@@ -96,10 +96,6 @@ module "aks" {
   location            = module.metadata.location
   tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
-
-  external_dns_zones     = var.external_dns_zones
-  cert_manager_dns_zones = var.cert_manager_dns_zones
-
   node_pool_tags     = {}
   node_pool_defaults = {}
   node_pool_taints   = {}
@@ -137,7 +133,7 @@ module "aks" {
     route_table_id = module.virtual_network.aks_subnets.route_table_id
   }
 
-  config = {
+  config = merge({
     alertmanager = {
       smtp_host = var.smtp_host
       smtp_from = var.smtp_from
@@ -147,7 +143,11 @@ module "aks" {
     internal_ingress = {
       domain    = "private.zone.azure.lnrsg.io"
     }
-  }
+
+    cert_manager = {
+      letsencrypt_environment = "staging"
+    }
+  }, var.config)
 
   # see /modules/core-config/modules/rbac/README.md
   azuread_clusterrole_map = {
@@ -162,6 +162,9 @@ module "aks" {
 }
 
 resource "kubernetes_namespace" "hpcc_namespace" {
+  depends_on = [
+    module.aks
+  ]
   metadata {
     name = var.namespace
   }
@@ -170,7 +173,7 @@ resource "kubernetes_namespace" "hpcc_namespace" {
 resource "azurerm_storage_account" "storage_account" {
   
   name                       = "${random_string.random.result}"
-  resource_group_name        = data.azurerm_kubernetes_cluster.aks_cluster.node_resource_group
+  resource_group_name        = module.resource_group.name
   location                   = module.resource_group.location
   tags                       = module.metadata.tags
 
@@ -196,8 +199,9 @@ resource "azurerm_storage_account" "storage_account" {
 
 }
 
-resource "azurerm_storage_container" "hpcc_data" {
-  name = "hpcc-data"
+resource "azurerm_storage_container" "hpcc_storage_containers" {
+  for_each = var.hpcc_config.storage
+  name = "hpcc-data-${each.key}"
   storage_account_name = azurerm_storage_account.storage_account.name
   container_access_type = "private"
 }
@@ -216,9 +220,10 @@ resource "helm_release" "csi_driver" {
 
 resource "random_uuid" "volume_handle" {}
 
-resource "kubernetes_persistent_volume" "hpcc_data_blob_volume" {
+resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
+  for_each = var.hpcc_config.storage
   metadata {
-    name = "pv-blob"
+    name = "pv-blob-${each.key}"
     labels = {
       storage-tier = "blobnfs"
     }
@@ -226,7 +231,7 @@ resource "kubernetes_persistent_volume" "hpcc_data_blob_volume" {
 
   spec {
     capacity = {
-      storage = "10Gi"
+      storage = each.value.volume_size
     }
     access_modes = ["ReadWriteMany"]
     
@@ -236,11 +241,11 @@ resource "kubernetes_persistent_volume" "hpcc_data_blob_volume" {
       csi {
         driver = "blob.csi.azure.com"
         read_only = false
-        volume_handle = random_uuid.volume_handle.result
-        volume_attributes = {
-          resourceGroup = data.azurerm_kubernetes_cluster.aks_cluster.node_resource_group 
+        volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
+        volume_attributes = { 
+          resourceGroup = module.resource_group.name
           storageAccount = azurerm_storage_account.storage_account.name
-          containerName = azurerm_storage_container.hpcc_data.name
+          containerName = azurerm_storage_container.hpcc_storage_containers[each.key].name
           protocol = "nfs"
         }
       }
@@ -250,17 +255,21 @@ resource "kubernetes_persistent_volume" "hpcc_data_blob_volume" {
   }
 } 
 
-resource kubernetes_persistent_volume_claim "hpcc_data_blob_pvc" {
+resource kubernetes_persistent_volume_claim "hpcc_blob_pvcs" {
+  depends_on = [
+    kubernetes_namespace.hpcc_namespace
+  ]
+  for_each = var.hpcc_config.storage
   metadata {
-    name = "pvc-blob-nfs"
-    namespace = var.namespace
+    name = "pvc-blob-${each.key}-nfs"
+    namespace = kubernetes_namespace.hpcc_namespace.metadata[0].name
   }
   spec {
     access_modes = ["ReadWriteMany"]
     storage_class_name = "blobnfs"
     resources {
       requests = {
-        storage = "10Gi"
+        storage = each.value.volume_size
       }
     }
     selector {
@@ -268,17 +277,21 @@ resource kubernetes_persistent_volume_claim "hpcc_data_blob_pvc" {
         storage-tier = "blobnfs"
       }
     }   
-    volume_name = kubernetes_persistent_volume.hpcc_data_blob_volume.metadata.0.name
+    volume_name = kubernetes_persistent_volume.hpcc_blob_volumes[each.key].metadata.0.name
   }
 }
-
+/*
 module hpcc_system {
+  depends_on = [
+    module.aks
+  ]
   source = "../.."
 
-  namespace = var.namespace
+  namespace = kubernetes_namespace.hpcc_namespace.metadata[0].name
   name = "hpcc-demo"
 
-  hpcc_storage_values = ["${file("./hpcc_storage_values.yaml")}"]
-  hpcc_system_values = ["${file("./hpcc_system_values.yaml")}"]
+  hpcc_config = 
   
 }
+*/
+

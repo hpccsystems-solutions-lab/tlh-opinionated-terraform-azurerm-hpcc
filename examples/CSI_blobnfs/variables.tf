@@ -1,14 +1,7 @@
-variable "external_dns_zones" {
-  description = "DNS Zone details for external-dns."
-  type = object({
-    names               = list(string)
-    resource_group_name = string
-  })
-}
-
-variable "cert_manager_dns_zones" {
-  description = "The name and resource group of the DNS zone associated with your Azure subscription"
-  type = map(string)
+variable "config" {
+  description = "cluster config"
+  type        = any
+  default     = {}
 }
 
 variable "azuread_clusterrole_map" {
@@ -47,4 +40,16 @@ variable "alerts_mailto" {
 variable "namespace" {
   description = "Namespace for HPCC System"
   type = string
+}
+
+variable "hpcc_config" {
+  description = "Config for hpcc"
+  type = object(
+      {
+          storage = map(object({
+              volume_size = string
+              path_prefix = string
+          }))
+      }
+  )
 }

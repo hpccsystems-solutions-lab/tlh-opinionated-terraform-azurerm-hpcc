@@ -15,17 +15,19 @@ variable create_namespace {
 }
 
 variable hpcc_helm_version {
-    description = "Version of the HPCC Helm Chart to use "
+    description = "Version of the HPCC Helm Chart to use"
     type = string
     default = "8.2.0-rc2"
 }
 
-variable hpcc_system_values {
-    description = "List of HPCC helm config yaml values - raw yaml"
-    type = list(string)
-}
-
-variable hpcc_storage_values {
-    description = "List of HPCC Storage helm config yaml values - raw yaml"
-    type = list(string)
+variable hpcc_config {
+    description = "Config options to pass to the values template for hpcc"
+    type = object(
+        {
+            storage = map(object({
+                volume_size = string
+                path_prefix = string
+            }))
+        }
+    )
 }
