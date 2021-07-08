@@ -57,11 +57,6 @@ global:
         settings:
           period: 60
 
-  # misc:
-  #   postJobCommand: "curl -sf -XPOST http://127.0.0.1:15020/quitquitquit"
-  # Or example for linkerd
-  #   postJobCommand: "kill $(pgrep linkerd2-proxy)"
-  #   postJobCommandViaSidecar: true
 
 
   # For pod placement instruction and examples please reference docs/placements.md
@@ -96,28 +91,12 @@ security:
 
 storage:
   planes:
-  - name: dali
-    #storageClass: ""
-    pvc: "dali-hpcc-demo-storage-hpcc-azurefile-pvc"
-    #existingClaim: "dali-fu"
-    prefix: "/var/lib/HPCCSystems/dalistorage"
-    labels: [ "dali" ]
-  - name: sasha
-    pvc: "dali-hpcc-demo-storage-hpcc-azurefile-pvc"
-    prefix: "/var/lib/HPCCSystems/sashastorage"
-    labels: [ "sasha" ]
-  - name: dll
-    #storageClass: ""
-    pvc: "dll-hpcc-demo-storage-hpcc-azurefile-pvc"
-    #existingClaim: "dll-fu"
-    prefix: "/var/lib/HPCCSystems/queries"
-    labels: [ "dll" ]
-  - name: data
-    #storageClass: ""
-    #existingClaim: "pvc-blob-nfs"
-    pvc: "pvc-blob-nfs"
-    prefix: "/var/lib/HPCCSystems/hpcc-data"
-    labels: [ "data" ]
+    %{ for key, value in storage}
+  - name: ${key}
+    pvc: "${value.pvc_name}"
+    prefix: "${value.path_prefix}"
+    labels: [ "${key}" ]
+  %{ endfor}
   - name: mydropzone
     prefix: "/var/lib/HPCCSystems/dropzone"
     labels: [ "lz" ]
@@ -240,16 +219,10 @@ vaults:
   ## vault kv put secret/codeSign/gpg-private-key-1 passphrase=<passphrase> private=@<private_key_file1>
   ## vault kv put secret/codeSign/gpg-private-key-2 passphrase=<passphrase> private=@<private_key_file2>
   codeSign:
-    # - name: codesign-private-keys
-    #  url: http://${env.VAULT_SERVICE_HOST}:${env.VAULT_SERVICE_PORT}/v1/secret/data/codeSign/${secret}
-    #  kind: kv-v2
   ## The keys for verifying signed code may be imported from the vault.
   ## vault kv put secret/codeVerify/gpg-public-key-1 public=@<public_key_file1>
   ## vault kv put secret/codeVerify/gpg-public-key-2 public=@<public_key_file2>
   codeVerify:
-    # - name: codesign-public-keys
-    #  url: http://${env.VAULT_SERVICE_HOST}:${env.VAULT_SERVICE_PORT}/v1/secret/data/codeVerify/${secret}
-    #  kind: kv-v2
 
 bundles: []
 ## Specifying bundles here will cause the indicated bundles to be downloaded and installed automatically

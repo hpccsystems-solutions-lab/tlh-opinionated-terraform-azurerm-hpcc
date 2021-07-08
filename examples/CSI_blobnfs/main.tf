@@ -171,6 +171,9 @@ resource "kubernetes_namespace" "hpcc_namespace" {
 }
 
 resource "azurerm_storage_account" "storage_account" {
+  depends_on = [
+    kubernetes_namespace.hpcc_namespace
+  ]
   
   name                       = "${random_string.random.result}"
   resource_group_name        = module.resource_group.name
@@ -208,7 +211,8 @@ resource "azurerm_storage_container" "hpcc_storage_containers" {
 
 resource "helm_release" "csi_driver" {
   depends_on = [
-    module.aks
+    module.aks,
+    azurerm_storage_container.hpcc_storage_containers
   ]
   chart = "blob-csi-driver"
   name = "blob-csi-driver"
@@ -221,6 +225,11 @@ resource "helm_release" "csi_driver" {
 resource "random_uuid" "volume_handle" {}
 
 resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
+  depends_on = [ 
+    kubernetes_namespace.hpcc_namespace,
+    helm_release.csi_driver
+  ]
+
   for_each = var.hpcc_config.storage
   metadata {
     name = "pv-blob-${each.key}"
@@ -261,7 +270,7 @@ resource kubernetes_persistent_volume_claim "hpcc_blob_pvcs" {
   ]
   for_each = var.hpcc_config.storage
   metadata {
-    name = "pvc-blob-${each.key}-nfs"
+    name = each.value.pvc_name
     namespace = kubernetes_namespace.hpcc_namespace.metadata[0].name
   }
   spec {
@@ -280,7 +289,7 @@ resource kubernetes_persistent_volume_claim "hpcc_blob_pvcs" {
     volume_name = kubernetes_persistent_volume.hpcc_blob_volumes[each.key].metadata.0.name
   }
 }
-/*
+
 module hpcc_system {
   depends_on = [
     module.aks
@@ -290,8 +299,7 @@ module hpcc_system {
   namespace = kubernetes_namespace.hpcc_namespace.metadata[0].name
   name = "hpcc-demo"
 
-  hpcc_config = 
+  hpcc_config = var.hpcc_config
   
 }
-*/
 

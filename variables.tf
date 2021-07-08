@@ -27,6 +27,7 @@ variable hpcc_config {
             storage = map(object({
                 volume_size = string
                 path_prefix = string
+                pvc_name = string
             }))
         }
     )
