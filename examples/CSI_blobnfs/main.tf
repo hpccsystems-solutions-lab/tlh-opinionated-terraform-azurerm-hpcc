@@ -57,11 +57,11 @@ module "virtual_network" {
 
   aks_subnets = {
     private = {
-      cidrs = ["10.1.0.0/24"]
+      cidrs             = ["10.1.0.0/24"]
       service_endpoints = ["Microsoft.Storage"]
     }
     public = {
-      cidrs = ["10.1.1.0/24"]
+      cidrs             = ["10.1.1.0/24"]
       service_endpoints = ["Microsoft.Storage"]
     }
     route_table = "default"
@@ -73,12 +73,12 @@ module "virtual_network" {
       use_inline_routes             = false
       routes = {
         internet = {
-          address_prefix         = "0.0.0.0/0"
-          next_hop_type          = "Internet"
+          address_prefix = "0.0.0.0/0"
+          next_hop_type  = "Internet"
         }
         local-vnet-10-1-0-0-22 = {
-          address_prefix         = "10.1.0.0/22"
-          next_hop_type          = "vnetlocal"
+          address_prefix = "10.1.0.0/22"
+          next_hop_type  = "vnetlocal"
         }
       }
     }
@@ -90,15 +90,15 @@ module "virtual_network" {
 module "aks" {
   source = "/home/jhodnett/repos/LN-RBA/terraform-azurerm-aks"
 
-  cluster_name = random_string.random.result
+  cluster_name    = random_string.random.result
   cluster_version = "1.21"
 
   location            = module.metadata.location
   tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
-  node_pool_tags     = {}
-  node_pool_defaults = {}
-  node_pool_taints   = {}
+  node_pool_tags      = module.metadata.tags
+  node_pool_defaults  = {}
+  node_pool_taints    = {}
 
   node_pools = [
     {
@@ -110,7 +110,7 @@ module "aks" {
       min_count = "1"
       max_count = "2"
       labels    = {}
-      tags      = {}
+      tags      = module.metadata.tags
     },
     {
       name      = "public"
@@ -121,7 +121,7 @@ module "aks" {
       min_count = "1"
       max_count = "2"
       labels    = {}
-      tags      = {}
+      tags      = module.metadata.tags
     }
   ]
 
@@ -137,25 +137,33 @@ module "aks" {
     alertmanager = {
       smtp_host = var.smtp_host
       smtp_from = var.smtp_from
-      receivers = [{ name = "alerts", email_configs = [{ to = var.alerts_mailto, require_tls = false }]}]
+      receivers = [{ name = "alerts", email_configs = [{ to = var.alerts_mailto, require_tls = false }] }]
     }
 
     internal_ingress = {
-      domain    = "private.zone.azure.lnrsg.io"
+      domain = "private.zone.azure.lnrsg.io"
     }
 
+    external_dns = {
+      zones               = ["us.lnrisk.io"]
+      resource_group_name = "rg-iog-sandbox-eastus2-lnriskio"
+    }
     cert_manager = {
       letsencrypt_environment = "staging"
+      letsencrypt_email       = "James.Hodnett@lexisnexisrisk.com"
+      dns_zones = {
+        "us.lnrisk.io" = "rg-iog-sandbox-eastus2-lnriskio"
+      }
     }
   }, var.config)
 
   # see /modules/core-config/modules/rbac/README.md
   azuread_clusterrole_map = {
-    cluster_admin_users  = {
+    cluster_admin_users = {
       "hodnja01@risk.regn.net" = "fe33802a-25bf-4847-aa4e-85357dc91d8e"
-      iog_dev_write = "8d47c834-0c73-4467-9b79-783c1692c4e5"
+      iog_dev_write            = "8d47c834-0c73-4467-9b79-783c1692c4e5"
     }
-    cluster_view_users = {}
+    cluster_view_users   = {}
     standard_view_users  = {}
     standard_view_groups = {}
   }
@@ -174,38 +182,38 @@ resource "azurerm_storage_account" "storage_account" {
   depends_on = [
     kubernetes_namespace.hpcc_namespace
   ]
-  
-  name                       = "${random_string.random.result}"
-  resource_group_name        = module.resource_group.name
-  location                   = module.resource_group.location
-  tags                       = module.metadata.tags
 
-  access_tier                = "Hot"
-  account_kind               = "StorageV2"
-  account_tier               = "Standard"
-  allow_blob_public_access   = true
-  is_hns_enabled             = true
-  min_tls_version            = "TLS1_2"
+  name                = random_string.random.result
+  resource_group_name = module.resource_group.name
+  location            = module.resource_group.location
+  tags                = module.metadata.tags
+
+  access_tier              = "Hot"
+  account_kind             = "StorageV2"
+  account_tier             = "Standard"
+  allow_blob_public_access = true
+  is_hns_enabled           = true
+  min_tls_version          = "TLS1_2"
 
 
-  nfsv3_enabled              = true
-  enable_https_traffic_only  = false
+  nfsv3_enabled             = true
+  enable_https_traffic_only = false
 
-  account_replication_type   = "LRS"
+  account_replication_type = "LRS"
 
   network_rules {
-    default_action              = "Deny"
-    ip_rules                    = ["${chomp(data.http.my_ip.body)}"]
-    virtual_network_subnet_ids  = [module.virtual_network.aks_subnets.private.id, module.virtual_network.aks_subnets.public.id]
-    bypass                      = ["AzureServices"]
+    default_action             = "Deny"
+    ip_rules                   = ["${chomp(data.http.my_ip.body)}"]
+    virtual_network_subnet_ids = [module.virtual_network.aks_subnets.private.id, module.virtual_network.aks_subnets.public.id]
+    bypass                     = ["AzureServices"]
   }
 
 }
 
 resource "azurerm_storage_container" "hpcc_storage_containers" {
-  for_each = var.hpcc_config.storage
-  name = "hpcc-data-${each.key}"
-  storage_account_name = azurerm_storage_account.storage_account.name
+  for_each              = var.hpcc_storage
+  name                  = "hpcc-data-${each.key}"
+  storage_account_name  = azurerm_storage_account.storage_account.name
   container_access_type = "private"
 }
 
@@ -214,23 +222,23 @@ resource "helm_release" "csi_driver" {
     module.aks,
     azurerm_storage_container.hpcc_storage_containers
   ]
-  chart = "blob-csi-driver"
-  name = "blob-csi-driver"
-  namespace = "blob-csi-driver"
+  chart            = "blob-csi-driver"
+  name             = "blob-csi-driver"
+  namespace        = "blob-csi-driver"
   create_namespace = true
-  repository = "https://raw.githubusercontent.com/kubernetes-sigs/blob-csi-driver/master/charts"
-  version = "v1.3.0"
+  repository       = "https://raw.githubusercontent.com/kubernetes-sigs/blob-csi-driver/master/charts"
+  version          = "v1.3.0"
 }
 
 resource "random_uuid" "volume_handle" {}
 
 resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
-  depends_on = [ 
+  depends_on = [
     kubernetes_namespace.hpcc_namespace,
     helm_release.csi_driver
   ]
 
-  for_each = var.hpcc_config.storage
+  for_each = var.hpcc_storage
   metadata {
     name = "pv-blob-${each.key}"
     labels = {
@@ -240,66 +248,92 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
 
   spec {
     capacity = {
-      storage = each.value.volume_size
+      storage = each.value
     }
     access_modes = ["ReadWriteMany"]
-    
+
     persistent_volume_reclaim_policy = "Retain"
 
     persistent_volume_source {
       csi {
-        driver = "blob.csi.azure.com"
-        read_only = false
+        driver        = "blob.csi.azure.com"
+        read_only     = false
         volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
-        volume_attributes = { 
-          resourceGroup = module.resource_group.name
+        volume_attributes = {
+          resourceGroup  = module.resource_group.name
           storageAccount = azurerm_storage_account.storage_account.name
-          containerName = azurerm_storage_container.hpcc_storage_containers[each.key].name
-          protocol = "nfs"
+          containerName  = azurerm_storage_container.hpcc_storage_containers[each.key].name
+          protocol       = "nfs"
         }
       }
     }
 
     storage_class_name = "blobnfs"
   }
-} 
+}
 
-resource kubernetes_persistent_volume_claim "hpcc_blob_pvcs" {
+resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
   depends_on = [
     kubernetes_namespace.hpcc_namespace
   ]
-  for_each = var.hpcc_config.storage
+  for_each = var.hpcc_storage
   metadata {
-    name = each.value.pvc_name
+    name      = "pvc-blob-${each.key}-nfs"
     namespace = kubernetes_namespace.hpcc_namespace.metadata[0].name
   }
   spec {
-    access_modes = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteMany"]
     storage_class_name = "blobnfs"
     resources {
       requests = {
-        storage = each.value.volume_size
+        storage = each.value
       }
     }
     selector {
       match_labels = {
         storage-tier = "blobnfs"
       }
-    }   
+    }
     volume_name = kubernetes_persistent_volume.hpcc_blob_volumes[each.key].metadata.0.name
   }
 }
 
-module hpcc_system {
-  depends_on = [
-    module.aks
-  ]
-  source = "../.."
+locals {
+  hpcc_config = {
+    path_prefix = "/var/lib/HPCCSystems"
+    storage = {
+      data = {
+        path     = "hpcc-data"
+        pvc_name = kubernetes_persistent_volume_claim.hpcc_blob_pvcs["data"].metadata.0.name
+      }
+      dali = {
+        path     = "dalistorage"
+        pvc_name = kubernetes_persistent_volume_claim.hpcc_blob_pvcs["dali"].metadata.0.name
+      }
+      sasha = {
+        path     = "sashastorage"
+        pvc_name = kubernetes_persistent_volume_claim.hpcc_blob_pvcs["sasha"].metadata.0.name
+      }
+      dll = {
+        path     = "queries"
+        pvc_name = kubernetes_persistent_volume_claim.hpcc_blob_pvcs["dll"].metadata.0.name
+      }
+      mydropzone = {
+        path     = "mydropzone"
+        pvc_name = kubernetes_persistent_volume_claim.hpcc_blob_pvcs["mydropzone"].metadata.0.name
+        category = "lz"
+      }
+    }
+  }
+}
 
-  namespace = kubernetes_namespace.hpcc_namespace.metadata[0].name
-  name = "hpcc-demo"
-
-  hpcc_config = var.hpcc_config
-  
+resource "helm_release" "hpcc" {
+  name             = "hpcc-demo"
+  namespace        = kubernetes_namespace.hpcc_namespace.metadata[0].name
+  create_namespace = true
+  chart            = "hpcc"
+  repository       = "https://hpcc-systems.github.io/helm-chart"
+  version          = var.hpcc_helm_version
+  values           = [templatefile("./hpcc_system_values.yaml.tpl", local.hpcc_config)]
 }
 
