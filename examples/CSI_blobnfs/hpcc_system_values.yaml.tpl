@@ -39,7 +39,7 @@ storage:
 %{ endfor ~}
 
 certificates:
-  enabled: true
+  enabled: false
   issuers:
     local:
       name: letsencrypt-issuer

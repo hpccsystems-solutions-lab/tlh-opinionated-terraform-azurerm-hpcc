@@ -45,7 +45,6 @@ variable "namespace" {
 variable "hpcc_helm_version" {
   description = "Version of the HPCC Helm Chart to use"
   type        = string
-  default     = "8.2.2-rc1"
 }
 
 variable "hpcc_storage" {

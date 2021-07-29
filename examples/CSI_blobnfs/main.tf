@@ -34,7 +34,7 @@ module "metadata" {
 }
 
 module "resource_group" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-resource-group.git?ref=v1.0.0"
+  source = "github.com/Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.0.0"
 
   location = module.metadata.location
   names    = module.metadata.names
@@ -42,7 +42,7 @@ module "resource_group" {
 }
 
 module "virtual_network" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v2.10.0"
+  source = "github.com/Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v5.0.0"
 
   naming_rules = module.naming.yaml
 
@@ -56,29 +56,26 @@ module "virtual_network" {
   address_space = ["10.1.0.0/22"]
 
   aks_subnets = {
-    private = {
-      cidrs             = ["10.1.0.0/24"]
-      service_endpoints = ["Microsoft.Storage"]
-    }
-    public = {
-      cidrs             = ["10.1.1.0/24"]
-      service_endpoints = ["Microsoft.Storage"]
-    }
-    route_table = "default"
-  }
-
-  route_tables = {
-    default = {
-      disable_bgp_route_propagation = true
-      use_inline_routes             = false
-      routes = {
-        internet = {
-          address_prefix = "0.0.0.0/0"
-          next_hop_type  = "Internet"
-        }
-        local-vnet-10-1-0-0-22 = {
-          address_prefix = "10.1.0.0/22"
-          next_hop_type  = "vnetlocal"
+    demo = {
+      private = {
+        cidrs = ["10.1.3.0/25"]
+        service_endpoints = ["Microsoft.Storage"]
+      }
+      public = {
+        cidrs = ["10.1.3.128/25"]
+        service_endpoints = ["Microsoft.Storage"]
+      }
+      route_table = {
+        disable_bgp_route_propagation = true
+        routes = {
+          internet = {
+            address_prefix = "0.0.0.0/0"
+            next_hop_type  = "Internet"
+          }
+          local-vnet-10-1-0-0-21 = {
+            address_prefix = "10.1.0.0/21"
+            next_hop_type  = "vnetlocal"
+          }
         }
       }
     }
@@ -96,44 +93,47 @@ module "aks" {
   location            = module.metadata.location
   tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
-  node_pool_tags      = module.metadata.tags
-  node_pool_defaults  = {}
-  node_pool_taints    = {}
 
   node_pools = [
     {
-      name      = "private"
-      tier      = "standard"
-      lifecycle = "normal"
-      vm_size   = "large"
-      os_type   = "Linux"
-      min_count = "1"
-      max_count = "2"
-      labels    = {}
-      tags      = module.metadata.tags
+      name            = "ingress"
+      single_vmss     = true
+      public          = true
+      vm_size         = "medium"
+      os_type         = "Linux"
+      host_encryption = true
+      min_count       = "1"
+      max_count       = "2"
+      taints = [{
+        key    = "ingress"
+        value  = "true"
+        effect = "NO_SCHEDULE"
+      }]
+      labels = {
+        "lnrs.io/tier" = "ingress"
+      }
+      tags            = {}
     },
     {
-      name      = "public"
-      tier      = "ingress"
-      lifecycle = "normal"
-      vm_size   = "medium"
-      os_type   = "Linux"
-      min_count = "1"
-      max_count = "2"
-      labels    = {}
-      tags      = module.metadata.tags
+      name            = "workers"
+      single_vmss     = false
+      public          = false
+      vm_size         = "large"
+      os_type         = "Linux"
+      host_encryption = true
+      min_count       = "1"
+      max_count       = "2"
+      taints          = []
+      labels = {
+        "lnrs.io/tier" = "standard"
+      }
+      tags            = {}
     }
   ]
 
-  virtual_network = {
-    subnets = {
-      private = module.virtual_network.aks_subnets.private
-      public  = module.virtual_network.aks_subnets.public
-    }
-    route_table_id = module.virtual_network.aks_subnets.route_table_id
-  }
+  virtual_network = module.virtual_network.aks["demo"]
 
-  config = merge({
+  core_services_config = merge({
     alertmanager = {
       smtp_host = var.smtp_host
       smtp_from = var.smtp_from
@@ -191,20 +191,19 @@ resource "azurerm_storage_account" "storage_account" {
   access_tier              = "Hot"
   account_kind             = "StorageV2"
   account_tier             = "Standard"
-  allow_blob_public_access = true
+  allow_blob_public_access = false
   is_hns_enabled           = true
   min_tls_version          = "TLS1_2"
 
 
   nfsv3_enabled             = true
-  enable_https_traffic_only = false
-
+  enable_https_traffic_only = true
   account_replication_type = "LRS"
 
   network_rules {
     default_action             = "Deny"
     ip_rules                   = ["${chomp(data.http.my_ip.body)}"]
-    virtual_network_subnet_ids = [module.virtual_network.aks_subnets.private.id, module.virtual_network.aks_subnets.public.id]
+    virtual_network_subnet_ids = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
     bypass                     = ["AzureServices"]
   }
 

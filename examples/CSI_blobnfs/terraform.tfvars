@@ -2,6 +2,8 @@ smtp_host     = ""
 smtp_from     = "James.Hodnett@lexisnexisrisk.com"
 alerts_mailto = "James.Hodnett@lexisnexisrisk.com"
 
+hpcc_helm_version = "8.2.6-rc1"
+
 namespace = "hpcc-demo"
 
 hpcc_storage = {
