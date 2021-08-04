@@ -7,6 +7,11 @@ resource "random_string" "random" {
   special = false
 }
 
+resource "random_password" "elastic_password" {
+  length  = 12
+  special = false
+}
+
 module "subscription" {
   source          = "github.com/Azure-Terraform/terraform-azurerm-subscription-data.git?ref=v1.0.0"
   subscription_id = data.azurerm_subscription.current.subscription_id
@@ -94,6 +99,24 @@ module "aks" {
   tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
 
+  namespaces =  [
+    "hpcc-demo",
+    "blob-csi-driver",
+    "elasticsearch"
+  ]
+
+  secrets = {
+    elastic-credentials = {
+      name = "elastic-credentials"
+      namespace = "elasticsearch"
+      type = "Opaque"
+      data = {
+        username = "elastic"
+        password = random_password.elastic_password.result
+      }
+    }
+  }
+
   node_pools = [
     {
       name            = "ingress"
@@ -169,18 +192,9 @@ module "aks" {
   }
 }
 
-resource "kubernetes_namespace" "hpcc_namespace" {
-  depends_on = [
-    module.aks
-  ]
-  metadata {
-    name = var.namespace
-  }
-}
-
 resource "azurerm_storage_account" "storage_account" {
   depends_on = [
-    kubernetes_namespace.hpcc_namespace
+    module.aks
   ]
 
   name                = random_string.random.result
@@ -211,7 +225,7 @@ resource "azurerm_storage_account" "storage_account" {
 
 resource "azurerm_storage_container" "hpcc_storage_containers" {
   for_each              = var.hpcc_storage
-  name                  = "hpcc-data-${each.key}"
+  name                  = "hpcc-${each.key}"
   storage_account_name  = azurerm_storage_account.storage_account.name
   container_access_type = "private"
 }
@@ -224,16 +238,27 @@ resource "helm_release" "csi_driver" {
   chart            = "blob-csi-driver"
   name             = "blob-csi-driver"
   namespace        = "blob-csi-driver"
-  create_namespace = true
   repository       = "https://raw.githubusercontent.com/kubernetes-sigs/blob-csi-driver/master/charts"
   version          = "v1.3.0"
+}
+
+resource "helm_release" "elasticsearch" {
+  depends_on = [
+    module.aks,
+    azurerm_storage_container.hpcc_storage_containers
+  ]
+  chart            = "elasticsearch"
+  name             = "elasticsearch"
+  namespace        = "elasticsearch"
+  repository       = "https://helm.elastic.co/"
+  version          = "v7.13.4"
 }
 
 resource "random_uuid" "volume_handle" {}
 
 resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
   depends_on = [
-    kubernetes_namespace.hpcc_namespace,
+    module.aks,
     helm_release.csi_driver
   ]
 
@@ -273,12 +298,12 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
 
 resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
   depends_on = [
-    kubernetes_namespace.hpcc_namespace
+    module.aks
   ]
   for_each = var.hpcc_storage
   metadata {
     name      = "pvc-blob-${each.key}-nfs"
-    namespace = kubernetes_namespace.hpcc_namespace.metadata[0].name
+    namespace = "hpcc-demo"
   }
   spec {
     access_modes       = ["ReadWriteMany"]
@@ -327,9 +352,11 @@ locals {
 }
 
 resource "helm_release" "hpcc" {
+  depends_on = [
+    module.aks
+  ]
   name             = "hpcc-demo"
-  namespace        = kubernetes_namespace.hpcc_namespace.metadata[0].name
-  create_namespace = true
+  namespace        = "hpcc-demo"
   chart            = "hpcc"
   repository       = "https://hpcc-systems.github.io/helm-chart"
   version          = var.hpcc_helm_version

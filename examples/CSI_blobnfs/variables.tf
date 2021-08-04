@@ -37,11 +37,6 @@ variable "alerts_mailto" {
   type        = string
 }
 
-variable "namespace" {
-  description = "Namespace for HPCC System"
-  type        = string
-}
-
 variable "hpcc_helm_version" {
   description = "Version of the HPCC Helm Chart to use"
   type        = string

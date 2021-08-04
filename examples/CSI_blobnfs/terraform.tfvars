@@ -4,7 +4,11 @@ alerts_mailto = "James.Hodnett@lexisnexisrisk.com"
 
 hpcc_helm_version = "8.2.6-rc1"
 
-namespace = "hpcc-demo"
+namespaces =  [
+  "hpcc-demo",
+  "blob-csi-driver",
+  "elasticsearch"
+]
 
 hpcc_storage = {
   data       = "10Gi"
@@ -13,3 +17,4 @@ hpcc_storage = {
   sasha      = "1Gi"
   mydropzone = "1Gi"
 }
+
