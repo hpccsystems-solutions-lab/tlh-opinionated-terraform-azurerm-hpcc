@@ -6,6 +6,9 @@ data "azurerm_subscription" "current" {
 }
 
 data "azurerm_kubernetes_cluster" "aks_cluster" {
+  depends_on = [
+    module.aks
+  ]
   name                = module.aks.aks_cluster_name
   resource_group_name = module.resource_group.name
 }

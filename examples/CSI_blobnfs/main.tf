@@ -90,7 +90,7 @@ module "virtual_network" {
 
 # local updates made to support Kubernetes 1.21
 module "aks" {
-  source = "/home/jhodnett/repos/LN-RBA/terraform-azurerm-aks"
+  source = "github.com/LexisNexis-RBA/terraform-azurerm-aks.git"
 
   cluster_name    = random_string.random.result
   cluster_version = "1.21"
@@ -99,34 +99,15 @@ module "aks" {
   tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
 
-  namespaces =  [
-    "hpcc-demo",
-    "blob-csi-driver",
-    "elasticsearch"
-  ]
-
-  secrets = {
-    elastic-credentials = {
-      name = "elastic-credentials"
-      namespace = "elasticsearch"
-      type = "Opaque"
-      data = {
-        username = "elastic"
-        password = random_password.elastic_password.result
-      }
-    }
-  }
-
   node_pools = [
     {
-      name            = "ingress"
-      single_vmss     = true
-      public          = true
-      vm_size         = "medium"
-      os_type         = "Linux"
-      host_encryption = true
-      min_count       = "1"
-      max_count       = "2"
+      name         = "ingress"
+      single_vmss  = true
+      public       = true
+      node_type    = "x64-gp"
+      node_size    = "medium"
+      min_capacity = 1
+      max_capacity = 2
       taints = [{
         key    = "ingress"
         value  = "true"
@@ -135,25 +116,24 @@ module "aks" {
       labels = {
         "lnrs.io/tier" = "ingress"
       }
-      tags            = {}
+      tags         = {}
     },
     {
-      name            = "workers"
-      single_vmss     = false
-      public          = false
-      vm_size         = "large"
-      os_type         = "Linux"
-      host_encryption = true
-      min_count       = "1"
-      max_count       = "2"
-      taints          = []
+      name         = "workers"
+      single_vmss  = false
+      public       = false
+      node_type    = "x64-gp"
+      node_size    = "large"
+      min_capacity = 1
+      max_capacity = 2
+      taints       = []
       labels = {
         "lnrs.io/tier" = "standard"
       }
-      tags            = {}
+      tags         = {}
     }
   ]
-
+  
   virtual_network = module.virtual_network.aks["demo"]
 
   core_services_config = merge({
@@ -163,19 +143,19 @@ module "aks" {
       receivers = [{ name = "alerts", email_configs = [{ to = var.alerts_mailto, require_tls = false }] }]
     }
 
-    ingress_core_internal = {
-      domain = "private.zone.azure.lnrsg.io"
+    ingress_internal_core = {
+      domain = "infrastructure-sandbox.us.lnrisk.io"
     }
 
     external_dns = {
-      zones               = ["us.lnrisk.io"]
+      zones               = ["infrastructure-sandbox.us.lnrisk.io"]
       resource_group_name = "rg-iog-sandbox-eastus2-lnriskio"
     }
     cert_manager = {
       letsencrypt_environment = "staging"
       letsencrypt_email       = "James.Hodnett@lexisnexisrisk.com"
       dns_zones = {
-        "us.lnrisk.io" = "rg-iog-sandbox-eastus2-lnriskio"
+        "infrastructure-sandbox.us.lnrisk.io" = "rg-iog-sandbox-eastus2-lnriskio"
       }
     }
   }, var.config)
@@ -190,6 +170,43 @@ module "aks" {
     standard_view_users  = {}
     standard_view_groups = {}
   }
+}
+
+resource "kubernetes_namespace" "hpcc_namespaces" {
+  depends_on = [
+    module.aks
+  ]
+
+  for_each = toset(var.hpcc_namespaces)
+
+  metadata {
+    name = each.key
+
+    labels = {
+      name = each.key
+    }
+  }
+
+  lifecycle {
+    ignore_changes = all
+  }
+}
+
+resource "kubernetes_secret" "hpcc_secrets" {
+  depends_on = [
+    module.aks,
+    kubernetes_namespace.hpcc_namespaces
+  ]
+
+  for_each = local.hpcc_secrets
+
+  metadata {
+    name       = each.value.name
+    namespace  = each.value.namespace
+  }
+
+  type = each.value.type
+  data = each.value.data
 }
 
 resource "azurerm_storage_account" "storage_account" {

@@ -46,3 +46,8 @@ variable "hpcc_storage" {
   description = "Storage config for hpcc"
   type        = map(string)
 }
+
+variable "hpcc_namespaces" {
+  description = "List of namespaces to create"
+  type        = list(string)
+}
