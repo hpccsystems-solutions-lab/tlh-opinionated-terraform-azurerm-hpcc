@@ -98,7 +98,13 @@ resource "azurerm_storage_account" "storage_account" {
     virtual_network_subnet_ids = var.storage_network_subnet_ids
     bypass                     = ["AzureServices"]
   }
+}
 
+resource "azurerm_management_lock" "protect_storage_account" {
+  count = var.storage_account_delete_protection ? 1 : 0
+  name = "protect-storage"
+  scope = azurerm_storage_account.storage_account.id
+  lock_level = "CanNotDelete"
 }
 
 resource "azurerm_storage_container" "hpcc_storage_containers" {

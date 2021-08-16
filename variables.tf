@@ -134,3 +134,8 @@ variable "virtual_network" {
   })
 }
 
+variable "storage_account_delete_protection" {
+  description = "Protect storage from deletion"
+  type = bool
+  default = true
+}

@@ -107,5 +107,6 @@ module "hpcc_cluster" {
   address_space = var.address_space
 
   hpcc_storage = var.hpcc_storage
+  storage_account_delete_protection = false   //defaults to true
 
 }
