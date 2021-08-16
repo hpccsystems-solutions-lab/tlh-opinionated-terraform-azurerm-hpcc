@@ -1,4 +1,9 @@
-variable "config" {
+variable "address_space" {
+  description = "List of address spaces"
+  type        = list(string)
+}
+
+variable "core_services_config" {
   description = "cluster config"
   type        = any
   default     = {}
@@ -22,24 +27,9 @@ variable "azuread_clusterrole_map" {
   }
 }
 
-variable "smtp_host" {
-  description = "SMTP host and optionally appended port to send alerts to"
-  type        = string
-}
-
-variable "smtp_from" {
-  description = "Email address alerts are sent from"
-  type        = string
-}
-
-variable "alerts_mailto" {
-  description = "Email address alerts are sent to"
-  type        = string
-}
-
-variable "hpcc_helm_version" {
-  description = "Version of the HPCC Helm Chart to use"
-  type        = string
+variable "api_server_authorized_ip_ranges" {
+  description = "Map of authorized CIDRs / IPs"
+  type        = map(string)
 }
 
 variable "hpcc_storage" {
@@ -47,7 +37,12 @@ variable "hpcc_storage" {
   type        = map(string)
 }
 
-variable "hpcc_namespaces" {
-  description = "List of namespaces to create"
+variable "private_cidrs" {
+  description = "Private AKS cidrs"
+  type        = list(string)
+}
+
+variable "public_cidrs" {
+  description = "Public AKS cidrs"
   type        = list(string)
 }
