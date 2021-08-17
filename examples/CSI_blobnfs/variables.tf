@@ -32,7 +32,7 @@ variable "api_server_authorized_ip_ranges" {
   type        = map(string)
 }
 
-variable "hpcc_storage" {
+variable "hpcc_storage_config" {
   description = "Storage config for hpcc"
   type        = map(string)
 }

@@ -1,3 +1,4 @@
+# AKS Config
 
 variable "address_space" {
   description = "The vnet address spaces."
@@ -48,23 +49,6 @@ variable "core_services_config" {
   type        = any
 }
 
-variable "hpcc_helm_version" {
-  description = "Version of the HPCC Helm Chart to use"
-  type        = string
-  default     = "8.2.6-rc1"
-}
-
-variable "hpcc_namespace" {
-  description = "HPCC Namespace"
-  type        = string
-  default     = "hpcc"
-}
-
-variable "hpcc_storage" {
-  description = "Storage config for hpcc"
-  type        = map(string)
-}
-
 variable "location" {
   description = "Azure region in which to build resources."
   type        = string
@@ -108,11 +92,6 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "storage_network_subnet_ids" {
-  description = "The network ids to grant storage access"
-  type        = list(string)
-}
-
 variable "tags" {
   description = "Tags to be applied to cloud resources."
   type        = map(string)
@@ -134,8 +113,33 @@ variable "virtual_network" {
   })
 }
 
+# HPCC Storage Config
+
 variable "storage_account_delete_protection" {
   description = "Protect storage from deletion"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
+}
+
+variable "storage_network_subnet_ids" {
+  description = "The network ids to grant storage access"
+  type        = list(string)
+}
+
+# HPCC Config
+variable "hpcc_helm_version" {
+  description = "Version of the HPCC Helm Chart to use"
+  type        = string
+  default     = "8.2.10"
+}
+
+variable "hpcc_namespace" {
+  description = "HPCC Namespace"
+  type        = string
+  default     = "hpcc"
+}
+
+variable "hpcc_storage_config" {
+  description = "Storage config for hpcc"
+  type        = map(string)
 }

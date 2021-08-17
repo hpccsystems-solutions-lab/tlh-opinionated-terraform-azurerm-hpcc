@@ -101,14 +101,14 @@ resource "azurerm_storage_account" "storage_account" {
 }
 
 resource "azurerm_management_lock" "protect_storage_account" {
-  count = var.storage_account_delete_protection ? 1 : 0
-  name = "protect-storage"
-  scope = azurerm_storage_account.storage_account.id
+  count      = var.storage_account_delete_protection ? 1 : 0
+  name       = "protect-storage"
+  scope      = azurerm_storage_account.storage_account.id
   lock_level = "CanNotDelete"
 }
 
 resource "azurerm_storage_container" "hpcc_storage_containers" {
-  for_each              = var.hpcc_storage
+  for_each              = var.hpcc_storage_config
   name                  = "hpcc-${each.key}"
   storage_account_name  = azurerm_storage_account.storage_account.name
   container_access_type = "private"
@@ -134,7 +134,7 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
     helm_release.csi_driver
   ]
 
-  for_each = var.hpcc_storage
+  for_each = var.hpcc_storage_config
   metadata {
     name = "pv-blob-${each.key}"
     labels = {
@@ -172,7 +172,7 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
   depends_on = [
     module.aks
   ]
-  for_each = var.hpcc_storage
+  for_each = var.hpcc_storage_config
   metadata {
     name      = "pvc-blob-${each.key}-nfs"
     namespace = var.hpcc_namespace

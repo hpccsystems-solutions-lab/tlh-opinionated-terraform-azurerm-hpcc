@@ -43,7 +43,7 @@ api_server_authorized_ip_ranges = {
 private_cidrs = ["10.1.3.0/25"]
 public_cidrs  = ["10.1.3.128/25"]
 
-hpcc_storage = {
+hpcc_storage_config = {
   data       = "10Gi"
   dali       = "1Gi"
   dll        = "1Gi"
