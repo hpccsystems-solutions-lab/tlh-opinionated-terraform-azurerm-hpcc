@@ -6,6 +6,11 @@ locals {
     var.api_server_authorized_ip_ranges
   )
 
+  storage_account_authorized_ip_ranges = sort([
+    for k,v in var.api_server_authorized_ip_ranges:
+      replace(v, "/\\/3[12]$/", "")
+  ])
+
   hpcc_config = {
     path_prefix = "/var/lib/HPCCSystems"
     storage = {

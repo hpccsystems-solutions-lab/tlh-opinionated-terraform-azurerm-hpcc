@@ -99,7 +99,7 @@ module "hpcc_cluster" {
   storage_network_subnet_ids      = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
   core_services_config            = var.core_services_config
   azuread_clusterrole_map         = var.azuread_clusterrole_map
-  api_server_authorized_ip_ranges = merge(var.api_server_authorized_ip_ranges, { "my_ip" = chomp(data.http.my_ip.body) })
+  api_server_authorized_ip_ranges = merge(var.api_server_authorized_ip_ranges, { "my_ip" = "${chomp(data.http.my_ip.body)}/32" })
 
   // node_pool config
 
@@ -110,3 +110,7 @@ module "hpcc_cluster" {
   storage_account_delete_protection = false //defaults to true
 
 }
+
+ output "aks_login" {
+   value = module.hpcc_cluster.aks_login
+ }
