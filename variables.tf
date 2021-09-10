@@ -115,6 +115,11 @@ variable "virtual_network" {
 
 # HPCC Storage Config
 
+variable "storage_account_authorized_ip_ranges" {
+  description = "Map of authorized CIDRs / IPs"
+  type        = map(string)
+}
+
 variable "storage_account_delete_protection" {
   description = "Protect storage from deletion"
   type        = bool
@@ -124,6 +129,7 @@ variable "storage_account_delete_protection" {
 variable "storage_network_subnet_ids" {
   description = "The network ids to grant storage access"
   type        = list(string)
+  default     = null
 }
 
 # HPCC Config
@@ -139,7 +145,24 @@ variable "hpcc_namespace" {
   default     = "hpcc"
 }
 
+variable "hpcc_storage_account_name" {
+  description = "Storage account name for hpcc"
+  type        = string
+  default     = ""
+}
+
+variable "hpcc_storage_account_resource_group_name" {
+  description = "Storage account resource group name for hpcc"
+  type        = string
+  default     = ""
+}
+
 variable "hpcc_storage_config" {
   description = "Storage config for hpcc"
-  type        = map(string)
+  type        = map(
+    object({
+      container_name = string
+      size = string
+    })
+  )
 }

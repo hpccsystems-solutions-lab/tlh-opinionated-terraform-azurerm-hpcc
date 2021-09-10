@@ -1,15 +1,11 @@
 locals {
-  api_server_authorized_ip_ranges = merge({
+  api_server_authorized_ip_ranges_local = merge({
     "podnet_cidr" = var.podnet_cidr
     },
     { for i, cidr in var.address_space : "subnet_cidr_${i}" => cidr },
     var.api_server_authorized_ip_ranges
   )
 
-  storage_account_authorized_ip_ranges = sort([
-    for k,v in var.api_server_authorized_ip_ranges:
-      replace(v, "/\\/3[12]$/", "")
-  ])
 
   hpcc_config = {
     path_prefix = "/var/lib/HPCCSystems"
@@ -38,8 +34,10 @@ locals {
     }
   }
 
+  
   hpcc_namespaces = [
     var.hpcc_namespace,
     "blob-csi-driver"
   ]
+
 }

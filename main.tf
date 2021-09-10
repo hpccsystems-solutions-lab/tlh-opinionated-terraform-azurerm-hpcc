@@ -1,3 +1,5 @@
+
+
 module "aks" {
   source = "github.com/LexisNexis-RBA/terraform-azurerm-aks.git?ref=v0.12.0"
 
@@ -48,7 +50,7 @@ module "aks" {
   virtual_network                 = var.virtual_network
   core_services_config            = var.core_services_config
   azuread_clusterrole_map         = var.azuread_clusterrole_map
-  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
+  api_server_authorized_ip_ranges = local.api_server_authorized_ip_ranges_local
 }
 
 resource "kubernetes_namespace" "hpcc_namespaces" {
@@ -70,54 +72,26 @@ resource "kubernetes_namespace" "hpcc_namespaces" {
     ignore_changes = all
   }
 }
-resource "azurerm_storage_account" "storage_account" {
-  depends_on = [
-    module.aks
-  ]
 
-  name                = var.cluster_name
-  resource_group_name = var.resource_group_name
+module "hpcc_storage" {
+  depends_on = [module.aks]
+  source = "./modules/blobnfs"
+  cluster_name        = var.cluster_name
   location            = var.location
   tags                = var.tags
+  resource_group_name = var.hpcc_storage_account_name == "" ? var.resource_group_name : var.hpcc_storage_account_resource_group_name
 
-  access_tier              = "Hot"
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  allow_blob_public_access = false
-  is_hns_enabled           = true
-  min_tls_version          = "TLS1_2"
-
-
-  nfsv3_enabled             = true
-  enable_https_traffic_only = true
-  account_replication_type  = "LRS"
-
-  network_rules {
-    default_action             = "Deny"
-    ip_rules                   = local.storage_account_authorized_ip_ranges
-    virtual_network_subnet_ids = var.storage_network_subnet_ids
-    bypass                     = ["AzureServices"]
-  }
-}
-
-resource "azurerm_management_lock" "protect_storage_account" {
-  count      = var.storage_account_delete_protection ? 1 : 0
-  name       = "protect-storage"
-  scope      = azurerm_storage_account.storage_account.id
-  lock_level = "CanNotDelete"
-}
-
-resource "azurerm_storage_container" "hpcc_storage_containers" {
-  for_each              = var.hpcc_storage_config
-  name                  = "hpcc-${each.key}"
-  storage_account_name  = azurerm_storage_account.storage_account.name
-  container_access_type = "private"
+  storage_network_subnet_ids           = var.storage_network_subnet_ids
+  storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
+  
+  hpcc_storage_account_name = var.hpcc_storage_account_name
+  hpcc_storage_config =  var.hpcc_storage_config
 }
 
 resource "helm_release" "csi_driver" {
   depends_on = [
     module.aks,
-    azurerm_storage_container.hpcc_storage_containers
+    module.hpcc_storage
   ]
   chart      = "blob-csi-driver"
   name       = "blob-csi-driver"
@@ -134,7 +108,7 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
     helm_release.csi_driver
   ]
 
-  for_each = var.hpcc_storage_config
+  for_each = module.hpcc_storage.config
   metadata {
     name = "pv-blob-${each.key}"
     labels = {
@@ -144,7 +118,7 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
 
   spec {
     capacity = {
-      storage = each.value
+      storage = each.value.size
     }
     access_modes = ["ReadWriteMany"]
 
@@ -156,9 +130,9 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
         read_only     = false
         volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
         volume_attributes = {
-          resourceGroup  = var.resource_group_name
-          storageAccount = azurerm_storage_account.storage_account.name
-          containerName  = azurerm_storage_container.hpcc_storage_containers[each.key].name
+          resourceGroup  = module.hpcc_storage.resource_group_name
+          storageAccount = module.hpcc_storage.account_name
+          containerName  = each.value.container_name
           protocol       = "nfs"
         }
       }
@@ -172,7 +146,7 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
   depends_on = [
     module.aks
   ]
-  for_each = var.hpcc_storage_config
+  for_each = module.hpcc_storage.config
   metadata {
     name      = "pvc-blob-${each.key}-nfs"
     namespace = var.hpcc_namespace
@@ -182,7 +156,7 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
     storage_class_name = "blobnfs"
     resources {
       requests = {
-        storage = each.value
+        storage = each.value.size
       }
     }
     selector {

@@ -87,11 +87,46 @@ module "virtual_network" {
   }
 }
 
+resource "azurerm_storage_account" "storage_account" {
+
+  name                = "hpccstorage"
+  resource_group_name = module.resource_group.name
+  location            = module.resource_group.location
+  tags                = module.metadata.tags
+
+  access_tier              = "Hot"
+  account_kind             = "StorageV2"
+  account_tier             = "Standard"
+  allow_blob_public_access = false
+  is_hns_enabled           = true
+  min_tls_version          = "TLS1_2"
+
+
+  nfsv3_enabled             = true
+  enable_https_traffic_only = true
+  account_replication_type  = "LRS"
+
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = concat(values(var.api_server_authorized_ip_ranges), ["${chomp(data.http.my_ip.body)}"])
+    virtual_network_subnet_ids = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
+    bypass                     = ["AzureServices"]
+  }
+}
+
+resource "azurerm_storage_container" "hpcc_storage_containers" {
+  for_each              = var.hpcc_storage_sizes
+  name                  = "hpcc-${each.key}"
+  storage_account_name  = azurerm_storage_account.storage_account.name
+  container_access_type = "private"
+}
+
+
 locals {
-  hpcc_storage_config = {for k,v in var.hpcc_storage_sizes : 
+  hpcc_storage_config = {for k,v in azurerm_storage_container.hpcc_storage_containers : 
     k => {
-      size = v
-      container_name = ""
+      size = var.hpcc_storage_sizes[k]
+      container_name = azurerm_storage_container.hpcc_storage_containers[k].name
     }
   }
 }
@@ -115,6 +150,8 @@ module "hpcc_cluster" {
   // network config
   address_space = var.address_space
 
+  hpcc_storage_account_name           = "hpccstorage"
+  hpcc_storage_account_resource_group_name  = module.resource_group.name
   hpcc_storage_config               = local.hpcc_storage_config
   storage_account_delete_protection = false //defaults to true
 
