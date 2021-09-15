@@ -1,6 +1,6 @@
 
 resource "azurerm_storage_account" "storage_account" {
-  count = var.hpcc_storage_account_name == "" ? 1 : 0
+  count               = var.hpcc_storage_account_name == "" ? 1 : 0
   name                = var.cluster_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -12,7 +12,6 @@ resource "azurerm_storage_account" "storage_account" {
   allow_blob_public_access = false
   is_hns_enabled           = true
   min_tls_version          = "TLS1_2"
-
 
   nfsv3_enabled             = true
   enable_https_traffic_only = true
@@ -29,7 +28,7 @@ resource "azurerm_storage_account" "storage_account" {
 resource "azurerm_storage_container" "hpcc_storage_containers" {
   for_each              = var.hpcc_storage_account_name == "" ? var.hpcc_storage_config : {}
   name                  = "hpcc-${each.key}"
-  storage_account_name  = azurerm_storage_account.storage_account[0].name 
+  storage_account_name  = azurerm_storage_account.storage_account[0].name
   container_access_type = "private"
 }
 

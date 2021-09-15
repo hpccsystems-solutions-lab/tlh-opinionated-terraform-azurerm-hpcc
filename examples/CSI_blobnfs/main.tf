@@ -88,9 +88,9 @@ module "virtual_network" {
 }
 
 locals {
-  hpcc_storage_config = {for k,v in var.hpcc_storage_sizes : 
+  hpcc_storage_config = { for k, v in var.hpcc_storage_sizes :
     k => {
-      size = v
+      size           = v
       container_name = ""
     }
   }
@@ -104,11 +104,11 @@ module "hpcc_cluster" {
   location            = module.resource_group.location
   tags                = module.metadata.tags
 
-  virtual_network                 = module.virtual_network.aks["demo"]
-  storage_network_subnet_ids      = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
-  core_services_config            = var.core_services_config
-  azuread_clusterrole_map         = var.azuread_clusterrole_map
-  api_server_authorized_ip_ranges = merge(var.api_server_authorized_ip_ranges, { "my_ip" = "${chomp(data.http.my_ip.body)}/32" })
+  virtual_network                      = module.virtual_network.aks["demo"]
+  storage_network_subnet_ids           = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
+  core_services_config                 = var.core_services_config
+  azuread_clusterrole_map              = var.azuread_clusterrole_map
+  api_server_authorized_ip_ranges      = merge(var.api_server_authorized_ip_ranges, { "my_ip" = "${chomp(data.http.my_ip.body)}/32" })
   storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
   // node_pool config
 

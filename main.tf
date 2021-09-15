@@ -37,8 +37,8 @@ module "aks" {
       public       = false
       node_type    = "x64-gp"
       node_size    = "large"
-      min_capacity = 3
-      max_capacity = 3
+      min_capacity = var.aks_workers_min
+      max_capacity = var.aks_workers_max
       taints       = []
       labels = {
         "lnrs.io/tier" = "standard"
@@ -74,8 +74,8 @@ resource "kubernetes_namespace" "hpcc_namespaces" {
 }
 
 module "hpcc_storage" {
-  depends_on = [module.aks]
-  source = "./modules/blobnfs"
+  depends_on          = [module.aks]
+  source              = "./modules/blobnfs"
   cluster_name        = var.cluster_name
   location            = var.location
   tags                = var.tags
@@ -83,9 +83,9 @@ module "hpcc_storage" {
 
   storage_network_subnet_ids           = var.storage_network_subnet_ids
   storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
-  
+
   hpcc_storage_account_name = var.hpcc_storage_account_name
-  hpcc_storage_config =  var.hpcc_storage_config
+  hpcc_storage_config       = var.hpcc_storage_config
 }
 
 resource "helm_release" "csi_driver" {
@@ -178,5 +178,7 @@ resource "helm_release" "hpcc" {
   chart      = "hpcc"
   repository = "https://hpcc-systems.github.io/helm-chart"
   version    = var.hpcc_helm_version
-  values     = [templatefile("${path.module}/hpcc_system_values.yaml.tpl", local.hpcc_config)]
+  values = [
+    yamlencode(local.chart_values)
+  ]
 }

@@ -159,10 +159,21 @@ variable "hpcc_storage_account_resource_group_name" {
 
 variable "hpcc_storage_config" {
   description = "Storage config for hpcc"
-  type        = map(
-    object({
-      container_name = string
-      size = string
+  type = map(object({
+    container_name = string
+    size           = string
     })
   )
+}
+
+variable "aks_workers_min" {
+  description = "Min number of worker nodes"
+  type        = number
+  default     = 3
+}
+
+variable "aks_workers_max" {
+  description = "Max number of worker nodes"
+  type        = number
+  default     = 3
 }

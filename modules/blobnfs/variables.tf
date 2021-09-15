@@ -1,9 +1,9 @@
 variable "hpcc_storage_config" {
   description = "Storage config for hpcc"
-  type        = map(
+  type = map(
     object({
       container_name = string
-      size = string
+      size           = string
     })
   )
 }

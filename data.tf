@@ -1,4 +1,3 @@
-
 data "azurerm_kubernetes_cluster" "aks_cluster" {
   depends_on = [
     module.aks
