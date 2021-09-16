@@ -33,44 +33,6 @@ locals {
   ]
 
   chart_values = {
-    global = {
-      image = {
-        root       = "hpccsystems"
-        pullPolicy = "IfNotPresent"
-      }
-
-      logging = {
-        detail = 80
-      }
-
-      egress = {
-        restricted = true
-      }
-
-      cost = {
-        moneyLocale = "en_US.UTF-8"
-        perCpu      = 0.126
-      }
-
-      metrics = {
-        sinks = [{
-          type = "log"
-          name = "logging"
-          settings = {
-            period = 60
-          }
-        }]
-      }
-    }
-
-    security = {
-      eclSecurity = {
-        embedded = "allow"
-        pipe     = "allow"
-        extern   = "allow"
-        datafile = "allow"
-      }
-    }
 
     storage = {
       planes = [for k, v in kubernetes_persistent_volume_claim.hpcc_blob_pvcs :
@@ -99,90 +61,22 @@ locals {
       }
     }
 
-    secrets = {
-      storage    = {}
-      ecl        = {}
-      codeSign   = {}
-      codeVerify = {}
-      system     = {}
-    }
-
-    vaults = {
-      storage    = []
-      ecl        = []
-      ecl-user   = []
-      esp        = []
-      codeSign   = []
-      codeVerify = []
-    }
-
-    bundles = []
-
-    dali = [
-      {
-        name = "mydali"
-        services = {
-          coalescer = {
-            service = {
-              servicePort = 8877
-            }
-          }
-        }
-      }
-    ]
-
-    sasha = {
-      wu-archiver = {
-        service = {
-          servicePort = 8877
-        }
-        plane = "sasha"
-      }
-
-      dfuwu-archiver = {
-        service = {
-          servicePort = 8877
-        }
-        plane = "sasha"
-      }
-
-      dfurecovery-archiver = {}
-
-      file-expiry = {}
-
-    }
-
-    dfuserver = [{
-      name    = "dfuserver"
-      maxJobs = 1
-    }]
-
     eclagent = [
       {
-        name              = "hthor"
-        replicas          = 1
-        maxActive         = 4
-        prefix            = "hthor"
-        useChildProcesses = false
-        type              = "hthor"
+        name      = "hthor"
+        replicas  = 1
+        maxActive = 4
       },
       {
-        name              = "roxie-workunit"
-        replicas          = 1
-        prefix            = "roxie_workunit"
-        maxActive         = 20
-        useChildProcesses = true
-        type              = "roxie"
+        name     = "roxie-workunit"
+        replicas = 1
       }
     ]
 
     eclccserver = [
       {
-        name              = "myeclccserver"
-        replicas          = 1
-        useChildProcesses = false
-        maxActive         = 4
-        listen            = []
+        name     = "myeclccserver"
+        replicas = 1
       }
     ]
 
@@ -257,8 +151,6 @@ locals {
         replicas       = 2
         numChannels    = 2
         serverReplicas = 0
-        localAgent     = false
-        useAeron       = false
         topoServer = {
           replicas = 1
         }
