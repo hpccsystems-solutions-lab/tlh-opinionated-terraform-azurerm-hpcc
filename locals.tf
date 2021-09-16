@@ -64,19 +64,19 @@ locals {
     eclagent = [
       {
         name      = "hthor"
-        replicas  = 1
+        replicas  = lookup(var.hpcc_replica_config, "eclagent", 1)
         maxActive = 4
       },
       {
         name     = "roxie-workunit"
-        replicas = 1
+        replicas = lookup(var.hpcc_replica_config, "roxie-workunit", 1)
       }
     ]
 
     eclccserver = [
       {
         name     = "myeclccserver"
-        replicas = 1
+        replicas = lookup(var.hpcc_replica_config, "myeclccserver", 1)
       }
     ]
 
@@ -85,7 +85,7 @@ locals {
         name        = "eclwatch"
         application = "eclwatch"
         auth        = "none"
-        replicas    = 1
+        replicas    = lookup(var.hpcc_replica_config, "eclwatch", 1)
         service = {
           port        = 8888
           servicePort = 8010
@@ -96,7 +96,7 @@ locals {
         name        = "eclservices"
         application = "eclservices"
         auth        = "none"
-        replicas    = 1
+        replicas    = lookup(var.hpcc_replica_config, "eclservices", 1)
         service = {
           servicePort = 8010
           visibility  = "cluster"
@@ -106,7 +106,7 @@ locals {
         name        = "eclqueries"
         application = "eclqueries"
         auth        = "none"
-        replicas    = 1
+        replicas    = lookup(var.hpcc_replica_config, "eclqueries", 1)
         service = {
           servicePort = 8002
           visibility  = "local"
@@ -116,7 +116,7 @@ locals {
         name        = "esdl-sandbox"
         application = "esdl-sandbox"
         auth        = "none"
-        replicas    = 1
+        replicas    = lookup(var.hpcc_replica_config, "esdl-sandbox", 1)
         service = {
           servicePort = 8899
           visibility  = "local"
@@ -126,7 +126,7 @@ locals {
         name        = "sql2ecl"
         application = "sql2ecl"
         auth        = "none"
-        replicas    = 1
+        replicas    = lookup(var.hpcc_replica_config, "sql2ecl", 1)
         service = {
           servicePort = 8510
           visibility  = "local"
@@ -148,11 +148,11 @@ locals {
             visibility  = "local"
           }
         ]
-        replicas       = 2
+        replicas       = lookup(var.hpcc_replica_config, "roxie", 2)
         numChannels    = 2
         serverReplicas = 0
         topoServer = {
-          replicas = 1
+          replicas = lookup(var.hpcc_replica_config, "roxie-toposerver", 1)
         }
       }
     ]
@@ -161,7 +161,7 @@ locals {
       {
         name       = "thor"
         prefix     = "thor"
-        numWorkers = 2
+        numWorkers = lookup(var.hpcc_replica_config, "thor-workers", 1)
         maxJobs    = 4
         maxGraphs  = 2
       }

@@ -166,6 +166,18 @@ variable "hpcc_storage_config" {
   )
 }
 
+variable "hpcc_replica_config" {
+  description = "HPCC component scaling"
+  type = map(number)
+  default = {}
+}
+
+variable "hpcc_disabled_services" {
+  description = "HPCC disable services"
+  type = map(bool)
+  default = {}
+}
+
 variable "aks_workers_min" {
   description = "Min number of worker nodes"
   type        = number
