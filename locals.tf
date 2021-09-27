@@ -70,6 +70,7 @@ locals {
       {
         name     = "roxie-workunit"
         replicas = lookup(var.hpcc_replica_config, "roxie-workunit", 1)
+        maxActive = 4
       }
     ]
 
@@ -77,6 +78,7 @@ locals {
       {
         name     = "myeclccserver"
         replicas = lookup(var.hpcc_replica_config, "myeclccserver", 1)
+        maxActive = 4
       }
     ]
 
