@@ -13,9 +13,12 @@ resource "azurerm_storage_account" "storage_account" {
   is_hns_enabled           = true
   min_tls_version          = "TLS1_2"
 
+  shared_access_key_enabled = false
+
   nfsv3_enabled             = true
   enable_https_traffic_only = true
   account_replication_type  = "LRS"
+  
 
   network_rules {
     default_action             = "Deny"
