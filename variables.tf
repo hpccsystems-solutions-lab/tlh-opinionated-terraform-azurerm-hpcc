@@ -168,8 +168,8 @@ variable "hpcc_storage_config" {
 
 variable "hpcc_replica_config" {
   description = "HPCC component scaling"
-  type = map(number)
-  default = {}
+  type        = map(number)
+  default     = {}
 }
 
 /* Future feature

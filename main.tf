@@ -90,15 +90,15 @@ module "hpcc_storage" {
 
 
 resource "azurerm_role_assignment" "hpcc_storage_account_contrib" {
-  scope = module.hpcc_storage.account_id
+  scope                = module.hpcc_storage.account_id
   role_definition_name = "Storage Account Contributor"
-  principal_id = module.aks.principal_id
+  principal_id         = module.aks.principal_id
 }
 
 resource "azurerm_role_assignment" "hpcc_blob_data_contrib" {
-  scope = module.hpcc_storage.account_id
+  scope                = module.hpcc_storage.account_id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id = module.aks.principal_id
+  principal_id         = module.aks.principal_id
 }
 
 resource "helm_release" "csi_driver" {

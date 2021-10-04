@@ -1,5 +1,5 @@
 provider "azurerm" {
-  storage_use_azuread =  true
+  storage_use_azuread = true
   features {}
 }
 
