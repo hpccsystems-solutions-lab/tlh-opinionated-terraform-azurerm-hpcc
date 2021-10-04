@@ -1,7 +1,7 @@
 
 
 module "aks" {
-  source = "github.com/LexisNexis-RBA/terraform-azurerm-aks.git?ref=v0.12.0"
+  source = "github.com/LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
 
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
