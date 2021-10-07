@@ -135,7 +135,6 @@ module "hpcc_cluster" {
 
   aks_principal_id = module.aks.principal_id
 
-  cluster_name        = random_string.random.result
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location
   tags                = module.metadata.tags
