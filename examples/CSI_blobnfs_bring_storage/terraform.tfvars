@@ -22,6 +22,7 @@ core_services_config = {
     dns_zones = {
       "infrastructure-sandbox.us.lnrisk.io" = "rg-iog-sandbox-eastus2-lnriskio"
     }
+    azure_environment = "AzurePublicCloud"
   }
 }
 

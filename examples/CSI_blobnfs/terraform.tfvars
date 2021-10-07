@@ -48,10 +48,25 @@ storage_account_authorized_ip_ranges = {
 private_cidrs = ["10.1.3.0/25"]
 public_cidrs  = ["10.1.3.128/25"]
 
-hpcc_storage_sizes = {
-  data       = "10Gi"
-  dali       = "1Gi"
-  dll        = "1Gi"
-  sasha      = "1Gi"
-  mydropzone = "1Gi"
+hpcc_storage_config = {
+  data = {
+    size           = "10Gi"
+    container_name = ""
+  }
+  dali = {
+    size           = "1Gi"
+    container_name = ""
+  }
+  dll = {
+    size           = "1Gi"
+    container_name = ""
+  }
+  sasha = {
+    size           = "1Gi"
+    container_name = ""
+  }
+  mydropzone = {
+    size           = "1Gi"
+    container_name = ""
+  }
 }

@@ -108,7 +108,7 @@ resource "azurerm_storage_account" "storage_account" {
 
   network_rules {
     default_action             = "Deny"
-    ip_rules                   = concat(values(var.api_server_authorized_ip_ranges), ["${chomp(data.http.my_ip.body)}"])
+    ip_rules                   = toset(values(var.storage_account_authorized_ip_ranges))
     virtual_network_subnet_ids = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
     bypass                     = ["AzureServices"]
   }
@@ -121,42 +121,78 @@ resource "azurerm_storage_container" "hpcc_storage_containers" {
   container_access_type = "private"
 }
 
+module "aks" {
+  source = "github.com/LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
+
+  cluster_name    = random_string.random.result
+  cluster_version = "1.21"
+
+  location            = module.metadata.location
+  tags                = module.metadata.tags
+  resource_group_name = module.resource_group.name
+
+  network_plugin = "kubenet"
+
+  node_pools = [
+    {
+      name         = "workers"
+      single_vmss  = false
+      public       = false
+      node_type    = "x64-gp"
+      node_size    = "large"
+      min_capacity = 3
+      max_capacity = 3
+      taints       = []
+      labels = {
+        "lnrs.io/tier" = "standard"
+      }
+      tags = {}
+    }
+  ]
+
+  virtual_network         = module.virtual_network.aks["demo"]
+  core_services_config    = var.core_services_config
+  azuread_clusterrole_map = var.azuread_clusterrole_map
+  api_server_authorized_ip_ranges = merge(
+    { "pod_cidr" = "100.65.0.0/16" },
+    { for i, cidr in var.address_space : "subnet_cidr_${i}" => cidr },
+    var.api_server_authorized_ip_ranges
+  )
+}
 
 locals {
-  hpcc_storage_config = {for k,v in azurerm_storage_container.hpcc_storage_containers : 
+  hpcc_storage_config = { for k, v in azurerm_storage_container.hpcc_storage_containers :
     k => {
-      size = var.hpcc_storage_sizes[k]
+      size           = var.hpcc_storage_sizes[k]
       container_name = azurerm_storage_container.hpcc_storage_containers[k].name
     }
   }
 }
 
 module "hpcc_cluster" {
+  depends_on = [
+    module.aks
+  ]
   source = "../../"
 
-  cluster_name        = random_string.random.result
+  aks_principal_id = module.aks.principal_id
+
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location
   tags                = module.metadata.tags
 
-  virtual_network                 = module.virtual_network.aks["demo"]
-  storage_network_subnet_ids      = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
-  core_services_config            = var.core_services_config
-  azuread_clusterrole_map         = var.azuread_clusterrole_map
-  api_server_authorized_ip_ranges = merge(var.api_server_authorized_ip_ranges, { "my_ip" = "${chomp(data.http.my_ip.body)}/32" })
   storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
-  // node_pool config
+  storage_network_subnet_ids           = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
 
-  // network config
-  address_space = var.address_space
+  hpcc_storage_account_name                = "hpccstorage"
+  hpcc_storage_account_resource_group_name = module.resource_group.name
+  hpcc_storage_config                      = local.hpcc_storage_config
+  storage_account_delete_protection        = false //defaults to true
 
-  hpcc_storage_account_name           = "hpccstorage"
-  hpcc_storage_account_resource_group_name  = module.resource_group.name
-  hpcc_storage_config               = local.hpcc_storage_config
-  storage_account_delete_protection = false //defaults to true
 
 }
 
 output "aks_login" {
-  value = module.hpcc_cluster.aks_login
+  value = "az aks get-credentials --name ${module.aks.cluster_name} --resource-group ${module.resource_group.name}"
 }
+

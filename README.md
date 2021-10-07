@@ -48,11 +48,6 @@ See [examples](/examples) for general usage.
 
 | **Variable**                       | **Description**                                                                                                           | **Type**                                        | **Default**       | **Required** |
 |:-----------------------------------|:--------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------|:------------------|:------------:|
-| `address_space`                    | Vnet address space used to configure default api_server_authorized_ip_ranges.                                             | `list(string)`                                  | `nil`             | `yes`         |
-| `api_server_authorized_ip_ranges`  | Public IP or CIDR ranges to apply as a whitelist to the K8S API server.  address_space and pod_cidr is automatically added| `map(string)`                                   | `nil`             | `no`         |
-| `aks_workers_max`                    | Max number of worker node in the cluster.                                                                                 | `number`                                        | `3`             | `no`         |
-| `aks_workers_min`                    | Min number of worker node in the cluster.                                                                                 | `number`                                        | `3`             | `no`         |
-| `azuread_clusterrole_map`          | Azure AD Users and Groups to assign to Kubernetes cluster roles.                                                          | `object(map(string))` _(see aks documentation)_ | `{}`              | `no`         |
 | `cluster_name`                     | Name of the AKS cluster, also used as a prefix in names of related resources.                                             | `string`                                        | `nil`             | `yes`        |
 | `cluster_version`                  | The Kubernetes minor version. Version `1.21` supported.                                                                   | `string`                                        | `"1.21"`          | `no`         |
 | `core_services_config`             | Configuration options for core platform services                                                                          | `any` _(see aks documentation)_                 | `nil`             | `yes`        |
@@ -61,20 +56,8 @@ See [examples](/examples) for general usage.
 | `hpcc_replica_config`              | Map of number of replicas to configure for each hpcc component service.                                                   | `map(number)`                                   | `hpcc`            | `no`         |
 | `hpcc_storage_config`              | Key value pair of storage container names and their sizes to create. Persistent volumes are created from these names.     | `map(object)`                                   | `{}`             | `no`         |
 | `location`                         | Azure region in which to build resources.                                                                                 | `string`                                        | `nil`             | `yes`        |
-| `namespaces`                       | List of additional namespaces to create on the cluster.                                                                   | `list(string)`                                  | `[]`              | `no`         |
-| `network_plugin`                   | Kubernetes Network Plugin (kubenet or azure)                                                                              | `string`                                        | `"kubenet"`       | `no`         |
-| `node_pools`                       | Node pool definitions.                                                                                                    | `list(object())` _(see aks documentation)_      | `nil`             | `yes`        |
 | `pod_cidr`                         | CIDR range for pod IP addresses when using the `kubenet` network plugin.                                                  | `string`                                        | `"100.65.0.0/16"` | `no`         |
 | `resource_group_name`              | Name of the Resource Group to deploy the AKS Kubernetes service into, must already exist.                                 | `string`                                        | `nil`             | `yes`        |
 | `storage_account_delete_protection`| Flag to enable delete protection on the HPCC storage account.                                                             | `bool`                                          | `true`            | `no`         |
 | `storage_network_subnet_ids`       | List of network Subnet IDs to give storage access.                                                                        | `list(string)`                                  | `nil`             | `yes`        |
 | `tags`                             | Tags to be applied to cloud resources.                                                                                    | `map(string)`                                   | `{}`              | `no`         |
-| `virtual_network`                  | Virtual network configuration.                                                                                            | `object(map)` _(see aks documentation)_         | `nil`             | `yes`        |
-
----
-
-## Outputs
-
-| Name        | Description |
-|-------------|-------------|
-| `aks_login` | n/a         |

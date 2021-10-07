@@ -14,11 +14,6 @@ variable "hpcc_storage_account_name" {
   default     = ""
 }
 
-variable "cluster_name" {
-  description = "The name of the AKS cluster to create, also used as a prefix in names of related resources."
-  type        = string
-}
-
 variable "location" {
   description = "Azure region in which to build resources."
   type        = string
