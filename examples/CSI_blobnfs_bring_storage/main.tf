@@ -101,6 +101,7 @@ resource "azurerm_storage_account" "storage_account" {
   is_hns_enabled           = true
   min_tls_version          = "TLS1_2"
 
+  shared_access_key_enabled = false
 
   nfsv3_enabled             = true
   enable_https_traffic_only = true
@@ -173,7 +174,7 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks
   ]
-  source = "../../"
+  source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git?ref=no_aks"
 
   aks_principal_id = module.aks.principal_id
 
