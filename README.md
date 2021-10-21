@@ -48,6 +48,7 @@ See [examples](/examples) for general usage.
 
 | **Variable**                       | **Description**                                                                                                           | **Type**                                        | **Default**       | **Required** |
 |:-----------------------------------|:--------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------|:------------------|:------------:|
+| `aks_principal_id`                 | AKS Principal ID used for creating RBAC use.                                                                                | `string`                                        | `nil`             | `yes`         |
 | `hpcc_helm_version`                | Version of HPCC Systems Helm chart to use.                                                                                | `string`                                        | `8.2.10-1`        | `no`         |
 | `hpcc_namespace`                   | Namespace to deploy the HPCC Helm chart.                                                                                  | `string`                                        | `hpcc`            | `no`         |
 | `hpcc_replica_config`              | Map of number of replicas to configure for each hpcc component service.                                                   | `map(number)`                                   | `hpcc`            | `no`         |
