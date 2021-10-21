@@ -33,15 +33,15 @@ See [examples](/examples) for general usage.
 
 | Version   |
 |-----------|
-| >= 0.14.8 |
+| >= 1.0.0  |
 
 ## Providers
 
 | Name       | Version   |
 |------------|-----------|
-| azurerm    | >= 2.72.0 |
+| azurerm    | >= 2.78.0 |
 | helm       | >= 2.1.1  |
-| kubernetes | ~> 1.13   |
+| kubernetes | >= 2.5.0  |
 | random     | >= 2.3.0  |
 
 ## Inputs

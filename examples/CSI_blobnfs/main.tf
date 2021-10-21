@@ -131,7 +131,7 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks
   ]
-  source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git?ref=no_aks"
+  source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git?ref=v1.0.0-beta.1"
 
   aks_principal_id = module.aks.principal_id
 
