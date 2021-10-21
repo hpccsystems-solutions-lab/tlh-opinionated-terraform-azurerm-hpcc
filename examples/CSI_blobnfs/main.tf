@@ -145,7 +145,6 @@ module "hpcc_cluster" {
   hpcc_storage_config               = var.hpcc_storage_config
   storage_account_delete_protection = false //defaults to true
 
-
 }
 
 output "aks_login" {

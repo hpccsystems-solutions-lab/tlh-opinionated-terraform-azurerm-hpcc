@@ -46,11 +46,6 @@ locals {
           kind = "ClusterIssuer"
           spec = null
         }
-        public = {
-          name = "letsencrypt-issuer"
-          kind = "ClusterIssuer"
-          spec = null
-        }
       }
     }
 
