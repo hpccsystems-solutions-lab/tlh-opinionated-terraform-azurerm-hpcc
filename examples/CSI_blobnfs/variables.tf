@@ -37,9 +37,13 @@ variable "storage_account_authorized_ip_ranges" {
   type        = map(string)
 }
 
-variable "hpcc_storage_sizes" {
-  description = "Storage size config for hpcc"
-  type        = map(string)
+variable "hpcc_storage_config" {
+  description = "Storage config for hpcc"
+  type = map(object({
+    container_name = string
+    size           = string
+    })
+  )
 }
 
 variable "private_cidrs" {

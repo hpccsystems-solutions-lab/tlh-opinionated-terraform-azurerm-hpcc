@@ -1,11 +1,4 @@
 locals {
-  api_server_authorized_ip_ranges_local = merge({
-    "podnet_cidr" = var.podnet_cidr
-    },
-    { for i, cidr in var.address_space : "subnet_cidr_${i}" => cidr },
-    var.api_server_authorized_ip_ranges
-  )
-
   # This may be passed in later as a variable.
   hpcc_pvc_config = {
     data = {
@@ -49,11 +42,6 @@ locals {
       enabled = false
       issuers = {
         local = {
-          name = "letsencrypt-issuer"
-          kind = "ClusterIssuer"
-          spec = null
-        }
-        public = {
           name = "letsencrypt-issuer"
           kind = "ClusterIssuer"
           spec = null

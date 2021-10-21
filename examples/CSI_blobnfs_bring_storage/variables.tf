@@ -38,7 +38,7 @@ variable "storage_account_authorized_ip_ranges" {
 }
 
 variable "hpcc_storage_sizes" {
-  description = "Storage size config for hpcc"
+  description = "Storage config for hpcc"
   type        = map(string)
 }
 

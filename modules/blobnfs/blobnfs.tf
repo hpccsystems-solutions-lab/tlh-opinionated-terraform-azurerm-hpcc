@@ -1,7 +1,14 @@
+resource "random_string" "random" {
+  count   = var.hpcc_storage_account_name == "" ? 1 : 0
+  length  = 5
+  upper   = false
+  number  = false
+  special = false
+}
 
 resource "azurerm_storage_account" "storage_account" {
   count               = var.hpcc_storage_account_name == "" ? 1 : 0
-  name                = var.cluster_name
+  name                = "hpcc${random_string.random[0].result}"
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags
@@ -18,7 +25,7 @@ resource "azurerm_storage_account" "storage_account" {
   nfsv3_enabled             = true
   enable_https_traffic_only = true
   account_replication_type  = "LRS"
-  
+
 
   network_rules {
     default_action             = "Deny"
