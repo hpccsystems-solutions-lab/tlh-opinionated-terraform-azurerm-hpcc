@@ -27,6 +27,15 @@ locals {
 
   chart_values = {
 
+    global = {
+      image = {
+        version = var.hpcc_helm_version
+        root = var.hpcc_image_root
+        name = var.hpcc_image_name
+        pullPolicy = "IfNotPresent"
+      }
+    }
+
     storage = {
       planes = [for k, v in kubernetes_persistent_volume_claim.hpcc_blob_pvcs :
         {
@@ -39,12 +48,16 @@ locals {
     }
 
     certificates = {
-      enabled = false
+      enabled = true
       issuers = {
         local = {
           name = "letsencrypt-issuer"
           kind = "ClusterIssuer"
-          spec = null
+          spec = {
+            ca = {
+              secretName = "letsencrypt-issuer-privatekey"
+            }
+          }
         }
       }
     }

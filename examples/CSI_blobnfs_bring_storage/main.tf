@@ -174,9 +174,15 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks
   ]
-  source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git?ref=v1.0.0-beta.1"
+  #source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git?ref=v1.0.0-beta.1"
+  source = "../../"
 
   aks_principal_id = module.aks.principal_id
+#  acr_resource_id = "/subscriptions/ec0ba952-4ae9-4f69-b61c-4b96ff470038/resourceGroups/official-hpcc-rg/providers/Microsoft.ContainerRegistry/registries/officialhpccacr"
+
+  acr_resource_id = "/subscriptions/ec0ba952-4ae9-4f69-b61c-4b96ff470038/resourceGroups/official-hpcc-rg/providers/Microsoft.Network/privateLinkServices/private-link-svc"
+
+
 
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location
