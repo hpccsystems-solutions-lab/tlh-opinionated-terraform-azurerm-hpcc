@@ -29,9 +29,9 @@ module "metadata" {
   market              = "us"
   project             = "hpcc_demo"
   location            = "eastus2"
-  environment         = "dev"
+  environment         = "sandbox"
   product_name        = random_string.random.result
-  business_unit       = "infra"
+  business_unit       = "iog"
   product_group       = "hpcc"
   subscription_id     = module.subscription.output.subscription_id
   subscription_type   = "dev"
@@ -129,7 +129,8 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks,
   ]
-  source           = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
+  #source           = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
+  source           = "../../"
   aks_principal_id = module.aks.principal_id
 
   hpcc_image_root   = var.hpcc_image_root
