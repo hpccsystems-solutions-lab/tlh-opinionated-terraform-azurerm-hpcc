@@ -46,6 +46,21 @@ variable "hpcc_storage_config" {
   )
 }
 
+variable "hpcc_image_root" {
+  description = "HPCC Helm image root"
+  type        = string
+}
+
+variable "hpcc_image_name" {
+  description = "HPCC Helm image name"
+  type        = string
+}
+
+variable "hpcc_helm_version" {
+  description = "HPCC Helm Version"
+  type        = string
+}
+
 variable "private_cidrs" {
   description = "Private AKS cidrs"
   type        = list(string)

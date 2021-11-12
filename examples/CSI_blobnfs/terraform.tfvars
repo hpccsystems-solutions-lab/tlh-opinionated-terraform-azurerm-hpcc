@@ -9,18 +9,18 @@ core_services_config = {
   }
 
   ingress_internal_core = {
-    domain = "infrastructure-sandbox.us.lnrisk.io"
+    domain = "us-infrastructure-dev.azure.lnrsg.io"
   }
 
   external_dns = {
-    zones               = ["infrastructure-sandbox.us.lnrisk.io"]
-    resource_group_name = "rg-iog-sandbox-eastus2-lnriskio"
+    zones               = ["us-infrastructure-dev.azure.lnrsg.io"]
+    resource_group_name = "app-dns-prod-eastus2"
   }
   cert_manager = {
     letsencrypt_environment = "staging"
     letsencrypt_email       = "James.Hodnett@lexisnexisrisk.com"
     dns_zones = {
-      "infrastructure-sandbox.us.lnrisk.io" = "rg-iog-sandbox-eastus2-lnriskio"
+      "us-infrastructure-dev.azure.lnrsg.io" = "app-dns-prod-eastus2"
     }
     azure_environment = "AzurePublicCloud"
   }
@@ -70,3 +70,7 @@ hpcc_storage_config = {
     container_name = ""
   }
 }
+
+hpcc_image_root   = "hpccsystems"
+hpcc_image_name   = ""
+hpcc_helm_version = "8.4.0"

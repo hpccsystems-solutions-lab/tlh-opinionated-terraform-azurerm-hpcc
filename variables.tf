@@ -37,7 +37,19 @@ variable "storage_network_subnet_ids" {
 variable "hpcc_helm_version" {
   description = "Version of the HPCC Helm Chart to use"
   type        = string
-  default     = "8.2.10"
+  default     = "8.4.0"
+}
+
+variable "hpcc_image_root" {
+  description = "HPCC Image Root"
+  type        = string
+  default     = ""
+}
+
+variable "hpcc_image_name" {
+  description = "HPCC Image Name"
+  type        = string
+  default     = ""
 }
 
 variable "hpcc_namespace" {
@@ -85,3 +97,4 @@ variable "aks_principal_id" {
   description = "AKS Principal ID"
   type        = string
 }
+

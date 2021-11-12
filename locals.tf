@@ -27,6 +27,33 @@ locals {
 
   chart_values = {
 
+    global = {
+      image = {
+        version    = var.hpcc_helm_version
+        root       = var.hpcc_image_root
+        name       = var.hpcc_image_name
+        pullPolicy = "IfNotPresent"
+      }
+      visibilities = {
+        cluster = {
+          type = "ClusterIP"
+        }
+        local = {
+          annotations = {
+            "helm.sh/resource-policy"                                 = "keep"
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+          }
+          type    = "LoadBalancer"
+          ingress = []
+        }
+        global = {
+          type    = "LoadBalancer"
+          ingress = []
+        }
+
+      }
+    }
+
     storage = {
       planes = [for k, v in kubernetes_persistent_volume_claim.hpcc_blob_pvcs :
         {
