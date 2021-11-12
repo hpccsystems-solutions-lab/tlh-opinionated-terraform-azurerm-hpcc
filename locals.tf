@@ -34,6 +34,23 @@ locals {
         name = var.hpcc_image_name
         pullPolicy = "IfNotPresent"
       }
+      visibilities = {
+        cluster = {
+          type = "ClusterIP"
+          local = {
+            annotations = {
+              "helm.sh/resource-policy" = "keep"
+              "service.beta.kubernetes.io/azure-load-balancer-internal" = true
+            }
+            type = "LoadBalancer"
+            ingress = []
+          }
+          global = {
+            type = "LoadBalancer"
+            ingress = []
+          }
+        }
+      }
     }
 
     storage = {
