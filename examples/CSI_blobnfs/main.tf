@@ -18,7 +18,7 @@ module "subscription" {
 }
 
 module "naming" {
-  source = "git@github.com:Azure-Terraform/example-naming-template.git?ref=v1.0.0"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-naming.git?ref=v1.0.81"
 }
 
 module "metadata" {
@@ -29,7 +29,7 @@ module "metadata" {
   market              = "us"
   project             = "hpcc_demo"
   location            = "eastus2"
-  environment         = "sandbox"
+  environment         = "dev"
   product_name        = random_string.random.result
   business_unit       = "infra"
   product_group       = "hpcc"
@@ -117,14 +117,11 @@ module "aks" {
     }
   ]
 
-  virtual_network         = module.virtual_network.aks["demo"]
-  core_services_config    = var.core_services_config
-  azuread_clusterrole_map = var.azuread_clusterrole_map
-  api_server_authorized_ip_ranges = merge(
-    { "pod_cidr" = "100.65.0.0/16" },
-    { for i, cidr in var.address_space : "subnet_cidr_${i}" => cidr },
-    var.api_server_authorized_ip_ranges
-  )
+  virtual_network                 = module.virtual_network.aks["demo"]
+  core_services_config            = var.core_services_config
+  azuread_clusterrole_map         = var.azuread_clusterrole_map
+  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
+
 }
 
 
@@ -132,7 +129,7 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks,
   ]
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
+  source           = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
   aks_principal_id = module.aks.principal_id
 
   hpcc_image_root   = var.hpcc_image_root
