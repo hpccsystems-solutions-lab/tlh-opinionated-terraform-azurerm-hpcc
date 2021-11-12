@@ -13,16 +13,16 @@ resource "random_string" "random" {
 }
 
 module "subscription" {
-  source          = "github.com/Azure-Terraform/terraform-azurerm-subscription-data.git?ref=v1.0.0"
+  source          = "git@github.com:Azure-Terraform/terraform-azurerm-subscription-data.git?ref=v1.0.0"
   subscription_id = data.azurerm_subscription.current.subscription_id
 }
 
 module "naming" {
-  source = "github.com/Azure-Terraform/example-naming-template.git?ref=v1.0.0"
+  source = "git@github.com:Azure-Terraform/example-naming-template.git?ref=v1.0.0"
 }
 
 module "metadata" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-metadata.git?ref=v1.5.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-metadata.git?ref=v1.5.0"
 
   naming_rules = module.naming.yaml
 
@@ -39,7 +39,7 @@ module "metadata" {
 }
 
 module "resource_group" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.0.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.0.0"
 
   location = module.metadata.location
   names    = module.metadata.names
@@ -47,7 +47,7 @@ module "resource_group" {
 }
 
 module "virtual_network" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v5.0.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v5.0.0"
 
   naming_rules = module.naming.yaml
 
@@ -89,7 +89,7 @@ module "virtual_network" {
 
 
 module "aks" {
-  source = "github.com/LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
 
   cluster_name    = random_string.random.result
   cluster_version = "1.21"
@@ -132,13 +132,13 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks,
   ]
-  source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git"
-
+  # source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
+  source           = "../../"
   aks_principal_id = module.aks.principal_id
 
-  hpcc_image_root   = "hpccacr.azurecr.io"
-  hpcc_image_name   = "hpccoperations/platform-core-ln"
-  hpcc_helm_version = "8.4.0"
+  hpcc_image_root   = var.hpcc_image_root
+  hpcc_image_name   = var.hpcc_image_name
+  hpcc_helm_version = var.hpcc_helm_version
 
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location

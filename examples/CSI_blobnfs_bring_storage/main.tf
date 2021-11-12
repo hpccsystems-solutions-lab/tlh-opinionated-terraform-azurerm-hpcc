@@ -13,23 +13,23 @@ resource "random_string" "random" {
 }
 
 module "subscription" {
-  source          = "github.com/Azure-Terraform/terraform-azurerm-subscription-data.git?ref=v1.0.0"
+  source          = "git@github.com:Azure-Terraform/terraform-azurerm-subscription-data.git?ref=v1.0.0"
   subscription_id = data.azurerm_subscription.current.subscription_id
 }
 
 module "naming" {
-  source = "github.com/Azure-Terraform/example-naming-template.git?ref=v1.0.0"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-naming.git?ref=v1.0.81"
 }
 
 module "metadata" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-metadata.git?ref=v1.5.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-metadata.git?ref=v1.5.0"
 
   naming_rules = module.naming.yaml
 
   market              = "us"
   project             = "hpcc_demo"
   location            = "eastus2"
-  environment         = "sandbox"
+  environment         = "dev"
   product_name        = random_string.random.result
   business_unit       = "infra"
   product_group       = "hpcc"
@@ -39,7 +39,7 @@ module "metadata" {
 }
 
 module "resource_group" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.0.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.0.0"
 
   location = module.metadata.location
   names    = module.metadata.names
@@ -47,7 +47,7 @@ module "resource_group" {
 }
 
 module "virtual_network" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v5.0.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v5.0.0"
 
   naming_rules = module.naming.yaml
 
@@ -123,7 +123,7 @@ resource "azurerm_storage_container" "hpcc_storage_containers" {
 }
 
 module "aks" {
-  source = "github.com/LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
 
   cluster_name    = random_string.random.result
   cluster_version = "1.21"
@@ -174,7 +174,7 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks
   ]
-  source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
 
   aks_principal_id = module.aks.principal_id
 
