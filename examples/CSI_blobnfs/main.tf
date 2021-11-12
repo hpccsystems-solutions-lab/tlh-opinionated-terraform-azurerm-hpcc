@@ -131,7 +131,6 @@ module "aks" {
 module "hpcc_cluster" {
   depends_on = [
     module.aks,
-    azurerm_private_endpoint.hpcc_acr
   ]
   source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git"
 
