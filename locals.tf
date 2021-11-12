@@ -48,16 +48,12 @@ locals {
     }
 
     certificates = {
-      enabled = true
+      enabled = false
       issuers = {
         local = {
           name = "letsencrypt-issuer"
           kind = "ClusterIssuer"
-          spec = {
-            ca = {
-              secretName = "letsencrypt-issuer-privatekey"
-            }
-          }
+          spec = null
         }
       }
     }
