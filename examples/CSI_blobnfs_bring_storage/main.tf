@@ -175,7 +175,6 @@ module "hpcc_cluster" {
     module.aks
   ]
   source = "github.com/LexisNexis-RBA/terraform-azurerm-hpcc.git"
-  source = "../../"
 
   aks_principal_id = module.aks.principal_id
 
