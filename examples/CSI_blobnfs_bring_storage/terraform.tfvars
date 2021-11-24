@@ -9,18 +9,18 @@ core_services_config = {
   }
 
   ingress_internal_core = {
-    domain = "infrastructure-sandbox.us.lnrisk.io"
+    domain = "us-infrastructure-dev.azure.lnrsg.io"
   }
 
   external_dns = {
-    zones               = ["infrastructure-sandbox.us.lnrisk.io"]
-    resource_group_name = "rg-iog-sandbox-eastus2-lnriskio"
+    zones               = ["us-infrastructure-dev.azure.lnrsg.io"]
+    resource_group_name = "app-dns-prod-eastus2"
   }
   cert_manager = {
     letsencrypt_environment = "staging"
     letsencrypt_email       = "James.Hodnett@lexisnexisrisk.com"
     dns_zones = {
-      "infrastructure-sandbox.us.lnrisk.io" = "rg-iog-sandbox-eastus2-lnriskio"
+      "us-infrastructure-dev.azure.lnrsg.io" = "app-dns-prod-eastus2"
     }
     azure_environment = "AzurePublicCloud"
   }
@@ -29,6 +29,7 @@ core_services_config = {
 azuread_clusterrole_map = {
   cluster_admin_users = {
     "hodnja01@risk.regn.net" = "fe33802a-25bf-4847-aa4e-85357dc91d8e"
+    "us-infrastructure-dev-owners"  = "f2e5d379-75f8-4d12-9cbf-20663822ba93"
   }
   cluster_view_users   = {}
   standard_view_users  = {}
