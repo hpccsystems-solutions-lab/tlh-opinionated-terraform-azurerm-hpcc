@@ -74,4 +74,4 @@ hpcc_storage_config = {
 
 hpcc_image_root   = "hpccsystems"
 hpcc_image_name   = ""
-hpcc_helm_version = "8.4.0"
+hpcc_helm_version = "8.4.12"
