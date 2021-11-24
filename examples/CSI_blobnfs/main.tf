@@ -129,7 +129,7 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks,
   ]
-  source           = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
 
   aks_principal_id = module.aks.principal_id
 
@@ -152,17 +152,17 @@ module "hpcc_cluster" {
 data "kubernetes_service" "eclwatch" {
   depends_on = [module.hpcc_cluster]
   metadata {
-    name = "eclwatch"
+    name      = "eclwatch"
     namespace = "hpcc"
   }
 }
 
 resource "azurerm_dns_a_record" "eclwatch" {
-  zone_name = "us-infrastructure-dev.azure.lnrsg.io"
+  zone_name           = "us-infrastructure-dev.azure.lnrsg.io"
   resource_group_name = "app-dns-prod-eastus2"
-  name    = "eclwatch-${random_string.random.result}"
-  ttl     = "30"
-  records = [data.kubernetes_service.eclwatch.status.0.load_balancer.0.ingress.0.ip]
+  name                = "eclwatch-${random_string.random.result}"
+  ttl                 = "30"
+  records             = [data.kubernetes_service.eclwatch.status.0.load_balancer.0.ingress.0.ip]
 }
 
 output "aks_login" {
