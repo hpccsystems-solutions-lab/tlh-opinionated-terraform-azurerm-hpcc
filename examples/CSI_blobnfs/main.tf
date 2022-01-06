@@ -149,6 +149,8 @@ module "hpcc_cluster" {
 
 }
 
+## The DNS workaround should be enabled until the Helm chart supports the external-dns plugin 
+/*
 data "kubernetes_service" "eclwatch" {
   depends_on = [module.hpcc_cluster]
   metadata {
@@ -163,7 +165,7 @@ resource "azurerm_dns_a_record" "eclwatch" {
   name                = "eclwatch-${random_string.random.result}"
   ttl                 = "30"
   records             = [data.kubernetes_service.eclwatch.status.0.load_balancer.0.ingress.0.ip]
-}
+}*/
 
 output "aks_login" {
   value = "az aks get-credentials --name ${module.aks.cluster_name} --resource-group ${module.resource_group.name}"
