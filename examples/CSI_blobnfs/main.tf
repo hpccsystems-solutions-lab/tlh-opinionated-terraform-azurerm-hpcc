@@ -142,7 +142,7 @@ module "hpcc_cluster" {
   tags                = module.metadata.tags
 
   storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
-  storage_network_subnet_ids           = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
+  storage_network_subnet_ids           = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id, var.tfe_prod_subnet_id]
 
   hpcc_storage_config               = var.hpcc_storage_config
   storage_account_delete_protection = false //defaults to true

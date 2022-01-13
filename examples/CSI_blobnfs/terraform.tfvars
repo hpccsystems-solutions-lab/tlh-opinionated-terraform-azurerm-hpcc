@@ -39,11 +39,13 @@ azuread_clusterrole_map = {
 api_server_authorized_ip_ranges = {
   "alpharetta" = "66.241.32.0/19"
   "boca"       = "209.243.48.0/20"
+  "tfe"        = "52.177.80.30"
 }
 
 storage_account_authorized_ip_ranges = {
   "alpharetta" = "66.241.32.0/19"
   "boca"       = "209.243.48.0/20"
+  "tfe"        = "52.177.80.30"
 }
 
 private_cidrs = ["10.1.3.0/25"]
