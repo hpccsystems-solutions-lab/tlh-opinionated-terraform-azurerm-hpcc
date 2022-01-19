@@ -41,10 +41,11 @@ resource "azurerm_storage_container" "hpcc_storage_containers" {
   storage_account_name  = azurerm_storage_account.storage_account[0].name
   container_access_type = "private"
 }
-
+/*
 resource "azurerm_management_lock" "protect_storage_account" {
   count      = var.storage_account_delete_protection ? 1 : 0
   name       = "protect-storage"
   scope      = var.hpcc_storage_account_name == "" ? azurerm_storage_account.storage_account[0].id : data.azurerm_storage_account.storage_account[0].id
   lock_level = "CanNotDelete"
 }
+*/
