@@ -45,6 +45,7 @@ resource "helm_release" "csi_driver" {
   depends_on = [
     module.hpcc_storage
   ]
+  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
   chart      = "blob-csi-driver"
   name       = "blob-csi-driver"
   namespace  = "blob-csi-driver"

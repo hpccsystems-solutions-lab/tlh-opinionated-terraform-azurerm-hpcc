@@ -8,6 +8,13 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "blob-csi-driver" {
+  description = "Determines if the blob-csi-drivers are to be installed for the cluster. Possible vaules are yes & no."
+  type        = string
+  default     = "yes"
+}
+
+
 variable "tags" {
   description = "Tags to be applied to cloud resources."
   type        = map(string)
