@@ -12,6 +12,19 @@ resource "kubernetes_namespace" "hpcc_namespaces" {
   }
 }
 
+resource "kubernetes_namespace" "csi_driver_namespaces" {
+
+  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
+
+  metadata {
+    name = "blob-csi-driver"
+
+    labels = {
+      name = "blob-csi-driver"
+    }
+  }
+}
+
 module "hpcc_storage" {
 
   source = "./modules/blobnfs"
