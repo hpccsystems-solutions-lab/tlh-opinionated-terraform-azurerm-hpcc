@@ -75,7 +75,7 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
 
   for_each = module.hpcc_storage.config
   metadata {
-    name = "pv-blob-${each.key}"
+    name = "pv-blob-${var.hpcc_namespace}-${each.key}"
     labels = {
       storage-tier = "blobnfs"
     }
