@@ -4,8 +4,8 @@ address_space = ["10.1.0.0/22"]
 core_services_config = {
   alertmanager = {
     smtp_host = "smtp.foo.bar"
-    smtp_from = "James.Hodnett@lexisnexisrisk.com"
-    receivers = [{ name = "alerts", email_configs = [{ to = "James.Hodnett@lexisnexisrisk.com", require_tls = false }] }]
+    smtp_from = "Akhila.Damera@lexisnexisrisk.com"
+    receivers = [{ name = "alerts", email_configs = [{ to = "Akhila.Damera@lexisnexisrisk.com", require_tls = false }] }]
   }
 
   ingress_internal_core = {
@@ -18,7 +18,7 @@ core_services_config = {
   }
   cert_manager = {
     letsencrypt_environment = "staging"
-    letsencrypt_email       = "James.Hodnett@lexisnexisrisk.com"
+    letsencrypt_email       = "Akhila.Damera@lexisnexisrisk.com"
     dns_zones = {
       "us-infrastructure-dev.azure.lnrsg.io" = "app-dns-prod-eastus2"
     }
@@ -28,7 +28,7 @@ core_services_config = {
 
 azuread_clusterrole_map = {
   cluster_admin_users = {
-    "hodnja01@risk.regn.net"       = "fe33802a-25bf-4847-aa4e-85357dc91d8e"
+    "DameAk01_risk.regn.net" = "ebb1bfeb-2803-42e8-b75c-32b0d6be1d0e"
     "us-infrastructure-dev-owners" = "f2e5d379-75f8-4d12-9cbf-20663822ba93"
   }
   cluster_view_users   = {}

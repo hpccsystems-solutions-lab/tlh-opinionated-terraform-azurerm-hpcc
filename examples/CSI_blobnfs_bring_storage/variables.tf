@@ -51,3 +51,10 @@ variable "public_cidrs" {
   description = "Public AKS cidrs"
   type        = list(string)
 }
+
+variable "tfe_prod_subnet_id" {
+  description = "Terraform enterprise Subnet id"
+  type        = string
+  default     = "/subscriptions/debc4966-2669-4fa7-9bd9-c4cdb08aed9f/resourceGroups/app-tfe-prod-useast2/providers/Microsoft.Network/virtualNetworks/core-production-useast2-vnet/subnets/iaas-public"
+
+}
