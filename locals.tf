@@ -21,8 +21,7 @@ locals {
 
 
   hpcc_namespaces = [
-    var.hpcc_namespace,
-    "blob-csi-driver"
+    var.hpcc_namespace
   ]
 
   chart_values = {

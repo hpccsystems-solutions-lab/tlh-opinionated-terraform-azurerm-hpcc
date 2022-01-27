@@ -12,6 +12,19 @@ resource "kubernetes_namespace" "hpcc_namespaces" {
   }
 }
 
+resource "kubernetes_namespace" "csi_driver_namespaces" {
+
+  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
+
+  metadata {
+    name = "blob-csi-driver"
+
+    labels = {
+      name = "blob-csi-driver"
+    }
+  }
+}
+
 module "hpcc_storage" {
 
   source = "./modules/blobnfs"
@@ -45,6 +58,7 @@ resource "helm_release" "csi_driver" {
   depends_on = [
     module.hpcc_storage
   ]
+  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
   chart      = "blob-csi-driver"
   name       = "blob-csi-driver"
   namespace  = "blob-csi-driver"
@@ -61,7 +75,7 @@ resource "kubernetes_persistent_volume" "hpcc_blob_volumes" {
 
   for_each = module.hpcc_storage.config
   metadata {
-    name = "pv-blob-${each.key}"
+    name = "pv-blob-${var.hpcc_namespace}-${each.key}"
     labels = {
       storage-tier = "blobnfs"
     }
