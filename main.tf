@@ -14,7 +14,7 @@ resource "kubernetes_namespace" "hpcc_namespaces" {
 
 resource "kubernetes_namespace" "csi_driver_namespaces" {
 
-  count = var.blob-csi-driver == "yes" ? 1 : 0
+  count = var.blob-csi-driver ? 1 : 0 
 
   metadata {
     name = "blob-csi-driver"

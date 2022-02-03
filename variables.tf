@@ -9,9 +9,9 @@ variable "resource_group_name" {
 }
 
 variable "blob-csi-driver" {
-  description = "Determines if the blob-csi-drivers are to be installed for the cluster. Possible vaules are yes & no."
-  type        = string
-  default     = "yes"
+  description = "Determines if the blob-csi-drivers are to be installed for the cluster."
+  type        = bool
+  default     = true
 }
 
 
