@@ -44,7 +44,7 @@ variable "storage_network_subnet_ids" {
 variable "hpcc_helm_version" {
   description = "Version of the HPCC Helm Chart to use"
   type        = string
-  default     = "8.4.0"
+  default     = "8.4.12"
 }
 
 variable "hpcc_image_root" {
@@ -105,3 +105,9 @@ variable "aks_principal_id" {
   type        = string
 }
 
+variable "hpc_cache_dns_name" {
+  type = object({
+    zone_name                = string
+    zone_resource_group_name = string
+  })
+}

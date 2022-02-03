@@ -14,7 +14,7 @@ resource "kubernetes_namespace" "hpcc_namespaces" {
 
 resource "kubernetes_namespace" "csi_driver_namespaces" {
 
-  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
+  count = var.blob-csi-driver == "yes" ? 1 : 0
 
   metadata {
     name = "blob-csi-driver"
@@ -39,6 +39,7 @@ module "hpcc_storage" {
 
   hpcc_storage_account_name = var.hpcc_storage_account_name
   hpcc_storage_config       = var.hpcc_storage_config
+  hpc_cache_dns_name        = var.hpc_cache_dns_name
 }
 
 
@@ -58,7 +59,7 @@ resource "helm_release" "csi_driver" {
   depends_on = [
     module.hpcc_storage
   ]
-  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
+  count      = var.blob-csi-driver == "yes" ? 1 : 0
   chart      = "blob-csi-driver"
   name       = "blob-csi-driver"
   namespace  = "blob-csi-driver"
