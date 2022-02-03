@@ -19,11 +19,11 @@ resource "azurerm_hpc_cache_blob_nfs_target" "hpc_cache_blob" {
   depends_on = [
     azurerm_hpc_cache.hpc_cache,
   ]
-
+  for_each             = var.hpcc_storage_account_name == "" ? var.hpc_cache_config : {}
   name                 = "hpc-cache-blob-data"
   resource_group_name  = var.resource_group_name
   cache_name           = azurerm_hpc_cache.hpc_cache.name
-  storage_container_id = azurerm_storage_container.hpcc_storage_containers["data"].resource_manager_id
+  storage_container_id = azurerm_storage_container.hpc_cache_containers[each.key].resource_manager_id
   namespace_path       = "/hpcc-data"
   usage_model          = "READ_HEAVY_INFREQ"
 }
@@ -43,7 +43,7 @@ resource "azurerm_role_assignment" "cache_blob_data_contrib" {
 ## HPC Cache DNS 
 resource "azurerm_dns_a_record" "cache_dns_record" {
 
-  name                = "hpc-cache-data-dns"
+  name                = "hpc-cache-data"
   zone_name           = var.hpc_cache_dns_name.zone_name
   resource_group_name = var.hpc_cache_dns_name.zone_resource_group_name
   ttl                 = 300
@@ -53,8 +53,9 @@ resource "azurerm_dns_a_record" "cache_dns_record" {
 
 
 ## HPC Cache Persistent Volumes 
-
+/*
 resource "kubernetes_persistent_volume" "hpccache" {
+  for_each = var.hpcc_storage_config["data"]
   metadata {
     name = "hpcc-data"
     labels = {
@@ -102,3 +103,5 @@ resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
     create = "20m"
   }
 }
+
+*/

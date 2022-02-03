@@ -30,7 +30,7 @@ module "metadata" {
   project             = "hpcc_demo"
   location            = "eastus2"
   environment         = "sandbox"
-  product_name        = random_string.random.result
+  product_name        = "pvctest"
   business_unit       = "iog"
   product_group       = "hpcc"
   subscription_id     = module.subscription.output.subscription_id
@@ -91,7 +91,7 @@ module "virtual_network" {
 module "aks" {
   source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
 
-  cluster_name    = random_string.random.result
+  cluster_name    = "hpc-cache-pvc-test"
   cluster_version = "1.21"
 
   location            = module.metadata.location
@@ -148,6 +148,8 @@ module "hpcc_cluster" {
   hpcc_storage_config               = var.hpcc_storage_config
   storage_account_delete_protection = false //defaults to true
   hpc_cache_dns_name                = var.hpc_cache_dns_name
+  hpc_cache_name                    = var.hpc_cache_name
+  hpc_cache_config                  = var.hpc_cache_config
 
 }
 

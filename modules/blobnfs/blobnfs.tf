@@ -42,6 +42,13 @@ resource "azurerm_storage_container" "hpcc_storage_containers" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_container" "hpc_cache_containers" {
+  for_each              = var.hpcc_storage_account_name == "" ? var.hpc_cache_config : {}
+  name                  = "hpcc-${each.key}"
+  storage_account_name  = azurerm_storage_account.storage_account[0].name
+  container_access_type = "private"
+}
+
 
 // Removing this resource block as the lock was creating an issue during terraform re-deployment
 /*

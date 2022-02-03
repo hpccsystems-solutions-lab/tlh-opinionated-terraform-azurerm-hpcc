@@ -1,9 +1,6 @@
 locals {
   # This may be passed in later as a variable.
   hpcc_pvc_config = {
-    data = {
-      path = "hpcc-data"
-    }
     dali = {
       path = "dalistorage"
     }
@@ -16,6 +13,13 @@ locals {
     mydropzone = {
       path     = "mydropzone"
       category = "lz"
+    }
+  }
+
+  # Cache 
+  hpc_cache_config = {
+    data = {
+      path = "hpcc-data"
     }
   }
 
@@ -60,6 +64,18 @@ locals {
           pvc      = v.metadata.0.name
           prefix   = "/var/lib/HPCCSystems/${local.hpcc_pvc_config[k].path}"
           category = lookup(local.hpcc_pvc_config[k], "category", k)
+        }
+      ]
+    }
+
+    ## Cache Storage
+    storage = {
+      planes = [for k, v in kubernetes_persistent_volume_claim.hpccachepvc :
+        {
+          name     = k
+          pvc      = v.metadata.0.name
+          prefix   = "/var/lib/HPCCSystems/${local.hpc_cache_config[k].path}"
+          category = lookup(local.hpc_cache_config[k], "category", k)
         }
       ]
     }
