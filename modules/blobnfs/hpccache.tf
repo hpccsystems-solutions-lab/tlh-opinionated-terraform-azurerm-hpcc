@@ -77,7 +77,7 @@ resource "kubernetes_persistent_volume" "hpccache" {
     storage_class_name = "hpcc-data"
   }
 }
-resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
+resource "kubernetes_persistent_volume_claim" "hpccache" {
   wait_until_bound = true
   metadata {
     name      = "hpcc-data"
