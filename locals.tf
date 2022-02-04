@@ -15,13 +15,13 @@ locals {
       category = "lz"
     }
   }
-
+/*
   # Cache 
-  hpc_cache_config = {
+  hpc_cache_pvc = {
     data = {
       path = "hpcc-data"
     }
-  }
+  }*/
 
 
   hpcc_namespaces = [
@@ -72,10 +72,10 @@ locals {
     storage = {
       planes = [for k, v in kubernetes_persistent_volume_claim.hpccachepvc :
         {
-          name     = k
-          pvc      = v.metadata.0.name
-          prefix   = "/var/lib/HPCCSystems/${local.hpc_cache_config[k].path}"
-          category = lookup(local.hpc_cache_config[k], "category", k)
+          name     = "data"
+          pvc      = "hpcc-data"
+          prefix   = "/var/lib/HPCCSystems/hpcc-data"
+          category = "data"
         }
       ]
     }
