@@ -192,7 +192,7 @@ locals {
   # HPC Cache Roxie data
   values = {
     storage = {
-      planes = [for k, v in kubernetes_persistent_volume_claim.hpccachepvc :
+      planes = [
       {
         name     = "data"
         pvc      = "hpcc-data"
