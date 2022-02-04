@@ -41,7 +41,7 @@ module "hpcc_storage" {
   hpcc_storage_config       = var.hpcc_storage_config
   hpc_cache_dns_name        = var.hpc_cache_dns_name
   hpc_cache_name            = var.hpc_cache_name
-  hpc_cache_config          = var.hpc_cache_config
+#  hpc_cache_config          = var.hpc_cache_config
 }
 
 
@@ -136,7 +136,7 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
 resource "helm_release" "hpcc" {
   depends_on = [
     kubernetes_persistent_volume_claim.hpcc_blob_pvcs,
-    kubernetes_persistent_volume_claim.hpccachepvc,
+  #  kubernetes_persistent_volume_claim.hpccachepvc,
   ]
 
   name       = var.hpcc_namespace
@@ -152,10 +152,7 @@ resource "helm_release" "hpcc" {
 ## HPC Cache Persistent Volumes 
 
 resource "kubernetes_persistent_volume" "hpccache" {
-  depends_on = [
-    helm_release.csi_driver
-  ]
-  for_each = module.hpcc_storage.cache_config
+ # for_each = module.hpcc_storage.cache_config
 
   metadata {
     name = "hpcc-data"
@@ -178,8 +175,9 @@ resource "kubernetes_persistent_volume" "hpccache" {
     storage_class_name = "hpcc-data"
   }
 }
+
 resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
-  for_each         = module.hpcc_storage.cache_config
+ 
   wait_until_bound = true
   metadata {
     name      = "hpcc-data"
@@ -198,7 +196,7 @@ resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
         storage-tier = "hpccache"
       }
     }
-    volume_name = kubernetes_persistent_volume.hpccache[each.key].metadata.0.name
+    volume_name = kubernetes_persistent_volume.hpccache.metadata.0.name
   }
 
   timeouts {

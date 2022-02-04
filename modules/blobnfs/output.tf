@@ -18,8 +18,8 @@ output "hpc_cache_name" {
   value = local.hpc_cache_name
 
 }
-
+/*
 output "cache_config" {
   value = local.hpc_cache_config
 
-}
+}*/

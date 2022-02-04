@@ -70,6 +70,7 @@ variable "hpc_cache_name" {
   type = string
 }
 
+/*
 variable "hpc_cache_config" {
   description = "config for hpcc-data"
   type = map(
@@ -78,4 +79,4 @@ variable "hpc_cache_config" {
       size           = string
     })
   )
-}
+}*/

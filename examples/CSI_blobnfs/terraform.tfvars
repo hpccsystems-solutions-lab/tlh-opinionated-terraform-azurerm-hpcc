@@ -82,9 +82,10 @@ hpc_cache_dns_name = {
 
 hpc_cache_name = "hpc-cache-blob-data"
 
+/*
 hpc_cache_config = {
   data = {
     size           = "10Gi"
     container_name = ""
   }
-}
+}*/

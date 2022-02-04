@@ -16,14 +16,6 @@ locals {
     }
   }
 
-  # Cache 
-  hpc_pvc_config = {
-    data = {
-      path = "hpcc-data"
-    }
-  }
-
-
   hpcc_namespaces = [
     var.hpcc_namespace
   ]
@@ -64,17 +56,6 @@ locals {
           pvc      = v.metadata.0.name
           prefix   = "/var/lib/HPCCSystems/${local.hpcc_pvc_config[k].path}"
           category = lookup(local.hpcc_pvc_config[k], "category", k)
-        }
-      ]
-    }
-
-    storage = {
-      planes = [for k, v in kubernetes_persistent_volume_claim.hpccachepvc :
-        {
-          name     = k
-          pvc      = v.metadata.0.name
-          prefix   = "/var/lib/HPCCSystems/${local.hpc_pvc_config[k].path}"
-          category = lookup(local.hpc_pvc_config[k], "category", k)
         }
       ]
     }
