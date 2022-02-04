@@ -152,10 +152,11 @@ resource "helm_release" "hpcc" {
 ## HPC Cache Persistent Volumes 
 
 resource "kubernetes_persistent_volume" "hpccache" {
-  for_each = module.hpcc_storage.cache_config
   depends_on = [
-    module.hpcc_storage
+    helm_release.csi_driver
   ]
+  for_each = module.hpcc_storage.cache_config
+
   metadata {
     name = "hpcc-data"
     labels = {
