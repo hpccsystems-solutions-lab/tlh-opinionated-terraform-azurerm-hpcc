@@ -116,13 +116,8 @@ variable "hpc_cache_name" {
   type = string
 }
 
-/*
-variable "hpc_cache_config" {
-  description = "config for hpcc-data"
-  type = map(
-    object({
-      container_name = string
-      size           = string
-    })
-  )
-}*/
+variable "values" {
+  type        = any
+  default     = {}
+  description = "Map of values to pass to helm. Values will be merged"
+}

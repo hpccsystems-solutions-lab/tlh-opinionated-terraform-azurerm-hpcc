@@ -41,7 +41,6 @@ module "hpcc_storage" {
   hpcc_storage_config       = var.hpcc_storage_config
   hpc_cache_dns_name        = var.hpc_cache_dns_name
   hpc_cache_name            = var.hpc_cache_name
-#  hpc_cache_config          = var.hpc_cache_config
 }
 
 
@@ -136,7 +135,7 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
 resource "helm_release" "hpcc" {
   depends_on = [
     kubernetes_persistent_volume_claim.hpcc_blob_pvcs,
-  #  kubernetes_persistent_volume_claim.hpccachepvc,
+
   ]
 
   name       = var.hpcc_namespace
@@ -149,10 +148,26 @@ resource "helm_release" "hpcc" {
   ]
 }
 
-## HPC Cache Persistent Volumes 
+##############################
+# HPC Cache Persistent Volumes
+##############################
+
+resource "helm_release" "hpccache" {
+  depends_on = [
+    kubernetes_persistent_volume_claim.hpccachepvc,
+  ]
+
+  name       = var.hpcc_namespace
+  namespace  = var.hpcc_namespace
+  chart      = "hpcc"
+  repository = "https://hpcc-systems.github.io/helm-chart"
+  version    = var.hpcc_helm_version
+  values = [
+    yamlencode(local.values)
+  ]
+}
 
 resource "kubernetes_persistent_volume" "hpccache" {
- # for_each = module.hpcc_storage.cache_config
 
   metadata {
     name = "hpcc-data"
@@ -177,7 +192,7 @@ resource "kubernetes_persistent_volume" "hpccache" {
 }
 
 resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
- 
+
   wait_until_bound = true
   metadata {
     name      = "hpcc-data"

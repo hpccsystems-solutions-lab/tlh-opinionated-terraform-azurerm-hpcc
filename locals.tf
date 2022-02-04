@@ -185,4 +185,39 @@ locals {
       }
     ]
   }
+
+  # HPC Cache Roxie data
+  values = {
+    storage = {
+      planes = {
+        name     = "data"
+        pvc      = "hpcc-data"
+        prefix   = "/var/lib/HPCCSystems/hpcc-data"
+        category = "data"
+      }
+    }
+
+    roxie = [
+      {
+        name     = "roxie"
+        disabled = false
+        prefix   = "roxie"
+        services = [
+          {
+            name        = "roxie"
+            servicePort = 9876
+            listenQueue = 200
+            numThreads  = 30
+            visibility  = "local"
+          }
+        ]
+        replicas       = lookup(var.hpcc_replica_config, "roxie", 2)
+        numChannels    = 2
+        serverReplicas = 0
+        topoServer = {
+          replicas = lookup(var.hpcc_replica_config, "roxie-toposerver", 1)
+        }
+      }
+    ]
+  }
 }

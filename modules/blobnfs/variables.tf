@@ -69,14 +69,3 @@ variable "hpc_cache_dns_name" {
 variable "hpc_cache_name" {
   type = string
 }
-
-/*
-variable "hpc_cache_config" {
-  description = "config for hpcc-data"
-  type = map(
-    object({
-      container_name = string
-      size           = string
-    })
-  )
-}*/

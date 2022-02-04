@@ -149,7 +149,6 @@ module "hpcc_cluster" {
   storage_account_delete_protection = false //defaults to true
   hpc_cache_dns_name                = var.hpc_cache_dns_name
   hpc_cache_name                    = var.hpc_cache_name
-#  hpc_cache_config                  = var.hpc_cache_config
 
 }
 

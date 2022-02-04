@@ -19,7 +19,6 @@ resource "azurerm_hpc_cache_blob_nfs_target" "hpc_cache_blob" {
   depends_on = [
     azurerm_hpc_cache.hpc_cache,
   ]
-  
   name                 = "hpc-cache-blob-data"
   resource_group_name  = var.resource_group_name
   cache_name           = azurerm_hpc_cache.hpc_cache.name
@@ -49,59 +48,3 @@ resource "azurerm_dns_a_record" "cache_dns_record" {
   ttl                 = 300
   records             = azurerm_hpc_cache.hpc_cache.mount_addresses
 }
-
-
-
-## HPC Cache Persistent Volumes 
-/*
-resource "kubernetes_persistent_volume" "hpccache" {
-  for_each = var.hpcc_storage_config["data"]
-  metadata {
-    name = "hpcc-data"
-    labels = {
-      storage-tier = "hpccache"
-    }
-  }
-  spec {
-    capacity = {
-      storage = "6T"
-    }
-    access_modes                     = ["ReadWriteMany"]
-    persistent_volume_reclaim_policy = "Retain"
-    persistent_volume_source {
-      nfs {
-        server = azurerm_dns_a_record.cache_dns_record.name
-        path   = "/hpcc-data"
-      }
-    }
-    storage_class_name = "hpcc-data"
-  }
-}
-resource "kubernetes_persistent_volume_claim" "hpccache" {
-  wait_until_bound = true
-  metadata {
-    name      = "hpcc-data"
-    namespace = var.hpcc_namespace
-  }
-  spec {
-    access_modes       = ["ReadWriteMany"]
-    storage_class_name = "hpcc-data"
-    resources {
-      requests = {
-        storage = "6T"
-      }
-    }
-    selector {
-      match_labels = {
-        storage-tier = "hpccache"
-      }
-    }
-    volume_name = kubernetes_persistent_volume.hpccache.metadata[0].name
-  }
-
-  timeouts {
-    create = "20m"
-  }
-}
-
-*/
