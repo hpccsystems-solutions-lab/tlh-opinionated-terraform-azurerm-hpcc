@@ -1,6 +1,9 @@
 locals {
   # This may be passed in later as a variable.
   hpcc_pvc_config = {
+    data = {
+      path = "hpcc-data"
+    }
     dali = {
       path = "dalistorage"
     }
@@ -189,12 +192,14 @@ locals {
   # HPC Cache Roxie data
   values = {
     storage = {
-      planes = {
+      planes = [for k, v in kubernetes_persistent_volume_claim.hpccachepvc :
+      {
         name     = "data"
         pvc      = "hpcc-data"
         prefix   = "/var/lib/HPCCSystems/hpcc-data"
         category = "data"
-      }
+        }
+      ]
     }
 
     roxie = [
