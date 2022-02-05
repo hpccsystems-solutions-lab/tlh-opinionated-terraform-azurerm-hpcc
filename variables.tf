@@ -44,7 +44,7 @@ variable "storage_network_subnet_ids" {
 variable "hpcc_helm_version" {
   description = "Version of the HPCC Helm Chart to use"
   type        = string
-  default     = "8.4.12"
+  default     = "8.4.24"
 }
 
 variable "hpcc_image_root" {
