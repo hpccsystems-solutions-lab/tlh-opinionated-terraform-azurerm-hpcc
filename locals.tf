@@ -1,9 +1,6 @@
 locals {
   # This may be passed in later as a variable.
   hpcc_pvc_config = {
-    data = {
-      path = "hpcc-data"
-    }
     dali = {
       path = "dalistorage"
     }
@@ -190,14 +187,49 @@ locals {
   }
 
   # HPC Cache Roxie data
+/*
+  hpc_pvc_config = {
+    data = {
+      path = "hpcc-data"
+    }
+  }*/
+
   values = {
+
+    global = {
+      image = {
+        version    = var.hpcc_helm_version
+        root       = var.hpcc_image_root
+        name       = var.hpcc_image_name
+        pullPolicy = "IfNotPresent"
+      }
+      visibilities = {
+        cluster = {
+          type = "ClusterIP"
+        }
+        local = {
+          annotations = {
+            "helm.sh/resource-policy"                                 = "keep"
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+          }
+          type    = "LoadBalancer"
+          ingress = []
+        }
+        global = {
+          type    = "LoadBalancer"
+          ingress = []
+        }
+
+      }
+    }
+
     storage = {
       planes = [
-      {
-        name     = "data"
-        pvc      = "hpcc-data"
-        prefix   = "/var/lib/HPCCSystems/hpcc-data"
-        category = "data"
+        {
+          name     = "data"
+          pvc      = "hpcc-data"
+          prefix   = "/var/lib/HPCCSystems/hpcc-data"
+          category = "data"
         }
       ]
     }

@@ -52,10 +52,6 @@ private_cidrs = ["10.1.3.0/25"]
 public_cidrs  = ["10.1.3.128/25"]
 
 hpcc_storage_config = {
-  data = {
-    size           = "10Gi"
-    container_name = ""
-  }
   dali = {
     size           = "1Gi"
     container_name = ""
