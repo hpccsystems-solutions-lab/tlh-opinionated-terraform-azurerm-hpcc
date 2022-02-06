@@ -135,7 +135,7 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
 resource "helm_release" "hpcc" {
   depends_on = [
     kubernetes_persistent_volume_claim.hpcc_blob_pvcs,
-    kubernetes_persistent_volume_claim.hpccachepvc,
+  #  kubernetes_persistent_volume_claim.hpccachepvc,
 
   ]
 

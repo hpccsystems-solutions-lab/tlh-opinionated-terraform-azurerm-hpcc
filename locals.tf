@@ -192,7 +192,7 @@ locals {
     data = {
       path = "hpcc-data"
     }
-  }*/
+  }
 
   values = {
 
@@ -256,5 +256,5 @@ locals {
         }
       }
     ]
-  }
+  }*/
 }
