@@ -22,7 +22,7 @@ resource "azurerm_hpc_cache_blob_nfs_target" "hpc_cache_blob" {
   name                 = "hpc-cache-blob-data"
   resource_group_name  = var.resource_group_name
   cache_name           = azurerm_hpc_cache.hpc_cache.name
-  storage_container_id = azurerm_storage_container.hpc_cache_containers.resource_manager_id
+  storage_container_id = azurerm_storage_container.hpcc_storage_containers["data"].resource_manager_id
   namespace_path       = "/hpcc-data"
   usage_model          = "READ_HEAVY_INFREQ"
 }
