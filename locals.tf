@@ -195,9 +195,9 @@ locals {
     data = {
       path = "hpcc-data"
     }
-  }
+  }*/
 
-  values = {
+  cache_values = {
 
     global = {
       image = {
@@ -259,5 +259,5 @@ locals {
         }
       }
     ]
-  }*/
+  }
 }
