@@ -145,8 +145,8 @@ resource "helm_release" "hpcc" {
   repository = "https://hpcc-systems.github.io/helm-chart"
   version    = var.hpcc_helm_version
   values = [
-    yamlencode(local.chart_values),
-    yamlencode(local.values)
+    yamlencode(local.chart_values)
+  #  yamlencode(local.values)
   ]
 }
 
