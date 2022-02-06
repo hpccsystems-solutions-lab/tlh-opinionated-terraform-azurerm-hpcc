@@ -1,6 +1,9 @@
 locals {
   # This may be passed in later as a variable.
   hpcc_pvc_config = {
+    data = {
+      path = "hpcc-data"
+    }
     dali = {
       path = "dalistorage"
     }
