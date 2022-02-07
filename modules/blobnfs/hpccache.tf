@@ -42,7 +42,7 @@ resource "azurerm_role_assignment" "cache_blob_data_contrib" {
 ## HPC Cache DNS 
 resource "azurerm_dns_a_record" "cache_dns_record" {
 
-  name                = var.hpc_cache_name
+  name                = local.hpc_cache_name
   zone_name           = var.hpc_cache_dns_name.zone_name
   resource_group_name = var.hpc_cache_dns_name.zone_resource_group_name
   ttl                 = 300
