@@ -129,7 +129,7 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks,
   ]
- 
+
   source = "../../"
 
   aks_principal_id = module.aks.principal_id

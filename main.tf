@@ -145,6 +145,7 @@ resource "helm_release" "hpcc" {
   version    = var.hpcc_helm_version
   values = [
     yamlencode(local.chart_values)
+
   ]
 }
 

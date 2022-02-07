@@ -14,7 +14,3 @@ output "resource_group_name" {
   value = local.hpcc_storage_resource_group_name
 }
 
-output "hpc_cache_name" {
-  value = local.hpc_cache_name
-
-}
