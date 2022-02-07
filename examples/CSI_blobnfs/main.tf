@@ -30,7 +30,7 @@ module "metadata" {
   project             = "hpcc_demo"
   location            = "eastus2"
   environment         = "sandbox"
-  product_name        = "pvctest"
+  product_name        = random_string.random.result
   business_unit       = "iog"
   product_group       = "hpcc"
   subscription_id     = module.subscription.output.subscription_id
@@ -91,7 +91,7 @@ module "virtual_network" {
 module "aks" {
   source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
 
-  cluster_name    = "hpc-cache-pvc-test"
+  cluster_name    = random_string.random.result
   cluster_version = "1.21"
 
   location            = module.metadata.location
@@ -129,7 +129,7 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks,
   ]
-  #  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
+ 
   source = "../../"
 
   aks_principal_id = module.aks.principal_id
