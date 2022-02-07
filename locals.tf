@@ -225,7 +225,7 @@ locals {
 
       }
     }
-
+/*
     storage = {
       planes = [
         {
@@ -233,6 +233,16 @@ locals {
           pvc      = "hpcc-data"
           prefix   = "/var/lib/HPCCSystems/hpcc-data"
           category = "data"
+        }
+      ]
+    }*/
+    storage = {
+      planes = [
+        {
+          name     = "data"
+          pvc      = "hpcc-data"
+          prefix   = "/var/lib/HPCCSystems/${local.hpcc_pvc_config["data"].path}"
+          category = lookup(local.hpcc_pvc_config["data"], "category", "data")
         }
       ]
     }

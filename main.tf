@@ -135,7 +135,7 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
 resource "helm_release" "hpcc" {
   depends_on = [
     kubernetes_persistent_volume_claim.hpcc_blob_pvcs,
-    kubernetes_persistent_volume_claim.hpccachepvc,
+  #  kubernetes_persistent_volume_claim.hpccachepvc,
 
   ]
 
@@ -146,14 +146,14 @@ resource "helm_release" "hpcc" {
   version    = var.hpcc_helm_version
   values = [
     yamlencode(local.chart_values),
-    yamlencode(local.cache_values)
+   # yamlencode(local.cache_values)
   ]
 }
 
 ##############################
 # HPC Cache Persistent Volumes
 ##############################
-/*
+
 resource "helm_release" "hpccache" {
   depends_on = [
     kubernetes_persistent_volume_claim.hpccachepvc,
@@ -165,9 +165,9 @@ resource "helm_release" "hpccache" {
   repository = "https://hpcc-systems.github.io/helm-chart"
   version    = var.hpcc_helm_version
   values = [
-    yamlencode(local.values)
+    yamlencode(local.cache_values)
   ]
-}*/
+}
 
 resource "kubernetes_persistent_volume" "hpccache" {
 
