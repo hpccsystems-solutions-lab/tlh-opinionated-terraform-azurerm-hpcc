@@ -115,9 +115,3 @@ variable "hpc_cache_dns_name" {
 variable "hpc_cache_name" {
   type = string
 }
-
-variable "values" {
-  type        = any
-  default     = {}
-  description = "Map of values to pass to helm. Values will be merged"
-}

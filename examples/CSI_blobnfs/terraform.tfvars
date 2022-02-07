@@ -52,6 +52,10 @@ private_cidrs = ["10.1.3.0/25"]
 public_cidrs  = ["10.1.3.128/25"]
 
 hpcc_storage_config = {
+  data = {
+    size           = "10Gi"
+    container_name = ""
+  }
   dali = {
     size           = "1Gi"
     container_name = ""
@@ -74,7 +78,7 @@ hpcc_image_root   = "hpccsystems"
 hpcc_image_name   = ""
 hpcc_helm_version = "8.4.24"
 
-#### Cache Storage target DNS
+#### Cache Storage target DNS 
 hpc_cache_dns_name = {
   zone_name                = "us-infrastructure-dev.azure.lnrsg.io"
   zone_resource_group_name = "app-dns-prod-eastus2"
