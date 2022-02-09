@@ -28,7 +28,7 @@ core_services_config = {
 
 azuread_clusterrole_map = {
   cluster_admin_users = {
-    "DameAk01_risk.regn.net" = "ebb1bfeb-2803-42e8-b75c-32b0d6be1d0e"
+    "DameAk01_risk.regn.net"       = "ebb1bfeb-2803-42e8-b75c-32b0d6be1d0e"
     "us-infrastructure-dev-owners" = "f2e5d379-75f8-4d12-9cbf-20663822ba93"
   }
   cluster_view_users   = {}
@@ -76,4 +76,12 @@ hpcc_storage_config = {
 
 hpcc_image_root   = "hpccsystems"
 hpcc_image_name   = ""
-hpcc_helm_version = "8.4.12"
+hpcc_helm_version = "8.4.24"
+
+#### Cache Storage target DNS 
+hpc_cache_dns_name = {
+  zone_name                = "us-infrastructure-dev.azure.lnrsg.io"
+  zone_resource_group_name = "app-dns-prod-eastus2"
+}
+
+hpc_cache_name = "hpc-cache-blob-data"

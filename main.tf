@@ -14,7 +14,7 @@ resource "kubernetes_namespace" "hpcc_namespaces" {
 
 resource "kubernetes_namespace" "csi_driver_namespaces" {
 
-  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
+  count = var.blob-csi-driver ? 1 : 0
 
   metadata {
     name = "blob-csi-driver"
@@ -39,6 +39,8 @@ module "hpcc_storage" {
 
   hpcc_storage_account_name = var.hpcc_storage_account_name
   hpcc_storage_config       = var.hpcc_storage_config
+  hpc_cache_dns_name        = var.hpc_cache_dns_name
+  hpc_cache_name            = var.hpc_cache_name
 }
 
 
@@ -58,7 +60,7 @@ resource "helm_release" "csi_driver" {
   depends_on = [
     module.hpcc_storage
   ]
-  count            = "${var.blob-csi-driver == "yes" ? 1: 0}"
+  count      = var.blob-csi-driver ? 1 : 0
   chart      = "blob-csi-driver"
   name       = "blob-csi-driver"
   namespace  = "blob-csi-driver"
@@ -132,8 +134,10 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
 
 resource "helm_release" "hpcc" {
   depends_on = [
-    kubernetes_persistent_volume_claim.hpcc_blob_pvcs,
+    kubernetes_persistent_volume_claim.hpcc_blob_pvcs
+
   ]
+
   name       = var.hpcc_namespace
   namespace  = var.hpcc_namespace
   chart      = "hpcc"
@@ -141,7 +145,63 @@ resource "helm_release" "hpcc" {
   version    = var.hpcc_helm_version
   values = [
     yamlencode(local.chart_values)
+
   ]
+}
+
+##############################
+# HPC Cache Persistent Volumes
+##############################
+resource "kubernetes_persistent_volume" "hpccache" {
+
+  metadata {
+    name = "hpcc-data"
+    labels = {
+      storage-tier = "hpccache"
+    }
+  }
+  spec {
+    capacity = {
+      storage = "6T"
+    }
+    access_modes                     = ["ReadWriteMany"]
+    persistent_volume_reclaim_policy = "Retain"
+    persistent_volume_source {
+      nfs {
+        server = var.hpc_cache_name
+        path   = "/hpcc-data"
+      }
+    }
+    storage_class_name = "hpcc-data"
+  }
+}
+
+resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
+
+  wait_until_bound = true
+  metadata {
+    name      = "hpcc-data"
+    namespace = var.hpcc_namespace
+  }
+  spec {
+    access_modes       = ["ReadWriteMany"]
+    storage_class_name = "hpcc-data"
+    resources {
+      requests = {
+        storage = "6T"
+      }
+    }
+    selector {
+      match_labels = {
+        storage-tier = "hpccache"
+      }
+    }
+    volume_name = kubernetes_persistent_volume.hpccache.metadata.0.name
+  }
+
+  timeouts {
+    create = "20m"
+  }
 }
 
 ## The DNS workaround should be enabled until the Helm chart supports the external-dns plugin 

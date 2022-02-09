@@ -13,3 +13,4 @@ output "account_id" {
 output "resource_group_name" {
   value = local.hpcc_storage_resource_group_name
 }
+

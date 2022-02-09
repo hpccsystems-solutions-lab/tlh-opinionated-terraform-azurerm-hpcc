@@ -19,7 +19,6 @@ locals {
     }
   }
 
-
   hpcc_namespaces = [
     var.hpcc_namespace
   ]

@@ -129,7 +129,8 @@ module "hpcc_cluster" {
   depends_on = [
     module.aks,
   ]
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
+
+  source = "../../"
 
   aks_principal_id = module.aks.principal_id
 
@@ -146,6 +147,8 @@ module "hpcc_cluster" {
 
   hpcc_storage_config               = var.hpcc_storage_config
   storage_account_delete_protection = false //defaults to true
+  hpc_cache_dns_name                = var.hpc_cache_dns_name
+  hpc_cache_name                    = var.hpc_cache_name
 
 }
 

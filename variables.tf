@@ -9,9 +9,9 @@ variable "resource_group_name" {
 }
 
 variable "blob-csi-driver" {
-  description = "Determines if the blob-csi-drivers are to be installed for the cluster. Possible vaules are yes & no."
-  type        = string
-  default     = "yes"
+  description = "Determines if the blob-csi-drivers are to be installed for the cluster."
+  type        = bool
+  default     = true
 }
 
 
@@ -44,7 +44,7 @@ variable "storage_network_subnet_ids" {
 variable "hpcc_helm_version" {
   description = "Version of the HPCC Helm Chart to use"
   type        = string
-  default     = "8.4.0"
+  default     = "8.4.24"
 }
 
 variable "hpcc_image_root" {
@@ -105,3 +105,13 @@ variable "aks_principal_id" {
   type        = string
 }
 
+variable "hpc_cache_dns_name" {
+  type = object({
+    zone_name                = string
+    zone_resource_group_name = string
+  })
+}
+
+variable "hpc_cache_name" {
+  type = string
+}
