@@ -64,8 +64,7 @@ module "hpcc_storage" {
 
   hpcc_storage_account_name = var.hpcc_storage_account_name
   hpcc_storage_config       = var.hpcc_storage_config
-  hpc_cache_dns_name        = var.hpc_cache_dns_name
-  hpc_cache_name            = var.hpc_cache_name
+
 }
 
 
