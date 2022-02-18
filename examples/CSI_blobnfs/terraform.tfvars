@@ -80,6 +80,6 @@ hpcc_helm_version = "8.6.0"
 jfrog_registry = {
   image_root = "useast.jfrog.lexisnexisrisk.com/hpccpl-docker-nonprod-virtual",
   image_name = "platform-core-ln",
-  username   = "dameak01@risk.regn.net",
-  password   = "AKCp8kqgGndsRRq8iDU6iuhDJwvC14dFFCZoWdexuz2HJJCZA4EtxMERCKd9c"
+  username   = "riskid@risk.regn.net",
+  password   = " " # API token from JFrog registry
 }
