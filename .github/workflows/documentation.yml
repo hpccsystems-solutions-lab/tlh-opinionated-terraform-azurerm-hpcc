@@ -1,5 +1,5 @@
 name: Generate terraform docs
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -12,14 +12,6 @@ jobs:
       uses: Dirrk/terraform-docs@v1.0.8
       with:
         tf_docs_working_dir: .
-        tf_docs_output_file: README.md
-        tf_docs_output_method: inject
-        tf_docs_git_push: 'true'
-
-    - name: Submodule
-      uses: Dirrk/terraform-docs@v1.0.8
-      with:
-        tf_docs_working_dir: ./blobnfs/
         tf_docs_output_file: README.md
         tf_docs_output_method: inject
         tf_docs_git_push: 'true'
