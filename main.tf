@@ -25,6 +25,31 @@ resource "kubernetes_namespace" "csi_driver_namespaces" {
   }
 }
 
+# Jfrog Registry Secret
+resource "kubernetes_secret" "jfrog_secret" {
+  metadata {
+    name      = "jfrog-secret"
+    namespace = var.hpcc_namespace
+    labels = {
+      name = "jfrog-secret"
+    }
+  }
+  data = {
+    ".dockerconfigjson" = <<DOCKER
+      { 
+        "auths" :{ 
+          "${var.jfrog_registry.image_root}": {
+              "username":"${var.jfrog_registry.username}",
+              "password":"${var.jfrog_registry.password}",
+              "auth": "${base64encode("${var.jfrog_registry.username}:${var.jfrog_registry.password}")}"
+      }
+   }
+}
+DOCKER
+  }
+  type = "kubernetes.io/dockerconfigjson"
+}
+
 module "hpcc_storage" {
 
   source = "./modules/blobnfs"
@@ -39,8 +64,7 @@ module "hpcc_storage" {
 
   hpcc_storage_account_name = var.hpcc_storage_account_name
   hpcc_storage_config       = var.hpcc_storage_config
-  hpc_cache_dns_name        = var.hpc_cache_dns_name
-  hpc_cache_name            = var.hpc_cache_name
+
 }
 
 
@@ -134,7 +158,8 @@ resource "kubernetes_persistent_volume_claim" "hpcc_blob_pvcs" {
 
 resource "helm_release" "hpcc" {
   depends_on = [
-    kubernetes_persistent_volume_claim.hpcc_blob_pvcs
+    kubernetes_persistent_volume_claim.hpcc_blob_pvcs,
+    kubernetes_secret.jfrog_secret
 
   ]
 

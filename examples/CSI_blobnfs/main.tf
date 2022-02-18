@@ -89,7 +89,7 @@ module "virtual_network" {
 
 
 module "aks" {
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.7"
 
   cluster_name    = random_string.random.result
   cluster_version = "1.21"
@@ -98,17 +98,17 @@ module "aks" {
   tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
 
-  network_plugin = "kubenet"
+  ingress_node_pool = true
 
   node_pools = [
     {
       name         = "workers"
       single_vmss  = false
       public       = false
-      node_type    = "x64-gp"
-      node_size    = "large"
+      node_type    = "x64-gp-v1"
+      node_size    = "medium"
       min_capacity = 3
-      max_capacity = 3
+      max_capacity = 6
       taints       = []
       labels = {
         "lnrs.io/tier" = "standard"
@@ -134,9 +134,9 @@ module "hpcc_cluster" {
 
   aks_principal_id = module.aks.principal_id
 
-  hpcc_image_root   = var.hpcc_image_root
-  hpcc_image_name   = var.hpcc_image_name
+
   hpcc_helm_version = var.hpcc_helm_version
+  jfrog_registry    = var.jfrog_registry
 
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location

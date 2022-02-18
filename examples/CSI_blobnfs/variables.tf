@@ -46,16 +46,6 @@ variable "hpcc_storage_config" {
   )
 }
 
-variable "hpcc_image_root" {
-  description = "HPCC Helm image root"
-  type        = string
-}
-
-variable "hpcc_image_name" {
-  description = "HPCC Helm image name"
-  type        = string
-}
-
 variable "hpcc_helm_version" {
   description = "HPCC Helm Version"
   type        = string
@@ -76,4 +66,16 @@ variable "tfe_prod_subnet_id" {
   type        = string
   default     = "/subscriptions/debc4966-2669-4fa7-9bd9-c4cdb08aed9f/resourceGroups/app-tfe-prod-useast2/providers/Microsoft.Network/virtualNetworks/core-production-useast2-vnet/subnets/iaas-public"
 
+}
+
+# JFrog
+variable "jfrog_registry" {
+  description = "values to set as secrets for JFrog repo access"
+  type = object({
+    username   = string
+    password   = string # API Token
+    image_root = string
+    image_name = string
+  })
+  sensitive = true
 }
