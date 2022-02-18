@@ -29,5 +29,8 @@ This module is designed to provide a standard, opinonated, but configurable, dep
 See [examples](/examples) for general usage. 
 
 ---
+```
+## Inputs
 
+```
 <!-- END_TF_DOCS -->
