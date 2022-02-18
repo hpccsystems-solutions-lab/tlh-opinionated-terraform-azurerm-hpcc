@@ -73,6 +73,8 @@ See [examples](/examples) for general usage.
 
 ## Outputs
 
-No output.
+| Name | Description |
+|------|-------------|
+| aks\_login | n/a |
 
 <!--- END_TF_DOCS --->
