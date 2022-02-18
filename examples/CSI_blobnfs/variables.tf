@@ -77,14 +77,3 @@ variable "tfe_prod_subnet_id" {
   default     = "/subscriptions/debc4966-2669-4fa7-9bd9-c4cdb08aed9f/resourceGroups/app-tfe-prod-useast2/providers/Microsoft.Network/virtualNetworks/core-production-useast2-vnet/subnets/iaas-public"
 
 }
-
-variable "hpc_cache_dns_name" {
-  type = object({
-    zone_name                = string
-    zone_resource_group_name = string
-  })
-}
-
-variable "hpc_cache_name" {
-  type = string
-}

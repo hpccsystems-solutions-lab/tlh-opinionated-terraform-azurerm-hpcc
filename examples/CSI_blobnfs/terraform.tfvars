@@ -77,11 +77,3 @@ hpcc_storage_config = {
 hpcc_image_root   = "hpccsystems"
 hpcc_image_name   = ""
 hpcc_helm_version = "8.4.24"
-
-#### Cache Storage target DNS 
-hpc_cache_dns_name = {
-  zone_name                = "us-infrastructure-dev.azure.lnrsg.io"
-  zone_resource_group_name = "app-dns-prod-eastus2"
-}
-
-hpc_cache_name = "hpc-cache-blob-data"
