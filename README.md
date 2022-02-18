@@ -28,7 +28,8 @@ This module is designed to provide a standard, opinonated, but configurable, dep
 See [examples](/examples) for general usage. 
 
 ---
-<!-- BEGIN_TF_DOCS -->
+
+<!--- BEGIN_TF_DOCS --->
 
 
-<!-- END_TF_DOCS -->
+<!--- END_TF_DOCS --->
