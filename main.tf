@@ -175,61 +175,6 @@ resource "helm_release" "hpcc" {
   ]
 }
 
-##############################
-# HPC Cache Persistent Volumes
-##############################
-resource "kubernetes_persistent_volume" "hpccache" {
-
-  metadata {
-    name = "hpcc-data"
-    labels = {
-      storage-tier = "hpccache"
-    }
-  }
-  spec {
-    capacity = {
-      storage = "6T"
-    }
-    access_modes                     = ["ReadWriteMany"]
-    persistent_volume_reclaim_policy = "Retain"
-    persistent_volume_source {
-      nfs {
-        server = var.hpc_cache_name
-        path   = "/hpcc-data"
-      }
-    }
-    storage_class_name = "hpcc-data"
-  }
-}
-
-resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
-
-  wait_until_bound = true
-  metadata {
-    name      = "hpcc-data"
-    namespace = var.hpcc_namespace
-  }
-  spec {
-    access_modes       = ["ReadWriteMany"]
-    storage_class_name = "hpcc-data"
-    resources {
-      requests = {
-        storage = "6T"
-      }
-    }
-    selector {
-      match_labels = {
-        storage-tier = "hpccache"
-      }
-    }
-    volume_name = kubernetes_persistent_volume.hpccache.metadata.0.name
-  }
-
-  timeouts {
-    create = "20m"
-  }
-}
-
 ## The DNS workaround should be enabled until the Helm chart supports the external-dns plugin 
 /*
 data "kubernetes_service" "eclwatch" {

@@ -93,17 +93,6 @@ variable "aks_principal_id" {
   type        = string
 }
 
-variable "hpc_cache_dns_name" {
-  type = object({
-    zone_name                = string
-    zone_resource_group_name = string
-  })
-}
-
-variable "hpc_cache_name" {
-  type = string
-}
-
 # JFrog Registry
 variable "jfrog_registry" {
   description = "values to set as secrets for JFrog repo access"
