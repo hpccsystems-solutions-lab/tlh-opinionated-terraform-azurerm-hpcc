@@ -1,4 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
 # HPCC Systems Terraform Module
 
 ## Overview
@@ -29,8 +28,7 @@ This module is designed to provide a standard, opinonated, but configurable, dep
 See [examples](/examples) for general usage. 
 
 ---
-```
-## Inputs
+<!-- BEGIN_TF_DOCS -->
 
-```
+
 <!-- END_TF_DOCS -->
