@@ -14,11 +14,13 @@ Support and use of this module.
 
 ## Requirements
 
-Since this module utilizes the [terraform-azurerm-aks](https://github.com/LexisNexis-RBA/terraform-azurerm-aks) module, be sure to consult its requirements [
+1.  Since this module utilizes the [terraform-azurerm-aks](https://github.com/LexisNexis-RBA/terraform-azurerm-aks) module, be sure to consult its requirements [
 [documentation](https://github.com/LexisNexis-RBA/terraform-azurerm-aks/docs).
 
-In particular, carefully review networking and DNS requirements.
+    In particular, carefully review networking and DNS requirements.
 
+2.  This module supports the Jfrog setup to deliver the hpcc systems images.
+    *   You need to request Viewer access to required project in [Jfrog](https://useast.jfrog.lexisnexisrisk.com/)
 ---
 
 ## Usage
