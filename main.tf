@@ -191,7 +191,8 @@ resource "azurerm_dns_a_record" "eclwatch" {
   ttl                 = "30"
   records             = [data.kubernetes_service.eclwatch.status.0.load_balancer.0.ingress.0.ip]
 }
+*/
 
 output "aks_login" {
   value = "az aks get-credentials --name ${module.aks.cluster_name} --resource-group ${module.resource_group.name}"
-}*/
+}
