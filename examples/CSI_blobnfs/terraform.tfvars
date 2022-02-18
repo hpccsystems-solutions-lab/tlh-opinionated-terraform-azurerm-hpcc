@@ -74,9 +74,6 @@ hpcc_storage_config = {
   }
 }
 
-hpcc_image_root   = "hpccsystems"
-hpcc_image_name   = ""
-hpcc_helm_version = "8.4.24"
 
 #### Cache Storage target DNS 
 hpc_cache_dns_name = {
@@ -85,3 +82,13 @@ hpc_cache_dns_name = {
 }
 
 hpc_cache_name = "hpc-cache-blob-data"
+
+# Registry
+hpcc_helm_version = "8.6.0"
+
+jfrog_registry = {
+  image_root = "useast.jfrog.lexisnexisrisk.com/hpccpl-docker-nonprod-virtual",
+  image_name = "platform-core-ln",
+  username   = "dameak01@risk.regn.net",
+  password   = "AKCp8kqgGndsRRq8iDU6iuhDJwvC14dFFCZoWdexuz2HJJCZA4EtxMERCKd9c"
+}

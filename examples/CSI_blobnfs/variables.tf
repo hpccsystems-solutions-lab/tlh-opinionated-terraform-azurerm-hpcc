@@ -46,16 +46,6 @@ variable "hpcc_storage_config" {
   )
 }
 
-variable "hpcc_image_root" {
-  description = "HPCC Helm image root"
-  type        = string
-}
-
-variable "hpcc_image_name" {
-  description = "HPCC Helm image name"
-  type        = string
-}
-
 variable "hpcc_helm_version" {
   description = "HPCC Helm Version"
   type        = string
@@ -87,4 +77,16 @@ variable "hpc_cache_dns_name" {
 
 variable "hpc_cache_name" {
   type = string
+}
+
+# JFrog
+variable "jfrog_registry" {
+  description = "values to set as secrets for JFrog repo access"
+  type = object({
+    username   = string
+    password   = string # API Token
+    image_root = string
+    image_name = string
+  })
+  sensitive = true
 }

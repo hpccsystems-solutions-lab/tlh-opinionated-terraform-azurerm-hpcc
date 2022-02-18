@@ -27,10 +27,11 @@ locals {
 
     global = {
       image = {
-        version    = var.hpcc_helm_version
-        root       = var.hpcc_image_root
-        name       = var.hpcc_image_name
-        pullPolicy = "IfNotPresent"
+        version          = var.hpcc_helm_version
+        root             = var.jfrog_registry.image_root
+        name             = var.jfrog_registry.image_name
+        pullPolicy       = "IfNotPresent"
+        imagePullSecrets = "jfrog-secret"
       }
       visibilities = {
         cluster = {
