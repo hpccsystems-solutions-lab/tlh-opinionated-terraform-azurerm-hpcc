@@ -83,3 +83,11 @@ jfrog_registry = {
   username   = "riskid@risk.regn.net",
   password   = " " # API token from JFrog registry
 }
+
+#### Cache Storage target DNS 
+hpc_cache_dns_name = {
+  zone_name                = "us-infrastructure-dev.azure.lnrsg.io"
+  zone_resource_group_name = "app-dns-prod-eastus2"
+}
+
+hpc_cache_name = "hpc-cache-blob-data"

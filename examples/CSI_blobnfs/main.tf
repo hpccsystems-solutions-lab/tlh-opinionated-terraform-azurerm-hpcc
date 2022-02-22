@@ -147,6 +147,8 @@ module "hpcc_cluster" {
 
   hpcc_storage_config               = var.hpcc_storage_config
   storage_account_delete_protection = false //defaults to true
+  hpc_cache_dns_name                = var.hpc_cache_dns_name
+  hpc_cache_name                    = var.hpc_cache_name
 
 }
 
@@ -166,8 +168,8 @@ resource "azurerm_dns_a_record" "eclwatch" {
   name                = "eclwatch-${random_string.random.result}"
   ttl                 = "30"
   records             = [data.kubernetes_service.eclwatch.status.0.load_balancer.0.ingress.0.ip]
-}*/
+}
 
 output "aks_login" {
   value = "az aks get-credentials --name ${module.aks.cluster_name} --resource-group ${module.resource_group.name}"
-}
+}*/
