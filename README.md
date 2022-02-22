@@ -57,6 +57,8 @@ See [examples](/examples) for general usage.
 |------|-------------|------|---------|:--------:|
 | aks\_principal\_id | AKS Principal ID | `string` | n/a | yes |
 | blob-csi-driver | Determines if the blob-csi-drivers are to be installed for the cluster. | `bool` | `true` | no |
+| hpc\_cache\_dns\_name | n/a | <pre>object({<br>    zone_name                = string<br>    zone_resource_group_name = string<br>  })</pre> | n/a | yes |
+| hpc\_cache\_name | n/a | `string` | n/a | yes |
 | hpcc\_helm\_version | Version of the HPCC Helm Chart to use | `string` | `"8.6.0"` | no |
 | hpcc\_namespace | HPCC Namespace | `string` | `"hpcc"` | no |
 | hpcc\_replica\_config | HPCC component scaling | `map(number)` | `{}` | no |
@@ -73,8 +75,6 @@ See [examples](/examples) for general usage.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| aks\_login | n/a |
+No output.
 
 <!--- END_TF_DOCS --->

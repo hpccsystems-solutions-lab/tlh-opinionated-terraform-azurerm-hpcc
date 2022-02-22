@@ -104,3 +104,14 @@ variable "jfrog_registry" {
   })
   sensitive = true
 }
+
+variable "hpc_cache_dns_name" {
+  type = object({
+    zone_name                = string
+    zone_resource_group_name = string
+  })
+}
+
+variable "hpc_cache_name" {
+  type = string
+}
