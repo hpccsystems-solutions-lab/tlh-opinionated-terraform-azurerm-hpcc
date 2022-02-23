@@ -27,6 +27,7 @@ resource "kubernetes_namespace" "csi_driver_namespaces" {
 
 # Jfrog Registry Secret
 resource "kubernetes_secret" "jfrog_secret" {
+
   metadata {
     name      = "jfrog-secret"
     namespace = var.hpcc_namespace
@@ -64,6 +65,7 @@ module "hpcc_storage" {
 
   hpcc_storage_account_name = var.hpcc_storage_account_name
   hpcc_storage_config       = var.hpcc_storage_config
+  hpc_cache_enabled         = var.hpc_cache_enabled
   hpc_cache_dns_name        = var.hpc_cache_dns_name
   hpc_cache_name            = var.hpc_cache_name
 
@@ -180,7 +182,7 @@ resource "helm_release" "hpcc" {
 # HPC Cache Persistent Volumes
 ##############################
 resource "kubernetes_persistent_volume" "hpccache" {
-
+  count = var.hpc_cache_enabled ? 1 : 0
   metadata {
     name = "hpcc-data"
     labels = {
@@ -204,7 +206,7 @@ resource "kubernetes_persistent_volume" "hpccache" {
 }
 
 resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
-
+  count            = var.hpc_cache_enabled ? 1 : 0
   wait_until_bound = true
   metadata {
     name      = "hpcc-data"
@@ -223,7 +225,7 @@ resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
         storage-tier = "hpccache"
       }
     }
-    volume_name = kubernetes_persistent_volume.hpccache.metadata.0.name
+    volume_name = kubernetes_persistent_volume.hpccache[count.index].metadata.0.name
   }
 
   timeouts {

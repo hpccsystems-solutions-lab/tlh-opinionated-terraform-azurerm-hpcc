@@ -2,7 +2,7 @@
 # HPC Cache #
 #############
 resource "azurerm_hpc_cache" "hpc_cache" {
-
+  count               = var.hpc_cache_enabled ? 1 : 0
   name                = "hpc-cache-data"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -16,24 +16,27 @@ resource "azurerm_hpc_cache" "hpc_cache" {
 }
 
 resource "azurerm_hpc_cache_blob_nfs_target" "hpc_cache_blob" {
+  count = var.hpc_cache_enabled ? 1 : 0
   depends_on = [
     azurerm_hpc_cache.hpc_cache,
   ]
   name                 = "hpc-cache-blob-data"
   resource_group_name  = var.resource_group_name
-  cache_name           = azurerm_hpc_cache.hpc_cache.name
+  cache_name           = azurerm_hpc_cache.hpc_cache[count.index].name
   storage_container_id = azurerm_storage_container.hpcc_storage_containers["data"].resource_manager_id
   namespace_path       = "/hpcc-data"
   usage_model          = "READ_HEAVY_INFREQ"
 }
 
 resource "azurerm_role_assignment" "cache_storage_account_contrib" {
+  count                = var.hpc_cache_enabled ? 1 : 0
   scope                = local.hpcc_storage_account_id
   role_definition_name = "Storage Account Contributor"
   principal_id         = var.object_id
 }
 
 resource "azurerm_role_assignment" "cache_blob_data_contrib" {
+  count                = var.hpc_cache_enabled ? 1 : 0
   scope                = local.hpcc_storage_account_id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = var.object_id
@@ -41,10 +44,10 @@ resource "azurerm_role_assignment" "cache_blob_data_contrib" {
 
 ## HPC Cache DNS 
 resource "azurerm_dns_a_record" "cache_dns_record" {
-
+  count               = var.hpc_cache_enabled ? 1 : 0
   name                = var.hpc_cache_name
   zone_name           = var.hpc_cache_dns_name.zone_name
   resource_group_name = var.hpc_cache_dns_name.zone_resource_group_name
   ttl                 = 300
-  records             = azurerm_hpc_cache.hpc_cache.mount_addresses
+  records             = azurerm_hpc_cache.hpc_cache[count.index].mount_addresses
 }

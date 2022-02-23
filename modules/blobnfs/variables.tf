@@ -59,6 +59,11 @@ variable "object_id" {
   default = "d76481b9-94f9-4ce5-b322-e24b3c1646f0"
 }
 
+variable "hpc_cache_enabled" {
+  description = "Creates the hpc-cache for the cluster."
+  type        = bool
+}
+
 variable "hpc_cache_dns_name" {
   type = object({
     zone_name                = string

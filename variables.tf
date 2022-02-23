@@ -105,6 +105,11 @@ variable "jfrog_registry" {
   sensitive = true
 }
 
+variable "hpc_cache_enabled" {
+  description = "Creates the hpc-cache for the cluster."
+  type        = bool
+}
+
 variable "hpc_cache_dns_name" {
   type = object({
     zone_name                = string
