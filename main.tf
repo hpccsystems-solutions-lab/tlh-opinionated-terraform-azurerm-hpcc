@@ -27,6 +27,7 @@ resource "kubernetes_namespace" "csi_driver_namespaces" {
 
 # Jfrog Registry Secret
 resource "kubernetes_secret" "jfrog_secret" {
+
   metadata {
     name      = "jfrog-secret"
     namespace = var.hpcc_namespace
@@ -64,6 +65,9 @@ module "hpcc_storage" {
 
   hpcc_storage_account_name = var.hpcc_storage_account_name
   hpcc_storage_config       = var.hpcc_storage_config
+  hpc_cache_enabled         = var.hpc_cache_enabled
+  hpc_cache_dns_name        = var.hpc_cache_dns_name
+  hpc_cache_name            = var.hpc_cache_name
 
 }
 
@@ -172,6 +176,61 @@ resource "helm_release" "hpcc" {
     yamlencode(local.chart_values)
 
   ]
+}
+
+##############################
+# HPC Cache Persistent Volumes
+##############################
+resource "kubernetes_persistent_volume" "hpccache" {
+  count = var.hpc_cache_enabled ? 1 : 0
+  metadata {
+    name = "hpcc-data"
+    labels = {
+      storage-tier = "hpccache"
+    }
+  }
+  spec {
+    capacity = {
+      storage = "6T"
+    }
+    access_modes                     = ["ReadWriteMany"]
+    persistent_volume_reclaim_policy = "Retain"
+    persistent_volume_source {
+      nfs {
+        server = var.hpc_cache_name
+        path   = "/hpcc-data"
+      }
+    }
+    storage_class_name = "hpcc-data"
+  }
+}
+
+resource "kubernetes_persistent_volume_claim" "hpccachepvc" {
+  count            = var.hpc_cache_enabled ? 1 : 0
+  wait_until_bound = true
+  metadata {
+    name      = "hpcc-data"
+    namespace = var.hpcc_namespace
+  }
+  spec {
+    access_modes       = ["ReadWriteMany"]
+    storage_class_name = "hpcc-data"
+    resources {
+      requests = {
+        storage = "6T"
+      }
+    }
+    selector {
+      match_labels = {
+        storage-tier = "hpccache"
+      }
+    }
+    volume_name = kubernetes_persistent_volume.hpccache[count.index].metadata.0.name
+  }
+
+  timeouts {
+    create = "20m"
+  }
 }
 
 ## The DNS workaround should be enabled until the Helm chart supports the external-dns plugin 
