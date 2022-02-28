@@ -68,6 +68,12 @@ variable "tfe_prod_subnet_id" {
 
 }
 
+variable "service_endpoints" {
+  description = "Creates a virtual network rule in the subnet_id (values are virtual network subnet ids)."
+  type        = map(string)
+  default     = {}
+}
+
 # JFrog
 variable "jfrog_registry" {
   description = "values to set as secrets for JFrog repo access"

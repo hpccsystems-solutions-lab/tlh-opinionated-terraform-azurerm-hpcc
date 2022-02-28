@@ -29,10 +29,10 @@ variable "storage_account_authorized_ip_ranges" {
   type        = map(string)
 }
 
-variable "storage_network_subnet_ids" {
-  description = "The network ids to grant storage access"
-  type        = list(string)
-  default     = null
+variable "service_endpoints" {
+  description = "Creates a virtual network rule in the subnet_id (values are virtual network subnet ids)."
+  type        = map(string)
+  default     = {}
 }
 
 variable "storage_account_delete_protection" {
