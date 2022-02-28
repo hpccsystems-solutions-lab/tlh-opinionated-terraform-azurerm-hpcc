@@ -6,14 +6,8 @@ resource "random_string" "random" {
   special = false
 }
 
-data "http" "my_ip" {
-  url = "https://ifconfig.me"
-}
-
-module "storage_account" {
-  source = "github.com/Azure-Terraform/terraform-azurerm-storage-account.git?ref=v0.12.1"
-  count  = var.hpcc_storage_account_name == "" ? 1 : 0
-
+resource "azurerm_storage_account" "storage_account" {
+  count               = var.hpcc_storage_account_name == "" ? 1 : 0
   name                = "hpcc${random_string.random[0].result}"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -23,26 +17,29 @@ module "storage_account" {
   account_kind             = "StorageV2"
   account_tier             = "Standard"
   allow_blob_public_access = false
-  enable_hns               = true
+  is_hns_enabled           = true
   min_tls_version          = "TLS1_2"
 
   shared_access_key_enabled = false
 
   nfsv3_enabled             = true
   enable_https_traffic_only = true
-  replication_type          = "LRS"
+  account_replication_type  = "LRS"
 
-  access_list = {
-    "my_ip" = data.http.my_ip.body
+
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = toset(values(var.storage_account_authorized_ip_ranges))
+    virtual_network_subnet_ids = values(var.service_endpoints)
+    bypass                     = ["AzureServices"]
   }
-
-  service_endpoints = var.service_endpoints
 }
+
 
 resource "azurerm_storage_container" "hpcc_storage_containers" {
   for_each              = var.hpcc_storage_account_name == "" ? var.hpcc_storage_config : {}
   name                  = "hpcc-${each.key}"
-  storage_account_name  = module.storage_account[0].name
+  storage_account_name  = azurerm_storage_account.storage_account[0].name
   container_access_type = "private"
 }
 

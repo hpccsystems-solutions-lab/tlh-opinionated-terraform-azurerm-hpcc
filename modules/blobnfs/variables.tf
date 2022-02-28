@@ -30,7 +30,7 @@ variable "storage_account_authorized_ip_ranges" {
 }
 
 variable "service_endpoints" {
-  description = "Creates a virtual network rule in the subnet_id (values are virtual network subnet ids)."
+  description = "Values are virtual network subnet ids"
   type        = map(string)
   default     = {}
 }
