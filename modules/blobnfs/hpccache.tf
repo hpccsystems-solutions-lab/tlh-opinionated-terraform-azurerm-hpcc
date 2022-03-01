@@ -7,7 +7,7 @@ resource "azurerm_hpc_cache" "hpc_cache" {
   resource_group_name = var.resource_group_name
   location            = var.location
   cache_size_in_gb    = 6144
-  subnet_id           = var.service_endpoints[0]
+  subnet_id           = var.service_endpoints["public"]
   sku_name            = "Standard_2G"
 
   timeouts {
