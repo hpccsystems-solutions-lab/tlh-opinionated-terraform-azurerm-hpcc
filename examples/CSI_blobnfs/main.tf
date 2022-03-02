@@ -143,14 +143,19 @@ module "hpcc_cluster" {
   tags                = module.metadata.tags
 
   storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
-  storage_network_subnet_ids           = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id, var.tfe_prod_subnet_id]
 
   hpcc_storage_config               = var.hpcc_storage_config
   storage_account_delete_protection = false //defaults to true
   hpc_cache_enabled                 = var.hpc_cache_enabled
   hpc_cache_dns_name                = var.hpc_cache_dns_name
   hpc_cache_name                    = var.hpc_cache_name
-
+  service_endpoints = merge(
+    var.azure_admin_subnets,
+    {
+      "public"  = module.virtual_network.aks["demo"].subnets.public.id
+      "private" = module.virtual_network.aks["demo"].subnets.private.id
+    }
+  )
 }
 
 ## The DNS workaround should be enabled until the Helm chart supports the external-dns plugin 

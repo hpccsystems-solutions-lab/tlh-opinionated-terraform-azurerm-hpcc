@@ -30,10 +30,11 @@ resource "azurerm_storage_account" "storage_account" {
   network_rules {
     default_action             = "Deny"
     ip_rules                   = toset(values(var.storage_account_authorized_ip_ranges))
-    virtual_network_subnet_ids = var.storage_network_subnet_ids
+    virtual_network_subnet_ids = values(var.service_endpoints)
     bypass                     = ["AzureServices"]
   }
 }
+
 
 resource "azurerm_storage_container" "hpcc_storage_containers" {
   for_each              = var.hpcc_storage_account_name == "" ? var.hpcc_storage_config : {}

@@ -69,9 +69,9 @@ See [examples](/examples) for general usage.
 | jfrog\_registry | values to set as secrets for JFrog repo access | <pre>object({<br>    username   = string<br>    password   = string # API Token<br>    image_root = string<br>    image_name = string<br>  })</pre> | n/a | yes |
 | location | Azure region in which to build resources. | `string` | n/a | yes |
 | resource\_group\_name | The name of the Resource Group to deploy the AKS cluster service to, must already exist. | `string` | n/a | yes |
+| service\_endpoints | Creates a virtual network rule in the subnet\_id (values are virtual network subnet ids). | `map(string)` | `{}` | no |
 | storage\_account\_authorized\_ip\_ranges | Map of authorized CIDRs / IPs | `map(string)` | n/a | yes |
 | storage\_account\_delete\_protection | Protect storage from deletion | `bool` | `true` | no |
-| storage\_network\_subnet\_ids | The network ids to grant storage access | `list(string)` | `null` | no |
 | tags | Tags to be applied to cloud resources. | `map(string)` | `{}` | no |
 
 ## Outputs

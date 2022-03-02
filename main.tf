@@ -59,7 +59,7 @@ module "hpcc_storage" {
   tags                = var.tags
   resource_group_name = var.hpcc_storage_account_name == "" ? var.resource_group_name : var.hpcc_storage_account_resource_group_name
 
-  storage_network_subnet_ids           = var.storage_network_subnet_ids
+  service_endpoints                    = var.service_endpoints
   storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
   storage_account_delete_protection    = var.storage_account_delete_protection
 
