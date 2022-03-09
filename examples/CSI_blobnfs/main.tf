@@ -149,6 +149,8 @@ module "hpcc_cluster" {
   hpc_cache_enabled                 = var.hpc_cache_enabled
   hpc_cache_dns_name                = var.hpc_cache_dns_name
   hpc_cache_name                    = var.hpc_cache_name
+  thor_workers                      = var.thor_workers
+  thor_maxvalues                    = var.thor_maxvalues
   service_endpoints = merge(
     var.azure_admin_subnets,
     {

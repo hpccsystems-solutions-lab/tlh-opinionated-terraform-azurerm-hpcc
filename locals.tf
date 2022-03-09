@@ -177,9 +177,9 @@ locals {
       {
         name       = "thor"
         prefix     = "thor"
-        numWorkers = lookup(var.hpcc_replica_config, "thor-workers", 1)
-        maxJobs    = 4
-        maxGraphs  = 2
+        numWorkers = lookup(var.hpcc_replica_config, "thor-workers", var.thor_workers)
+        maxJobs    = var.thor_maxvalues.maxJobs
+        maxGraphs  = var.thor_maxvalues.maxGraphs
       }
     ]
 

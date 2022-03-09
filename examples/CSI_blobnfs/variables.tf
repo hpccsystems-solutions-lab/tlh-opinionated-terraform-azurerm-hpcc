@@ -67,6 +67,13 @@ variable "service_endpoints" {
   default     = {}
 }
 
+# Admin Subnets
+variable "azure_admin_subnets" {
+  description = "Azure Admin Subnets (for service endpoints)"
+  type        = map(string)
+  default     = {}
+}
+
 # JFrog
 variable "jfrog_registry" {
   description = "values to set as secrets for JFrog repo access"
@@ -94,4 +101,15 @@ variable "hpc_cache_dns_name" {
 
 variable "hpc_cache_name" {
   type = string
+}
+
+variable "thor_workers" {
+  type = number
+}
+
+variable "thor_maxvalues" {
+  type = object({
+    maxJobs   = number
+    maxGraphs = number
+  })
 }

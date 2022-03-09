@@ -120,3 +120,14 @@ variable "hpc_cache_dns_name" {
 variable "hpc_cache_name" {
   type = string
 }
+
+variable "thor_workers" {
+  type = number
+}
+
+variable "thor_maxvalues" {
+  type = object({
+    maxJobs   = number
+    maxGraphs = number
+  })
+}
