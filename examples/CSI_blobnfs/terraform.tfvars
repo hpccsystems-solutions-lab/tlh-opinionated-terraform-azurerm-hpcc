@@ -28,7 +28,7 @@ core_services_config = {
 
 azuread_clusterrole_map = {
   cluster_admin_users = {
-    "DameAk01_risk.regn.net"       = "ebb1bfeb-2803-42e8-b75c-32b0d6be1d0e"
+    "DameAk01_risk.regn.net" = "ebb1bfeb-2803-42e8-b75c-32b0d6be1d0e"
     "us-infrastructure-dev-owners" = "f2e5d379-75f8-4d12-9cbf-20663822ba93"
   }
   cluster_view_users   = {}
@@ -91,3 +91,11 @@ hpc_cache_dns_name = {
 }
 
 hpc_cache_name = "hpc-cache-blob-data"
+
+# Helm Values
+thor_workers = 1
+
+thor_maxvalues = {
+  maxJobs   = 4
+  maxGraphs = 2
+}
