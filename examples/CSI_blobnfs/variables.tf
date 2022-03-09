@@ -104,10 +104,12 @@ variable "hpc_cache_name" {
 }
 
 variable "thor_workers" {
+  description = "Number of thor workers to define the limits for each pod"
   type = number
 }
 
 variable "thor_maxvalues" {
+  description = "Thor workers resources limits for each pod"
   type = object({
     maxJobs   = number
     maxGraphs = number

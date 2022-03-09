@@ -29,7 +29,7 @@ core_services_config = {
 azuread_clusterrole_map = {
   cluster_admin_users = {
     "DameAk01_risk.regn.net" = "ebb1bfeb-2803-42e8-b75c-32b0d6be1d0e"
-    #  "us-infrastructure-dev-owners" = "f2e5d379-75f8-4d12-9cbf-20663822ba93"
+    "us-infrastructure-dev-owners" = "f2e5d379-75f8-4d12-9cbf-20663822ba93"
   }
   cluster_view_users   = {}
   standard_view_users  = {}
