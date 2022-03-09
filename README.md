@@ -73,6 +73,8 @@ See [examples](/examples) for general usage.
 | storage\_account\_authorized\_ip\_ranges | Map of authorized CIDRs / IPs | `map(string)` | n/a | yes |
 | storage\_account\_delete\_protection | Protect storage from deletion | `bool` | `true` | no |
 | tags | Tags to be applied to cloud resources. | `map(string)` | `{}` | no |
+| thor\_maxvalues | n/a | <pre>object({<br>    maxJobs   = number<br>    maxGraphs = number<br>  })</pre> | n/a | yes |
+| thor\_workers | n/a | `number` | n/a | yes |
 
 ## Outputs
 
