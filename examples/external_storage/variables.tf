@@ -1,8 +1,3 @@
-variable "address_space" {
-  description = "List of address spaces"
-  type        = list(string)
-}
-
 variable "core_services_config" {
   description = "cluster config"
   type        = any
@@ -37,24 +32,36 @@ variable "storage_account_authorized_ip_ranges" {
   type        = map(string)
 }
 
-variable "hpcc_storage_sizes" {
-  description = "Storage config for hpcc"
-  type        = map(string)
-}
-
-variable "private_cidrs" {
-  description = "Private AKS cidrs"
-  type        = list(string)
-}
-
-variable "public_cidrs" {
-  description = "Public AKS cidrs"
-  type        = list(string)
-}
-
-variable "tfe_prod_subnet_id" {
-  description = "Terraform enterprise Subnet id"
+variable "hpcc_helm_chart_version" {
+  description = "HPCC helm chart version"
   type        = string
-  default     = "/subscriptions/debc4966-2669-4fa7-9bd9-c4cdb08aed9f/resourceGroups/app-tfe-prod-useast2/providers/Microsoft.Network/virtualNetworks/core-production-useast2-vnet/subnets/iaas-public"
+}
 
+variable "service_endpoints" {
+  description = "Creates a virtual network rule in the subnet_id (values are virtual network subnet ids)."
+  type        = map(string)
+  default     = {}
+}
+
+variable "hpcc_container_registry" {
+  description = "HPCC container registry info."
+  type = object({
+    username   = string
+    password   = string
+    image_root = string
+    image_name = string
+  })
+  sensitive = true
+}
+
+variable "hpc_cache" {
+  description = "Creates the hpc-cache for the cluster."
+  type = object({
+    dns = object({
+      zone_name                = string
+      zone_resource_group_name = string
+    })
+    size = string
+  })
+  default = null
 }

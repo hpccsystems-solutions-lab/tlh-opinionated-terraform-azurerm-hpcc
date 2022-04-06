@@ -4,6 +4,10 @@ data "http" "my_ip" {
   url = "https://ifconfig.me"
 }
 
+data "azuread_service_principal" "hpc_cache_resource_provider" {
+  display_name = "HPC Cache Resource Provider"
+}
+
 # Random string for resource group 
 resource "random_string" "random" {
   length  = 12
@@ -58,16 +62,16 @@ module "virtual_network" {
 
   enforce_subnet_names = false
 
-  address_space = var.address_space
+  address_space = ["10.0.0.0/23"]
 
   aks_subnets = {
     demo = {
       private = {
-        cidrs             = var.private_cidrs
+        cidrs             = ["10.0.0.0/24"]
         service_endpoints = ["Microsoft.Storage"]
       }
       public = {
-        cidrs             = var.public_cidrs
+        cidrs             = ["10.0.1.0/24"]
         service_endpoints = ["Microsoft.Storage"]
       }
       route_table = {
@@ -78,7 +82,7 @@ module "virtual_network" {
             next_hop_type  = "Internet"
           }
           local-vnet-address-space = {
-            address_prefix = var.address_space[0]
+            address_prefix = "10.0.0.0/23"
             next_hop_type  = "vnetlocal"
           }
         }
@@ -87,63 +91,30 @@ module "virtual_network" {
   }
 }
 
-resource "azurerm_storage_account" "storage_account" {
-
-  name                = "hpccstorage"
-  resource_group_name = module.resource_group.name
-  location            = module.resource_group.location
-  tags                = module.metadata.tags
-
-  access_tier              = "Hot"
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  allow_blob_public_access = false
-  is_hns_enabled           = true
-  min_tls_version          = "TLS1_2"
-
-  shared_access_key_enabled = false
-
-  nfsv3_enabled             = true
-  enable_https_traffic_only = true
-  account_replication_type  = "LRS"
-
-  network_rules {
-    default_action             = "Deny"
-    ip_rules                   = toset(values(var.storage_account_authorized_ip_ranges))
-    virtual_network_subnet_ids = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
-    bypass                     = ["AzureServices"]
-  }
-}
-
-resource "azurerm_storage_container" "hpcc_storage_containers" {
-  for_each              = var.hpcc_storage_sizes
-  name                  = "hpcc-${each.key}"
-  storage_account_name  = azurerm_storage_account.storage_account.name
-  container_access_type = "private"
-}
-
 module "aks" {
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.3"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.8"
 
   cluster_name    = random_string.random.result
   cluster_version = "1.21"
+  sku_tier        = "Free"
 
   location            = module.metadata.location
   tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
 
-  network_plugin = "kubenet"
+  ingress_node_pool = true
 
   node_pools = [
     {
-      name         = "workers"
-      single_vmss  = false
-      public       = false
-      node_type    = "x64-gp"
-      node_size    = "large"
-      min_capacity = 3
-      max_capacity = 3
-      taints       = []
+      name                = "workers"
+      single_vmss         = true
+      public              = false
+      node_type           = "x64-gpd-v1"
+      node_size           = "2xlarge"
+      min_capacity        = 1
+      max_capacity        = 25
+      taints              = []
+      placement_group_key = ""
       labels = {
         "lnrs.io/tier" = "standard"
       }
@@ -158,40 +129,6 @@ module "aks" {
 
 }
 
-locals {
-  hpcc_storage_config = { for k, v in azurerm_storage_container.hpcc_storage_containers :
-    k => {
-      size           = var.hpcc_storage_sizes[k]
-      container_name = azurerm_storage_container.hpcc_storage_containers[k].name
-    }
-  }
-}
-
-module "hpcc_cluster" {
-  depends_on = [
-    module.aks
-  ]
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git"
-
-  aks_principal_id = module.aks.principal_id
-
-
-  resource_group_name = module.resource_group.name
-  location            = module.resource_group.location
-  tags                = module.metadata.tags
-
-  storage_account_authorized_ip_ranges = var.storage_account_authorized_ip_ranges
-  storage_network_subnet_ids           = [module.virtual_network.aks["demo"].subnets.private.id, module.virtual_network.aks["demo"].subnets.public.id]
-
-  hpcc_storage_account_name                = "hpccstorage"
-  hpcc_storage_account_resource_group_name = module.resource_group.name
-  hpcc_storage_config                      = local.hpcc_storage_config
-  storage_account_delete_protection        = false //defaults to true
-
-
-}
-
 output "aks_login" {
   value = "az aks get-credentials --name ${module.aks.cluster_name} --resource-group ${module.resource_group.name}"
 }
-
