@@ -5,7 +5,7 @@ resource "random_string" "random" {
   special = false
 }
 
-resource "azurerm_storage_account" "services" {
+resource "azurerm_storage_account" "admin_services" {
   name                = "hpcc${random_string.random.result}services"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -22,30 +22,30 @@ resource "azurerm_storage_account" "services" {
 
   nfsv3_enabled             = true
   enable_https_traffic_only = true
-  account_replication_type  = var.services_storage_account_settings.replication_type
+  account_replication_type  = var.admin_services_storage_account_settings.replication_type
 
 
   network_rules {
     default_action             = "Deny"
-    ip_rules                   = values(var.services_storage_account_settings.authorized_ip_ranges)
-    virtual_network_subnet_ids = values(var.services_storage_account_settings.subnet_ids)
+    ip_rules                   = values(var.admin_services_storage_account_settings.authorized_ip_ranges)
+    virtual_network_subnet_ids = values(var.admin_services_storage_account_settings.subnet_ids)
     bypass                     = ["AzureServices"]
   }
 }
 
-resource "azurerm_storage_container" "services" {
+resource "azurerm_storage_container" "admin_services" {
   for_each = local.blob_nfs_services_storage
 
   name                  = each.value.container_name
-  storage_account_name  = azurerm_storage_account.services.name
+  storage_account_name  = azurerm_storage_account.admin_services.name
   container_access_type = "private"
 }
 
 resource "azurerm_management_lock" "protect_storage_account" {
-  count = var.services_storage_account_settings.delete_protection ? 1 : 0
+  count = var.admin_services_storage_account_settings.delete_protection ? 1 : 0
 
-  name       = "protect-storage-${azurerm_storage_account.services.name}"
-  scope      = azurerm_storage_account.services.id
+  name       = "protect-storage-${azurerm_storage_account.admin_services.name}"
+  scope      = azurerm_storage_account.admin_services.id
   lock_level = "CanNotDelete"
 }
 
@@ -88,11 +88,11 @@ module "data_cache" {
   size      = var.data_storage_config.internal.hpc_cache.size
   subnet_id = var.data_storage_config.internal.hpc_cache.subnet_id
 
-  storage_targets = { for k,v in var.data_storage_config.internal.hpc_cache.storage_targets :
+  storage_targets = { for k, v in var.data_storage_config.internal.hpc_cache.storage_targets :
     k => {
       cache_update_frequency = v.cache_update_frequency
-      storage_account_data_planes = (v.storage_account_data_planes == null ? 
-        module.data_storage.0.data_planes : v.storage_account_data_planes)
+      storage_account_data_planes = (v.storage_account_data_planes == null ?
+      module.data_storage.0.data_planes : v.storage_account_data_planes)
     }
   }
 }

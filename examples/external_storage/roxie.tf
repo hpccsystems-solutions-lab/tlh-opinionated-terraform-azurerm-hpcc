@@ -25,7 +25,7 @@ module "roxie" {
   enable_node_tuning      = false
   install_blob_csi_driver = false
 
-  services_storage_account_settings = {
+  admin_services_storage_account_settings = {
     replication_type     = "LRS"
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
@@ -38,9 +38,9 @@ module "roxie" {
   data_storage_config = {
     internal = null
     external = {
-      blob_nfs = null
+      blob_nfs  = null
       hpc_cache = module.hpcc_data_cache.data_planes["external"]
-      hpcc = null
+      hpcc      = null
     }
   }
 

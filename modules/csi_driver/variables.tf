@@ -12,14 +12,14 @@ variable "helm_chart_version" {
 
 variable "namespace" {
   description = "Namespace in which to install the csi driver."
-  type        = object({
-    name = string
+  type = object({
+    name   = string
     labels = map(string)
   })
-  default     = {
+  default = {
+    name = "blob-csi-driver"
+    labels = {
       name = "blob-csi-driver"
-      labels = {
-        name = "blob-csi-driver"
-      }
+    }
   }
 }

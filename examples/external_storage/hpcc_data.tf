@@ -1,7 +1,7 @@
 module "hpcc_data_storage" {
   depends_on = [
     module.virtual_network
-  ]  
+  ]
 
   source = "../../modules/hpcc_data_storage"
 
@@ -46,11 +46,11 @@ module "hpcc_data_cache" {
 
   storage_targets = {
     external = {
-      cache_update_frequency = "3h"
+      cache_update_frequency      = "3h"
       storage_account_data_planes = module.hpcc_data_storage.data_planes
     }
   }
 
-  subnet_id                   = module.virtual_network.aks["demo"].subnets.private.id
-  tags                        = module.metadata.tags
+  subnet_id = module.virtual_network.aks["demo"].subnets.private.id
+  tags      = module.metadata.tags
 }

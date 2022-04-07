@@ -19,7 +19,7 @@ module "hpcc" {
     }
   }
 
-  services_storage_account_settings = {
+  admin_services_storage_account_settings = {
     replication_type     = "LRS"
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
@@ -44,7 +44,7 @@ module "hpcc" {
         }
 
       }
-      hpc_cache        = null
+      hpc_cache = null
     }
     external = null
   }

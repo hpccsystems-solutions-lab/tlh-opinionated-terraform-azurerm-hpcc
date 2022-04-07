@@ -91,7 +91,6 @@ module "virtual_network" {
   }
 }
 
-
 module "aks" {
   source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.8"
 

@@ -1,3 +1,37 @@
+variable "admin_services_storage_account_settings" {
+  description = "Settings for admin services storage account."
+  type = object({
+    authorized_ip_ranges = map(string)
+    delete_protection    = bool
+    replication_type     = string
+    subnet_ids           = map(string)
+  })
+  default = {
+    authorized_ip_ranges = {}
+    delete_protection    = false
+    replication_type     = "LRS"
+    subnet_ids           = {}
+  }
+}
+
+variable "admin_services_storage_size" {
+  description = "PV sizes for admin service planes (storage billed only as consumed)."
+  type = object({
+    dali  = string
+    debug = string
+    dll   = string
+    lz    = string
+    sasha = string
+  })
+  default = {
+    dali  = "100Gi"
+    debug = "100Gi"
+    dll   = "100Gi"
+    lz    = "1Pi"
+    sasha = "100Gi"
+  }
+}
+
 variable "container_registry" {
   description = "Registry info for HPCC containers."
   type = object({
@@ -40,7 +74,7 @@ variable "data_storage_config" {
             storage_account_name = string
           }))
         }))
-        subnet_id                   = string
+        subnet_id = string
       })
     })
     external = object({
@@ -58,7 +92,7 @@ variable "data_storage_config" {
         server = string
       }))
       hpcc = list(object({
-        name    = string
+        name = string
         planes = list(object({
           local  = string
           remote = string
@@ -176,40 +210,6 @@ variable "roxie_config" {
   ]
 }
 
-variable "services_storage_account_settings" {
-  description = "Settings for internal storage account (if external account is not used)."
-  type = object({
-    authorized_ip_ranges = map(string)
-    delete_protection    = bool
-    replication_type     = string
-    subnet_ids           = map(string)
-  })
-  default = {
-    authorized_ip_ranges = {}
-    delete_protection    = false
-    replication_type     = "LRS"
-    subnet_ids           = {}
-  }
-}
-
-variable "services_storage_size" {
-  description = "Storage config for hpcc non-data services."
-  type = object({
-    dali  = string
-    debug = string
-    dll = string
-    lz = string
-    sasha = string
-  })
-  default = {
-    dali  = "100Gi"
-    debug = "100Gi"
-    dll = "100Gi"
-    lz = "1Pi"
-    sasha = "100Gi"
-  }
-}
-
 variable "spill_volume_size" {
   description = "Size of spill volume to be created."
   type        = string
@@ -219,7 +219,7 @@ variable "spill_volume_size" {
 variable "thor_config" {
   description = "Configuration for Thor(s)."
   type = list(object({
-    disabled         = bool
+    disabled = bool
     eclAgentResources = object({
       cpu    = string
       memory = string
@@ -244,7 +244,7 @@ variable "thor_config" {
     })
   }))
   default = [{
-    disabled         = true
+    disabled = true
     eclAgentResources = {
       cpu    = 1
       memory = "2G"

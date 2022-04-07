@@ -51,35 +51,35 @@ locals {
       container_name = "hpcc-dali"
       path           = "dalistorage"
       plane_name     = "dali"
-      size           = var.services_storage_size.dali
+      size           = var.admin_services_storage_size.dali
     },
     {
       category       = "debug"
       container_name = "hpcc-debug"
       path           = "debug"
       plane_name     = "debug"
-      size           = var.services_storage_size.debug
+      size           = var.admin_services_storage_size.debug
     },
     {
       category       = "dll"
       container_name = "hpcc-dll"
       path           = "queries"
       plane_name     = "dll"
-      size           = var.services_storage_size.dll
+      size           = var.admin_services_storage_size.dll
     },
     {
       category       = "lz"
       container_name = "hpcc-mydropzone"
       path           = "mydropzone"
       plane_name     = "mydropzone"
-      size           = var.services_storage_size.lz
+      size           = var.admin_services_storage_size.lz
     },
     {
       category       = "sasha"
       container_name = "hpcc-sasha"
       path           = "sashastorage"
       plane_name     = "sasha"
-      size           = var.services_storage_size.sasha
+      size           = var.admin_services_storage_size.sasha
     }
   ]
 
@@ -90,7 +90,7 @@ locals {
       path            = config.path
       resource_group  = var.resource_group_name
       size            = config.size
-      storage_account = azurerm_storage_account.services.name
+      storage_account = azurerm_storage_account.admin_services.name
     }
   }
 
@@ -142,7 +142,7 @@ locals {
           }, local.hpc_cache_data_enabled ? {
           aliases = [
             {
-              mode      = [ "random" ]
+              mode      = ["random"]
               name      = "data-cache"
               numMounts = length(local.hpc_cache_data_storage)
               prefix    = "/var/lib/HPCCSystems/hpcc-data-cache"

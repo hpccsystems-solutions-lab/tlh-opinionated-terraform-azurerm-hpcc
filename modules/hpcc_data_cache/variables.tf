@@ -1,13 +1,3 @@
-
-#variable "cache_update_frequency" {
-#  description = "HPC Cache target update frequency."
-#
-#  validation {
-#    condition     = contains(["never", "30s", "3h"], var.cache_update_frequency)
-#    error_message = "HPC Cache target update frequency must be \"never\", \"30s\" or \"3h\"."
-#  }
-#}
-
 variable "dns" {
   description = "DNS info for HPC Cache."
   type = object({

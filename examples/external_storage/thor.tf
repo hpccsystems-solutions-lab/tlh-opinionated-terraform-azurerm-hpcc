@@ -21,7 +21,7 @@ module "thor" {
     }
   }
 
-  services_storage_account_settings = {
+  admin_services_storage_account_settings = {
     replication_type     = "LRS"
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
@@ -34,9 +34,9 @@ module "thor" {
   data_storage_config = {
     internal = null
     external = {
-      blob_nfs = module.hpcc_data_storage.data_planes
+      blob_nfs  = module.hpcc_data_storage.data_planes
       hpc_cache = null
-      hpcc = null
+      hpcc      = null
     }
   }
 

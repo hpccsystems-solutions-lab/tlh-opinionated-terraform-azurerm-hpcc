@@ -6,14 +6,14 @@ variable "create_namespace" {
 
 variable "namespace" {
   description = "Namespace in which to install node tuning daemonset"
-  type        = object({
-    name = string
+  type = object({
+    name   = string
     labels = map(string)
   })
-  default     = {
+  default = {
+    name = "hpcc-node-tuning"
+    labels = {
       name = "hpcc-node-tuning"
-      labels = {
-        name = "hpcc-node-tuning"
-      }
+    }
   }
 }
