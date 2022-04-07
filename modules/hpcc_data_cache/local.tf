@@ -1,6 +1,4 @@
 locals {
-  hpc_cache_name = var.name == null ? "hpcc${random_string.random.0.result}" : var.name
-
   hpc_cache_info = {
     small = {
       cache_size_in_gb = 21623

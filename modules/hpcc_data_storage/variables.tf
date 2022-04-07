@@ -23,7 +23,6 @@ variable "resource_group_name" {
 variable "storage_account_name_prefix" {
   description = "Prefix for storage account name (leave null for auto-generation)."
   type        = string
-  default     = null
 }
 
 variable "storage_account_settings" {

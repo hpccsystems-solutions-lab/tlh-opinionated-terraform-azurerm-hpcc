@@ -24,7 +24,6 @@ variable "location" {
 variable "name" {
   description = "HPC Cache name."
   type        = string
-  default     = null
 }
 
 variable "resource_group_name" {

@@ -5,6 +5,8 @@ module "hpcc_data_storage" {
 
   source = "../../modules/hpcc_data_storage"
 
+  storage_account_name_prefix = "hpcc${random_string.random.result}data"
+
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location
   tags                = module.metadata.tags
@@ -30,13 +32,15 @@ module "hpcc_data_cache" {
 
   source = "../../modules/hpcc_data_cache"
 
+  name                = "hpcc${random_string.random}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+
   dns = {
     zone_name                = var.core_services_config.external_dns.zones.0
     zone_resource_group_name = var.core_services_config.external_dns.resource_group_name
   }
 
-  location                    = module.resource_group.location
-  resource_group_name         = module.resource_group.name
   resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_provider.object_id
   size                        = "small"
 

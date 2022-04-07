@@ -39,7 +39,7 @@ See [examples](/examples) for general usage.
 | :---------------------------- | :-------------------------------------------------------------------------- | :------------------------------------------------ | :--------   | :----------- |
 | `dns`                         | DNS information.                                                            | `object()` [_(see appendix a)_](#Appendix-A)      | `hpcc-data` | `yes`        |
 | `location`                    | Azure region in which to create resources.                                  | `string`                                          | `nil`       | `yes`        |
-| `name`                        | HPC Cache name (leave null for auto-generation).                            | `string`                                          | `nil`       | `no`         |
+| `name`                        | HPC Cache name.                                                             | `string`                                          | `nil`       | `yes`         |
 | `resource_group_name`         | The name of the resource group to deploy resources.                         | `string`                                          | `nil`       | `yes`        |
 | `resource_provider_object_id` | Object ID of HPC Cache resource provider [(_see appendix b_)](#Appendix-C). | `string`                                          | `nil`       | `yes`        |
 | `size`                        | Size of HPC Cache (small, medium, large).                                   | `string`                                          | `nil`       | `yes`        |

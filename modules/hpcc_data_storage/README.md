@@ -37,13 +37,13 @@ See [examples](/examples) for general usage.
 
 | **Variable**                 | **Description**                                                   | **Type**                                     | **Default** | **Required** |
 | :--------------------------- | :---------------------------------------------------------------- | :------------------------------------------- | :--------   | :----------- |
-| `container_name`             | Name of container to create within storage accounts.              | `string`                                     | `hpcc-data` |     `no`     |
-| `data_plane_count`           | Number of data planes/storage accounts to be created.             | `number`                                     | `1`         |     `no`     |
-| `location`                   | Azure region in which to create resources.                        | `string`                                     | `nil`       |     `yes`    |
-| `resource_group_name`        | The name of the resource group to deploy resources.               | `string`                                     | `nil`       |     `yes`    |
-| `storage_account_name_prefix`| Prefix for storage account name (leave null for auto-generation). | `string`                                     | `nil`       |     `no`     |
-| `storage_account_settings`   | Storage account settings.                                         | `object()` [_(see appendix a)_](#Appendix-A) | `{}`        |     `no`     |
-| `tags`                       | Tags to be applied to Azure resources.                            | `map(string)`                                | `{}`        |     `no`     |
+| `container_name`             | Name of container to create within storage accounts.              | `string`                                     | `hpcc-data` | `no`         |
+| `data_plane_count`           | Number of data planes/storage accounts to be created.             | `number`                                     | `1`         | `no`         |
+| `location`                   | Azure region in which to create resources.                        | `string`                                     | `nil`       | `yes`        |
+| `resource_group_name`        | The name of the resource group to deploy resources.               | `string`                                     | `nil`       | `yes`        |
+| `storage_account_name_prefix`| Prefix for storage account name.                                  | `string`                                     | `nil`       | `yes`        |
+| `storage_account_settings`   | Storage account settings.                                         | `object()` [_(see appendix a)_](#Appendix-A) | `{}`        | `no`         |
+| `tags`                       | Tags to be applied to Azure resources.                            | `map(string)`                                | `{}`        | `no`         |
 
 ### Appendix A
 

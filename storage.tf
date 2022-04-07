@@ -50,6 +50,10 @@ resource "azurerm_management_lock" "protect_storage_account" {
 }
 
 module "data_storage" {
+  depends_on = [
+    random_string.random
+  ]
+
   source = "./modules/hpcc_data_storage"
 
   count = local.create_data_storage ? 1 : 0
@@ -68,6 +72,7 @@ module "data_cache" {
   depends_on = [
     module.data_storage
   ]
+
   source = "./modules/hpcc_data_cache"
 
   count = local.create_data_cache ? 1 : 0

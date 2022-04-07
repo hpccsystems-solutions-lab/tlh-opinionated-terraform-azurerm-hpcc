@@ -1,16 +1,7 @@
-resource "random_string" "random" {
-  count = var.storage_account_name_prefix == null ? 1 : 0
-
-  length  = 12
-  upper   = false
-  number  = false
-  special = false
-}
-
 resource "azurerm_storage_account" "default" {
   for_each = local.storage_plane_ids
 
-  name                = "${local.storage_account_name_prefix}${each.value}"
+  name                = "${var.storage_account_name_prefix}${each.value}"
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags

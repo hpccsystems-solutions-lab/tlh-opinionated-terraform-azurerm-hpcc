@@ -1,14 +1,5 @@
-resource "random_string" "random" {
-  count = var.name == null ? 1 : 0
-
-  length  = 12
-  upper   = false
-  number  = false
-  special = false
-}
-
 resource "azurerm_hpc_cache" "default" {
-  name                = local.hpc_cache_name
+  name                = var.name
   resource_group_name = var.resource_group_name
   location            = var.location
   cache_size_in_gb    = local.hpc_cache_info[var.size].cache_size_in_gb
