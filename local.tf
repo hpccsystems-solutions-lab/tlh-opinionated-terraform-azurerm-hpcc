@@ -1,6 +1,4 @@
 locals {
-  namespaces = merge({ hpcc = var.namespace }, var.install_blob_csi_driver ? { csi_driver = local.blob_csi_driver.namespace } : {})
-
   create_registry_auth_secret = var.container_registry.username != null && var.container_registry.username != "" ? true : false
 
   internal_data_config = var.data_storage_config.internal == null ? false : true
@@ -93,16 +91,6 @@ locals {
       resource_group  = var.resource_group_name
       size            = config.size
       storage_account = azurerm_storage_account.services.name
-    }
-  }
-
-  blob_csi_driver = {
-    chart_version = "v1.9.0"
-    namespace = {
-      name = "blob-csi-driver"
-      labels = {
-        name = "blob-csi-driver"
-      }
     }
   }
 

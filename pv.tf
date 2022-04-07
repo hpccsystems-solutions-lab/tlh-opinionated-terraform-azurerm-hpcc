@@ -1,8 +1,14 @@
+module "csi_driver" {
+  count = var.install_blob_csi_driver ? 1 : 0
+
+  source = "./modules/csi_driver"
+}
+
 resource "random_uuid" "volume_handle" {}
 
 resource "kubernetes_persistent_volume" "blob_nfs" {
   depends_on = [
-    helm_release.csi_driver,
+    module.csi_driver,
     module.data_storage
   ]
 
