@@ -32,7 +32,7 @@ module "hpcc_data_cache" {
 
   source = "../../modules/hpcc_data_cache"
 
-  name                = "hpcc${random_string.random}"
+  name                = "hpcc${random_string.random.result}"
   location            = module.resource_group.location
   resource_group_name = module.resource_group.name
 
