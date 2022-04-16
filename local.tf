@@ -1,5 +1,5 @@
 locals {
-  create_registry_auth_secret = var.container_registry.username != null && var.container_registry.username != "" ? true : false
+  create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
   internal_data_config = var.data_storage_config.internal == null ? false : true
   external_data_config = var.data_storage_config.external == null ? false : true
@@ -13,9 +13,11 @@ locals {
 
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
-    local.external_data_storage ? var.data_storage_config.external.blob_nfs : null))
-    hpc_cache = (local.create_data_cache ? module.data_cache.0.data_planes.default : (
-    local.external_data_cache ? var.data_storage_config.external.hpc_cache : null))
+      local.external_data_storage ? var.data_storage_config.external.blob_nfs : null)
+      )
+    hpc_cache = (local.create_data_cache ? module.data_cache.0.data_planes.internal : (
+      local.external_data_cache ? var.data_storage_config.external.hpc_cache : null)
+      )
     hpcc = local.external_hpcc_data ? var.data_storage_config.external.hpcc : []
   }
 
@@ -25,7 +27,7 @@ locals {
   spill_space_enabled    = var.spill_volume_size == null ? false : true
 
   blob_nfs_data_storage = local.blob_nfs_data_enabled ? { for plane in local.storage_config.blob_nfs :
-    "data-${plane.id}" => {
+    length(local.storage_config.blob_nfs) == 1 ? "data" : "data-${plane.id}" => {
       category        = "data"
       container_name  = plane.container_name
       id              = plane.id
@@ -37,8 +39,7 @@ locals {
   } : {}
 
   hpc_cache_data_storage = local.hpc_cache_data_enabled ? { for plane in local.storage_config.hpc_cache :
-    "data-${plane.id}" => {
-      name   = "hpc-cache-data-${plane.id}"
+    length(local.storage_config.hpc_cache) == 1 ? "data" : "data-${plane.id}" => {
       server = plane.server
       path   = plane.path
       size   = "5Pi"
@@ -98,13 +99,11 @@ locals {
 
     global = {
       image = merge({
-        version          = var.helm_chart_version
-        root             = var.container_registry.image_root
-        name             = var.container_registry.image_name
+        version          = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
+        root             = var.hpcc_container.image_root
+        name             = var.hpcc_container.image_name
         pullPolicy       = "IfNotPresent"
-        imagePullSecrets = local.create_registry_auth_secret ? kubernetes_secret.container_registry_auth.0.metadata.0.name : null
-        },
-      )
+      }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {} )
       visibilities = {
         cluster = {
           type = "ClusterIP"
