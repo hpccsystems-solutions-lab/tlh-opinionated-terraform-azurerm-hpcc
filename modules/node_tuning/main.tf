@@ -7,6 +7,33 @@ resource "kubernetes_namespace" "default" {
   }
 }
 
+resource "kubernetes_secret" "container_registry_auth" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
+  count = local.create_kubernetes_secret ? 1 : 0
+
+  metadata {
+    name      = "container-registry-auth"
+    namespace = var.namespace.name
+    labels = {
+      name = "container-registry-auth"
+    }
+  }
+
+  data = {
+    ".dockerconfigjson" = jsonencode({
+      auths = { for url in local.auth_urls:
+        url => {
+          auth = base64encode("${var.container_registry_auth.username}:${var.container_registry_auth.password}")
+        }
+      }
+    })
+  }
+  type = "kubernetes.io/dockerconfigjson"
+}
+
 resource "kubernetes_config_map" "nfs_read_ahead_rule" {
   depends_on = [
     kubernetes_namespace.default
@@ -57,10 +84,16 @@ resource "kubernetes_daemonset" "node_tuning" {
       spec {
         host_pid            = true
         priority_class_name = "system-node-critical"
+        dynamic "image_pull_secrets" {
+          for_each = local.create_kubernetes_secret ? [1] : []
+          content {
+            name = kubernetes_secret.container_registry_auth.0.metadata.0.name
+          }
+        }
         container {
-          name              = "node-tuning-complete"
-          image             = "busybox:1.34"
-          image_pull_policy = "Always"
+          name               = "node-tuning-complete"
+          image              = var.containers.busybox
+          image_pull_policy  = "IfNotPresent"
           resources {
             limits = {
               cpu    = "20m"
@@ -75,9 +108,9 @@ resource "kubernetes_daemonset" "node_tuning" {
           args    = ["echo `date` --- node tuning completed successfully; while true; do echo `date` --- sleeping 1 hour && sleep 3600; done"]
         }
         init_container {
-          name              = "node-udev-edit"
-          image             = "debian:bullseye-slim"
-          image_pull_policy = "Always"
+          name               = "node-udev-edit"
+          image              = var.containers.debian
+          image_pull_policy  = "IfNotPresent"
           resources {
             limits = {
               cpu    = "1000m"

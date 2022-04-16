@@ -35,16 +35,36 @@ See [examples](/examples) for general usage.
 
 ## Inputs
 
-| **Variable**         | **Description**                                          | **Type**                                     | **Default** | **Required** |
-| :------------------- | :------------------------------------------------------- | :------------------------------------------- | :--------   | :----------- |
-| `create_namespace`   | Create kubernetes namespace.                             | `bool`                                       | `hpcc-data` | `no`        |
-| `namespace`          | Kubernetes namespace in which to install the helm chart. | `object()` [_(see appendix a)_](#Appendix-A) | `nil`       | `no`         |
-
+| **Variable**              | **Description**                                          | **Type**                                     | **Default** | **Required** |
+| :------------------------ | :------------------------------------------------------- | :------------------------------------------- | :--------   | :----------- |
+| `containers`              | URIs for containers to be used by node tuning submodule. | `object()` [_(see appendix a)_](#Appendix-A) | `{}`        | `no`         |
+| `container_registry_auth` | Registry authentication for node tuning containers.      | `object()` [_(see appendix b)_](#Appendix-B) | `{}`        | `no`         |
+| `create_namespace`        | Create kubernetes namespace.                             | `bool`                                       | `true`      | `no`         |
+| `namespace`               | Kubernetes namespace in which to install the helm chart. | `object()` [_(see appendix c)_](#Appendix-C) | `nil`       | `no`         |
+ 
 ### Appendix A
+
+`containers` object specification
+
+| **Variable** | **Description**                             | **Type** | **Default**                              | **Required** |
+| :----------- | :------------------------------------------ | :------- | :--------------------------------------- | :----------- |
+| `busybox`    | URI for busybox container.                  | `string` | `docker.io/library/busybox:1.34`         | `yes`        |
+| `debian`     | URI for debian container (slim preferred)'. | `string` | `docker.io/library/debian:bullseye-slim` | `yes`        |
+
+### Appendix B
+
+`container_registry_auth` object specification
+
+| **Variable** | **Description**                                       | **Type** | **Required** |
+| :----------- | :---------------------------------------------------- | :------- | :----------- |
+| `password`   | Password/API key.                                     | `string` | `yes`        |
+| `username`   | Username.                                             | `string` | `yes`        |
+
+### Appendix C
 
 `namespace` object specification
 
-| **Variable** | **Description**                         | **Type**      | **Required** |
-| :----------- | :-------------------------------------- | :------------ | :----------- |
-| `namespace`  | Namespace name.                         | `string`      | `yes`        |
-| `labels`     | Lables to be applied to the namespace'. | `map(string)` | `yes`        |
+| **Variable** | **Description**                         | **Type**      | **Default**                   | **Required** |
+| :----------- | :-------------------------------------- | :------------ | :---------------------------- | :----------- |
+| `namespace`  | Namespace name.                         | `string`      | `hpcc-node-tuning`            | `yes`        |
+| `labels`     | Lables to be applied to the namespace'. | `map(string)` | `{name = "hpcc-node-tuning"}` | `yes`        |
