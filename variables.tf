@@ -32,17 +32,6 @@ variable "admin_services_storage_size" {
   }
 }
 
-variable "container_registry" {
-  description = "Registry info for HPCC containers."
-  type = object({
-    image_name = string
-    image_root = string
-    password   = string
-    username   = string
-  })
-  sensitive = true
-}
-
 variable "data_storage_config" {
   description = "Data plane config for HPCC."
   type = object({
@@ -57,22 +46,20 @@ variable "data_storage_config" {
         })
       })
       hpc_cache = object({
+        cache_update_frequency = string
         dns = object({
           zone_name                = string
           zone_resource_group_name = string
         })
         resource_provider_object_id = string
         size                        = string
-        storage_targets = map(object({
-          cache_update_frequency = string
-          storage_account_data_planes = list(object({
-            container_id         = string
-            container_name       = string
-            id                   = number
-            resource_group_name  = string
-            storage_account_id   = string
-            storage_account_name = string
-          }))
+        storage_account_data_planes = list(object({
+          container_id         = string
+          container_name       = string
+          id                   = number
+          resource_group_name  = string
+          storage_account_id   = string
+          storage_account_name = string
         }))
         subnet_id = string
       })
@@ -130,10 +117,35 @@ variable "helm_chart_overrides" {
   default     = ""
 }
 
+variable "helm_chart_timeout" {
+  description = "Helm timeout for hpcc chart."
+  type        = number
+  default     = 600
+}
+
 variable "helm_chart_version" {
   description = "Version of the HPCC Helm Chart to use."
   type        = string
-  default     = "8.6.10-rc1"
+  default     = "8.6.16"
+}
+
+variable "hpcc_container" {
+  description = "HPCC container information (if version is set to null helm chart version is used)."
+  type = object({
+    image_name = string
+    image_root = string
+    version    = string
+  })
+}
+
+variable "hpcc_container_registry_auth" {
+  description = "Registry authentication for HPCC container."
+  type        = object({
+    password   = string
+    username   = string
+  })
+  default = null
+  sensitive = true
 }
 
 variable "install_blob_csi_driver" {
@@ -159,6 +171,28 @@ variable "namespace" {
       name = "hpcc"
     }
   }
+}
+
+variable "node_tuning_containers" {
+  description = "URIs for containers to be used by node tuning submodule." 
+  type        = object({
+    busybox = string
+    debian  = string
+  })
+  default = {
+    busybox = "docker.io/library/busybox:1.34"
+    debian  = "docker.io/library/debian:bullseye-slim"
+  }
+}
+
+variable "node_tuning_container_registry_auth" {
+  description = "Registry authentication for node tuning containers."
+  type        = object({
+    password   = string
+    username   = string
+  })
+  default = null
+  sensitive = true
 }
 
 variable "resource_group_name" {
