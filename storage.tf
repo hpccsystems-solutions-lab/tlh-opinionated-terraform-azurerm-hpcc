@@ -88,11 +88,11 @@ module "data_cache" {
   size      = var.data_storage_config.internal.hpc_cache.size
   subnet_id = var.data_storage_config.internal.hpc_cache.subnet_id
 
-  storage_targets = { for k, v in var.data_storage_config.internal.hpc_cache.storage_targets :
-    k => {
-      cache_update_frequency = v.cache_update_frequency
-      storage_account_data_planes = (v.storage_account_data_planes == null ?
-      module.data_storage.0.data_planes : v.storage_account_data_planes)
+  storage_targets = {
+    internal = {
+      cache_update_frequency = var.data_storage_config.internal.hpc_cache.cache_update_frequency
+      storage_account_data_planes = (var.data_storage_config.internal.hpc_cache.storage_account_data_planes == null ?
+      module.data_storage.0.data_planes : var.data_storage_config.internal.hpc_cache.storage_account_data_planes)
     }
   }
 }
