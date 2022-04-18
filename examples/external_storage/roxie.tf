@@ -8,8 +8,9 @@ module "roxie" {
 
   source = "../../"
 
-  helm_chart_version = var.hpcc_helm_chart_version
-  container_registry = var.hpcc_container_registry
+  helm_chart_version           = var.hpcc_helm_chart_version
+  hpcc_container               = var.hpcc_container
+  hpcc_container_registry_auth = var.hpcc_container_registry_auth
 
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location

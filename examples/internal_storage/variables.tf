@@ -43,14 +43,22 @@ variable "service_endpoints" {
   default     = {}
 }
 
-variable "hpcc_container_registry" {
+variable "hpcc_container" {
   description = "HPCC container registry info."
   type = object({
-    username   = string
-    password   = string
-    image_root = string
     image_name = string
+    image_root = string
+    version    = string
   })
+}
+
+variable "hpcc_container_registry_auth" {
+  description = "Registry authentication for HPCC containers."
+  type        = object({
+    password   = string
+    username   = string
+  })
+  default = null
   sensitive = true
 }
 

@@ -5,8 +5,11 @@ module "hpcc" {
 
   source = "../../"
 
-  helm_chart_version = var.hpcc_helm_chart_version
-  container_registry = var.hpcc_container_registry
+  helm_chart_version           = var.hpcc_helm_chart_version
+  hpcc_container               = var.hpcc_container
+  hpcc_container_registry_auth = var.hpcc_container_registry_auth
+
+  node_tuning_container_registry_auth = var.hpcc_container_registry_auth
 
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location
@@ -32,7 +35,7 @@ module "hpcc" {
   data_storage_config = {
     internal = {
       blob_nfs = {
-        data_plane_count = 5
+        data_plane_count = 2
         storage_account_settings = {
           replication_type     = "LRS"
           authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
@@ -44,7 +47,17 @@ module "hpcc" {
         }
 
       }
-      hpc_cache = null
+      hpc_cache = {
+        dns = {
+          zone_name                = "infrastructure-sandbox.us.lnrisk.io"
+          zone_resource_group_name = "rg-iog-sandbox-eastus2-lnriskio"
+        }
+        resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_provider.object_id
+        size                        = "small"
+        cache_update_frequency = "3h"
+        storage_account_data_planes = null
+        subnet_id = module.virtual_network.aks["demo"].subnets.private.id
+      }
     }
     external = null
   }
