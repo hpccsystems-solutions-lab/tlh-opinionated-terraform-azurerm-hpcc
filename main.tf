@@ -20,6 +20,9 @@ resource "helm_release" "hpcc" {
     kubernetes_persistent_volume_claim.hpc_cache,
     kubernetes_persistent_volume_claim.spill,
     kubernetes_secret.hpcc_container_registry_auth,
+    kubernetes_secret.dali_hpcc_admin,
+    kubernetes_secret.dali_ldap_admin,
+    kubernetes_secret.esp_ldap_admin,
     module.node_tuning
   ]
 
