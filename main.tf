@@ -35,8 +35,3 @@ resource "helm_release" "hpcc" {
     var.helm_chart_overrides
   ]
 }
-
-resource "local_file" "test" {
-  content  = yamlencode(local.helm_chart_values)
-  filename = "/Users/tmiller/git-repos/tfe/terraform-azurerm-hpcc/examples/shortcut/hpcc.yaml"
-}

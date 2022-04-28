@@ -48,27 +48,29 @@ See [examples](/examples) for general usage.
 
 ## Inputs
 
-| **Variable**                              | **Description**                                                      | **Type**                                           | **Default** | **Required** |
-| :---------------------------------------- | :------------------------------------------------------------------- | :------------------------------------------------- | :--------   | :----------- |
-| `admin_services_storage_account_settings` | Settings for admin services storage account.                         | `object()` [_(see appendix a)_](#Appendix-A)       | `{}`        |     `no`     |
-| `admin_services_storage_size`             | PV sizes for admin service planes (storage billed only as consumed). | `object()` [_(see appendix b)_](#Appendix-B)       | `{}`        |     `no`     |
-| `data_storage_config`                     | HPCC Data storage config.                                            | `object()` [_(see appendix c)_](#Appendix-C)       | `nil`       |     `yes`    |
-| `enable_node_tuning`                      | Enable node tuning daemonset (only needed once per AKS cluster).     | `bool`                                             | `true`      |     `no`     |
-| `helm_chart_overrides`                    | Helm chart values, in yaml format, to be merged last.                | `string`                                           | `nil`       |     `no`     |
-| `helm_chart_timeout`                      | Helm timeout for hpcc chart in seconds.                              | `number`                                           | `600`       |     `no`     |
-| `helm_chart_version`                      | Version of the HPCC Helm Chart to use.                               | `string`                                           | `8.6.16`    |     `no`     |
-| `hpcc_container`                          | HPCC container information.                                          | `object()` [_(see appendix q)_](#Appendix-Q)       | `nil`       |     `yes`    |
-| `hpcc_container_registry_auth`            | Registry authentication for HPCC container.                          | `object()` [_(see appendix r)_](#Appendix-R)       | `nil`       |     `no`     |
-| `install_blob_csi_driver`                 | Install blob-csi-drivers on the cluster.                             | `bool`                                             | `true`      |     `no`     |
-| `location`                                | Azure region in which to create resources.                           | `string`                                           | `nil`       |     `yes`    |
-| `namespace`                               | Kubernetes namespace where resources will be created.                | `object()` [_(see appendix s)_](#Appendix-S)       | `hpcc`      |     `no`     |
-| `node_tuning_containers`                  | URIs for containers to be used by node tuning submodule.             | `object()` [_(see appendix t)_](#Appendix-T)       | `{}`        |     `no`     |
-| `node_tuning_container_registry_auth`     | Registry authentication for node tuning containers.                  | `object()` [_(see appendix u)_](#Appendix-U)       | `{}`        |     `no`     |
-| `resource_group_name`                     | The name of the resource group to deploy resources.                  | `string`                                           | `nil`       |     `yes`    |
-| `roxie_config`                            | Settings for roxie service.                                          | `list(object())` [_(see appendix v)_](#Appendix-V) | `disabled`  |     `no`     |
-| `spill_volume_size`                       | Storage config for hpcc.                                             | `string`                                           | `nil`       |     `no`     |
-| `thor_config`                             | Settings for thor service.                                           | `list(object())` [_(see appendix y)_](#Appendix-Y) | `disabled`  |     `no`     |
-| `tags`                                    | Tags to be applied to Azure resources.                               | `map(string)`                                      | `{}`        |     `no`     |
+| **Variable**                              | **Description**                                                      | **Type**                                             | **Default** | **Required** |
+| :---------------------------------------- | :------------------------------------------------------------------- | :--------------------------------------------------- | :--------   | :----------- |
+| `admin_services_storage_account_settings` | Settings for admin services storage account.                         | `object()` [_(see appendix a)_](#Appendix-A)         | `{}`        | `no`         |
+| `admin_services_storage_size`             | PV sizes for admin service planes (storage billed only as consumed). | `object()` [_(see appendix b)_](#Appendix-B)         | `{}`        | `no`         |
+| `data_storage_config`                     | HPCC Data storage config.                                            | `object()` [_(see appendix c)_](#Appendix-C)         | `nil`       | `yes`        |
+| `enable_node_tuning`                      | Enable node tuning daemonset (only needed once per AKS cluster).     | `bool`                                               | `true`      | `no`         |
+| `helm_chart_overrides`                    | Helm chart values, in yaml format, to be merged last.                | `string`                                             | `nil`       | `no`         |
+| `helm_chart_timeout`                      | Helm timeout for hpcc chart in seconds.                              | `number`                                             | `600`       | `no`         |
+| `helm_chart_version`                      | Version of the HPCC Helm Chart to use.                               | `string`                                             | `8.6.16`    | `no`         |
+| `hpcc_container`                          | HPCC container information.                                          | `object()` [_(see appendix q)_](#Appendix-Q)         | `nil`       | `yes`        |
+| `hpcc_container_registry_auth`            | Registry authentication for HPCC container.                          | `object()` [_(see appendix r)_](#Appendix-R)         | `nil`       | `no`         |
+| `install_blob_csi_driver`                 | Install blob-csi-drivers on the cluster.                             | `bool`                                               | `true`      | `no`         |
+| `ldap_config`                             | LDAP settings for dali and esp services.                             | `object()` [_(see appendix s)_](#Appendix-S)         | `nil`       | `no`         |
+| `ldap_tunables`                           | Tunable settings for LDAP.                                           | `string`                                             | `nil`       | `no`         |
+| `location`                                | Azure region in which to create resources.                           | `string`                                             | `nil`       | `yes`        |
+| `namespace`                               | Kubernetes namespace where resources will be created.                | `object()` [_(see appendix w)_](#Appendix-W)         | `hpcc`      | `no`         |
+| `node_tuning_containers`                  | URIs for containers to be used by node tuning submodule.             | `object()` [_(see appendix x)_](#Appendix-X)         | `{}`        | `no`         |
+| `node_tuning_container_registry_auth`     | Registry authentication for node tuning containers.                  | `object()` [_(see appendix y)_](#Appendix-Y)         | `{}`        | `no`         |
+| `resource_group_name`                     | The name of the resource group to deploy resources.                  | `string`                                             | `nil`       | `yes`        |
+| `roxie_config`                            | Settings for roxie service.                                          | `list(object())` [_(see appendix z)_](#Appendix-Z)   | `disabled`  | `no`         |
+| `spill_volume_size`                       | Storage config for hpcc.                                             | `string`                                             | `nil`       | `no`         |
+| `thor_config`                             | Settings for thor service.                                           | `list(object())` [_(see appendix cc)_](#Appendix-CC) | `disabled`  | `no`         |
+| `tags`                                    | Tags to be applied to Azure resources.                               | `map(string)`                                        | `{}`        | `no`         |
 
 ### Appendix A
 
@@ -265,6 +267,69 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 
 ### Appendix S
 
+`ldap_config` object specification
+
+| **Variable**  | **Description**             | **Type**                                     | **Required** |
+| :------------ | :-------------------------- | :------------------------------------------- | :----------- |
+| `dali`        | Dali service LDAP settings. | `object()` [_(see appendix t)_](#Appendix-T) | `yes`        |
+| `esp`         | ESP service LDAP settings.  | `object()` [_(see appendix u)_](#Appendix-U) | `yes`        |
+| `ldap_server` | LDAP server address.        | `string`                                     | `yes`        |
+
+### Appendix T
+
+`ldap_config.dali` object specification
+
+| **Variable**          | **Description**                                               | **Type** | **Required** |
+| :-------------------- | :------------------------------------------------------------ | :------- | :----------- |
+| `adminGroupName`      | LDAP adminGroupName.                                          | `string` | `yes`        |
+| `filesBasedn`         | LDAP filesBasedn.                                             | `string` | `yes`        |
+| `groupsBasedn`        | LDAP groupsBasedn.                                            | `string` | `yes`        |
+| `hpcc_admin_password` | LDAP hpcc admin password (kubernetes secret will be created). | `string` | `yes`        |
+| `hpcc_admin_username` | LDAP hpcc admin username (kubernetes secret will be created). | `string` | `yes`        |
+| `ldap_admin_password` | LDAP ldap admin password (kubernetes secret will be created). | `string` | `yes`        |
+| `ldap_admin_username` | LDAP ldap admin username (kubernetes secret will be created). | `string` | `yes`        |
+| `ldapAdminSecretKey`  | LDAP ldapAdminSecretKey.                                      | `string` | `yes`        |
+| `ldapAdminVaultId`    | LDAP ldapAdminVaultId.                                        | `string` | `yes`        |
+| `resourcesBasedn`     | LDAP resourcesBasedn.                                         | `string` | `yes`        |
+| `sudoersBasedn`       | LDAP sudoersBasedn.                                           | `string` | `yes`        |
+| `systemBasedn`        | LDAP systemBasedn.                                            | `string` | `yes`        |
+| `usersBasedn`         | LDAP usersBasedn.                                             | `string` | `yes`        |
+| `workunitsBasedn`     | LDAP workunitsBasedn.                                         | `string` | `yes`        |
+
+### Appendix U
+
+`ldap_config.esp` object specification
+
+| **Variable**          | **Description**                                               | **Type** | **Required** |
+| :-------------------- | :------------------------------------------------------------ | :------- | :----------- |
+| `adminGroupName`      | LDAP adminGroupName.                                          | `string` | `yes`        |
+| `filesBasedn`         | LDAP filesBasedn.                                             | `string` | `yes`        |
+| `groupsBasedn`        | LDAP groupsBasedn.                                            | `string` | `yes`        |
+| `ldap_admin_password` | LDAP ldap admin password (kubernetes secret will be created). | `string` | `yes`        |
+| `ldap_admin_username` | LDAP ldap admin username (kubernetes secret will be created). | `string` | `yes`        |
+| `ldapAdminSecretKey`  | LDAP ldapAdminSecretKey.                                      | `string` | `yes`        |
+| `ldapAdminVaultId`    | LDAP ldapAdminVaultId.                                        | `string` | `yes`        |
+| `resourcesBasedn`     | LDAP resourcesBasedn.                                         | `string` | `yes`        |
+| `sudoersBasedn`       | LDAP sudoersBasedn.                                           | `string` | `yes`        |
+| `systemBasedn`        | LDAP systemBasedn.                                            | `string` | `yes`        |
+| `usersBasedn`         | LDAP usersBasedn.                                             | `string` | `yes`        |
+| `workunitsBasedn`     | LDAP workunitsBasedn.                                         | `string` | `yes`        |
+
+### Appendix V
+
+`ldap_tunables` object specification
+
+| **Variable**                    | **Description**          | **Type** | **Default** | **Required** |
+| :------------------------------ | :----------------------- | :------- | :---------- | :----------- |
+| `cacheTimeout`                  | LDAP adminGroupName.     | `number` | `5`         | `yes`        |
+| `checkScopeScans`               | LDAP filesBasedn.        | `bool`   | `true`      | `yes`        |
+| `ldapTimeoutSecs`               | LDAP groupsBasedn.       | `number` | `131`       | `yes`        |
+| `maxConnections`                | LDAP hpccAdminSecretKey. | `number` | `10`        | `yes`        |
+| `passwordExpirationWarningDays` | LDAP ldapAdminSecretKey. | `number` | `10`        | `yes`        |
+| `sharedCache`                   | LDAP ldapAdminVaultId.   | `bool`   | `true`      | `yes`        |
+
+### Appendix W
+
 `namespace` object specification
 
 | **Variable** | **Description**                         | **Type**      | **Default**       | **Required** |
@@ -272,7 +337,7 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `namespace`  | Namespace name.                         | `string`      | `hpcc`            | `yes`        |
 | `labels`     | Lables to be applied to the namespace'. | `map(string)` | `{name = "hpcc"}` | `no`         |
 
-### Appendix T
+### Appendix X
 
 `node_tuning_containers` object specification
 
@@ -281,7 +346,7 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `busybox`    | URI for busybox container.                  | `string` | `docker.io/library/busybox:1.34`         | `yes`        |
 | `debian`     | URI for debian container (slim preferred)'. | `string` | `docker.io/library/debian:bullseye-slim` | `yes`        |
 
-### Appendix U
+### Appendix Y
 
 `node_tuning_container_registry_auth` object specification
 
@@ -290,7 +355,7 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `password`   | Password/API key.                                     | `string` | `yes`        |
 | `username`   | Username.                                             | `string` | `yes`        |
 
-### Appendix V
+### Appendix Z
 
 `roxie_config` object specification
 
@@ -302,10 +367,10 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `prefix`        | Root directory for access plane. | `string`                                           | `yes`        |
 | `replicas`      | Number of replicas per channel.  | `number`                                           | `yes`        |
 | `serverReplicas`| Number of replica sets.          | `number`                                           | `yes`        |
-| `services`      | Service configs.                 | `list(object())` [_(see appendix w)_](#Appendix-w) | `yes`        |
-| `topoServer`    | TopoServer config.               | `object()` [_(see appendix x)_](#Appendix-x)       | `yes`        |
+| `services`      | Service configs.                 | `list(object())` [_(see appendix aa)_](#Appendix-AA) | `yes`        |
+| `topoServer`    | TopoServer config.               | `object()` [_(see appendix bb)_](#Appendix-BB)       | `yes`        |
 
-### Appendix W
+### Appendix AA
 
 `roxie_config.services` object specification
 
@@ -317,7 +382,7 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `numThreads`  | Number of threads.   | `number` | `yes`        |
 | `visability`  | Service visability.  | `string` | `yes`        |
 
-### Appendix X
+### Appendix BB
 
 `roxie_config.topoServer` object specification
 
@@ -325,25 +390,25 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | :----------- | :------------------ | :------------ | :----------- |
 | `replicas`   | Number of replicas. | `number`      | `yes`        |
 
-### Appendix Y
+### Appendix CC
 
 `thor_config` object specification
 
 | **Variable**        | **Description**                  | **Type**                                       | **Required** |
 | :------------------ | :------------------------------- | :--------------------------------------------- | :----------- |
 | `disabled`          | Disable this Thor config.        | `bool`                                         | `yes`        |
-| `eclAgentResources` | ECL Agent resource settings.     | `object()` [_(see appendix z)_](#Appendix-Z)   | `yes`        |
-| `managerResources`  | Manager resource settings.       | `object()` [_(see appendix aa)_](#Appendix-AA) | `yes`        |
+| `eclAgentResources` | ECL Agent resource settings.     | `object()` [_(see appendix dd)_](#Appendix-DD)   | `yes`        |
+| `managerResources`  | Manager resource settings.       | `object()` [_(see appendix ee)_](#Appendix-EE) | `yes`        |
 | `maxGraphs`         | Maximum number of graphs.        | `number`                                       | `yes`        |
 | `maxJobs`           | Maximum number of jobs in queue. | `number`                                       | `yes`        |
 | `name`              | Name of Thor config.             | `string`                                       | `yes`        |
 | `numWorkersPerPod`  | Number of workers per pod.       | `number`                                       | `yes`        |
 | `numWorkers`        | Number of Thor workers.          | `number`                                       | `yes`        |
 | `prefix`            | Root directory for access plane. | `string`                                       | `yes`        |
-| `workerMemory`      | Worker memory settings.          | `object()` [_(see appendix bb)_](#Appendix-BB) | `yes`        |
-| `workerResources`   | Worker resource settings.        | `object()` [_(see appendix cc)_](#Appendix-CC) | `yes`        |
+| `workerMemory`      | Worker memory settings.          | `object()` [_(see appendix ff)_](#Appendix-FF) | `yes`        |
+| `workerResources`   | Worker resource settings.        | `object()` [_(see appendix gg)_](#Appendix-GG) | `yes`        |
 
-### Appendix Z
+### Appendix DD
 
 `thor_config.eclAgentResources` object specification
 
@@ -352,7 +417,7 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `cpu`        | CPU config.     | `string` | `yes`        |
 | `memory`     | Memory config.  | `string` | `yes`        |
 
-### Appendix AA
+### Appendix EE
 
 `thor_config.managerResources` object specification
 
@@ -361,7 +426,7 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `cpu`        | CPU config.     | `string` | `yes`        |
 | `memory`     | Memory config.  | `string` | `yes`        |
 
-### Appendix BB
+### Appendix FF
 
 `thor_config.workerMemory` object specification
 
@@ -370,7 +435,7 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | `query`      | Query memory config.       | `string` | `yes`        |
 | `thirdParty` | Third party memory config. | `string` | `yes`        |
 
-### Appendix CC
+### Appendix GG
 
 `thor_config.workerResources` object specification
 

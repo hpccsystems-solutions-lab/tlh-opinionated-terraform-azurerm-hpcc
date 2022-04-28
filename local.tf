@@ -1,6 +1,7 @@
 locals {
   create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
+  
   internal_data_config = var.data_storage_config.internal == null ? false : true
   external_data_config = var.data_storage_config.external == null ? false : true
 
@@ -14,10 +15,10 @@ locals {
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
       local.external_data_storage ? var.data_storage_config.external.blob_nfs : null)
-      )
+    )
     hpc_cache = (local.create_data_cache ? module.data_cache.0.data_planes.internal : (
       local.external_data_cache ? var.data_storage_config.external.hpc_cache : null)
-      )
+    )
     hpcc = local.external_hpcc_data ? var.data_storage_config.external.hpcc : []
   }
 
@@ -95,15 +96,48 @@ locals {
     }
   }
 
+  ldap_defaults = {
+    serverType     = "ActiveDirectory"
+    description    = "LDAP server process"
+    ldapProtocol   = "ldaps"
+    ldapPort       = 389
+    ldapSecurePort = 636
+  }
+
+  ldap_enabled         = var.ldap_config == null ? false : true
+  ldap_shared_config   = local.ldap_enabled ? merge({ ldapAddress = var.ldap_config.ldap_server }, var.ldap_tunables, local.ldap_defaults) : null
+  ldap_config_excludes = ["hpcc_admin_password", "hpcc_admin_username", "ldap_admin_password", "ldap_admin_username"]
+
+  dali_ldap_config = local.ldap_enabled ? { ldap = merge(
+    { for k, v in var.ldap_config.dali : k => v if !contains(local.ldap_config_excludes, k) },
+    { hpccAdminSecretKey = "dali-hpccadminsecretkey", ldapAdminSecretKey = "dali-ldapadminsecretkey" },
+    local.ldap_shared_config
+  )} : null
+
+  esp_ldap_config = local.ldap_enabled ? { ldap = merge(
+    { for k, v in var.ldap_config.esp : k => v if !contains(local.ldap_config_excludes, k) },
+    { ldapAdminSecretKey = "esp-ldapadminsecretkey" },
+    local.ldap_shared_config
+  )} : null
+
+  auth_mode            = local.ldap_enabled ? "ldap" : "none"
+  authn_secrets = local.ldap_enabled ? {
+    authn = { 
+      dali-hpccadminsecretkey = kubernetes_secret.dali_hpcc_admin.0.metadata.0.name 
+      dali-ldapadminsecretkey = kubernetes_secret.dali_ldap_admin.0.metadata.0.name 
+      esp-ldapadminsecretkey  = kubernetes_secret.esp_ldap_admin.0.metadata.0.name 
+    }
+  } : null
+
   helm_chart_values = {
 
     global = {
       image = merge({
-        version          = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
-        root             = var.hpcc_container.image_root
-        name             = var.hpcc_container.image_name
-        pullPolicy       = "IfNotPresent"
-      }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {} )
+        version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
+        root       = var.hpcc_container.image_root
+        name       = var.hpcc_container.image_name
+        pullPolicy = "IfNotPresent"
+      }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
       visibilities = {
         cluster = {
           type = "ClusterIP"
@@ -179,6 +213,20 @@ locals {
       }
     }
 
+    dali = [
+      merge({
+        name = "mydali"
+        auth = local.auth_mode
+        services = {
+          coalescer = {
+            service = {
+              servicePort = 8877
+            }
+          }
+        }
+      }, local.dali_ldap_config)
+    ]
+
     eclagent = [
       {
         name      = "hthor"
@@ -201,57 +249,57 @@ locals {
     ]
 
     esp = [
-      {
+      merge({
         name        = "eclwatch"
         application = "eclwatch"
-        auth        = "none"
+        auth        = local.auth_mode
         replicas    = 1
         service = {
           port        = 8888
           servicePort = 8010
           visibility  = "local"
         }
-      },
-      {
+      }, local.esp_ldap_config),
+      merge({
         name        = "eclservices"
         application = "eclservices"
-        auth        = "none"
+        auth        = local.auth_mode
         replicas    = 1
         service = {
           servicePort = 8010
           visibility  = "cluster"
         }
-      },
-      {
+      }, local.esp_ldap_config),
+      merge({
         name        = "eclqueries"
         application = "eclqueries"
-        auth        = "none"
+        auth        = local.auth_mode
         replicas    = 1
         service = {
           servicePort = 8002
           visibility  = "local"
         }
-      },
-      {
+      }, local.esp_ldap_config),
+      merge({
         name        = "esdl-sandbox"
         application = "esdl-sandbox"
-        auth        = "none"
+        auth        = local.auth_mode
         replicas    = 1
         service = {
           servicePort = 8899
           visibility  = "local"
         }
-      },
-      {
+      }, local.esp_ldap_config),
+      merge({
         name        = "sql2ecl"
         application = "sql2ecl"
-        auth        = "none"
+        auth        = local.auth_mode
         replicas    = 1
         service = {
           servicePort = 8510
           visibility  = "local"
         }
-      }
+      }, local.esp_ldap_config)
     ]
 
     roxie = var.roxie_config
@@ -263,6 +311,11 @@ locals {
         name = "eclscheduler"
       }
     ]
+
+    secrets = merge(
+      local.ldap_enabled ? local.authn_secrets : null
+    )
+
   }
 
 }

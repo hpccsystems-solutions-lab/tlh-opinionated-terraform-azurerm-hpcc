@@ -140,11 +140,11 @@ variable "hpcc_container" {
 
 variable "hpcc_container_registry_auth" {
   description = "Registry authentication for HPCC container."
-  type        = object({
-    password   = string
-    username   = string
+  type = object({
+    password = string
+    username = string
   })
-  default = null
+  default   = null
   sensitive = true
 }
 
@@ -152,6 +152,63 @@ variable "install_blob_csi_driver" {
   description = "Install blob-csi-drivers on the cluster."
   type        = bool
   default     = true
+}
+
+variable "ldap_config" {
+  description = "LDAP settings for dali and esp services."
+  type = object({
+    dali = object({
+      adminGroupName      = string
+      filesBasedn         = string
+      groupsBasedn        = string
+      hpcc_admin_password = string
+      hpcc_admin_username = string
+      ldap_admin_password = string
+      ldap_admin_username = string
+      ldapAdminVaultId    = string
+      resourcesBasedn     = string
+      sudoersBasedn       = string
+      systemBasedn        = string
+      usersBasedn         = string
+      workunitsBasedn     = string
+    })
+    esp = object({
+      adminGroupName      = string
+      filesBasedn         = string
+      groupsBasedn        = string
+      ldap_admin_password = string
+      ldap_admin_username = string
+      ldapAdminVaultId    = string
+      resourcesBasedn     = string
+      sudoersBasedn       = string
+      systemBasedn        = string
+      usersBasedn         = string
+      workunitsBasedn     = string
+    })
+    ldap_server = string
+  })
+  default   = null
+  sensitive = true
+}
+
+variable "ldap_tunables" {
+  description = "Tunable settings for LDAP."
+  type = object({
+    cacheTimeout                  = number
+    checkScopeScans               = bool
+    ldapTimeoutSecs               = number
+    maxConnections                = number
+    passwordExpirationWarningDays = number
+    sharedCache                   = bool
+  })
+  default = {
+    cacheTimeout                  = 5
+    checkScopeScans               = true
+    ldapTimeoutSecs               = 131
+    maxConnections                = 10
+    passwordExpirationWarningDays = 10
+    sharedCache                   = true
+  }
 }
 
 variable "location" {
@@ -174,8 +231,8 @@ variable "namespace" {
 }
 
 variable "node_tuning_containers" {
-  description = "URIs for containers to be used by node tuning submodule." 
-  type        = object({
+  description = "URIs for containers to be used by node tuning submodule."
+  type = object({
     busybox = string
     debian  = string
   })
@@ -187,11 +244,11 @@ variable "node_tuning_containers" {
 
 variable "node_tuning_container_registry_auth" {
   description = "Registry authentication for node tuning containers."
-  type        = object({
-    password   = string
-    username   = string
+  type = object({
+    password = string
+    username = string
   })
-  default = null
+  default   = null
   sensitive = true
 }
 
