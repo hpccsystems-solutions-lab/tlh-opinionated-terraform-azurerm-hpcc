@@ -1,7 +1,6 @@
 locals {
   create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
-  
   internal_data_config = var.data_storage_config.internal == null ? false : true
   external_data_config = var.data_storage_config.external == null ? false : true
 
@@ -105,6 +104,14 @@ locals {
   }
 
   ldap_enabled         = var.ldap_config == null ? false : true
+
+  auth_mode = local.ldap_enabled ? "ldap" : "none"
+  ldap_authn_secrets = local.ldap_enabled ? {
+      dali-hpccadminsecretkey = kubernetes_secret.dali_hpcc_admin.0.metadata.0.name
+      dali-ldapadminsecretkey = kubernetes_secret.dali_ldap_admin.0.metadata.0.name
+      esp-ldapadminsecretkey  = kubernetes_secret.esp_ldap_admin.0.metadata.0.name
+  } : null
+
   ldap_shared_config   = local.ldap_enabled ? merge({ ldapAddress = var.ldap_config.ldap_server }, var.ldap_tunables, local.ldap_defaults) : null
   ldap_config_excludes = ["hpcc_admin_password", "hpcc_admin_username", "ldap_admin_password", "ldap_admin_username"]
 
@@ -119,15 +126,6 @@ locals {
     { ldapAdminSecretKey = "esp-ldapadminsecretkey" },
     local.ldap_shared_config
   )} : null
-
-  auth_mode            = local.ldap_enabled ? "ldap" : "none"
-  authn_secrets = local.ldap_enabled ? {
-    authn = { 
-      dali-hpccadminsecretkey = kubernetes_secret.dali_hpcc_admin.0.metadata.0.name 
-      dali-ldapadminsecretkey = kubernetes_secret.dali_ldap_admin.0.metadata.0.name 
-      esp-ldapadminsecretkey  = kubernetes_secret.esp_ldap_admin.0.metadata.0.name 
-    }
-  } : null
 
   helm_chart_values = {
 
@@ -312,9 +310,15 @@ locals {
       }
     ]
 
-    secrets = merge(
-      local.ldap_enabled ? local.authn_secrets : null
-    )
+    secrets = {
+      authn      = merge(local.ldap_authn_secrets, {})
+      codeSign   = {}
+      codeVerify = {}
+      ecl        = {}
+      git        = {}
+      storage    = {}
+      system     = {}
+    }
 
   }
 

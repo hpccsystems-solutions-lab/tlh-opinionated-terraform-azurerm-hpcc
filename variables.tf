@@ -319,6 +319,7 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
+    keepJobs         = string
     maxGraphs        = number
     maxJobs          = number
     name             = string
@@ -344,6 +345,7 @@ variable "thor_config" {
       cpu    = 1
       memory = "2G"
     }
+    keepJobs         = "none"
     maxGraphs        = 2
     maxJobs          = 4
     name             = "thor"
