@@ -126,7 +126,7 @@ variable "helm_chart_timeout" {
 variable "helm_chart_version" {
   description = "Version of the HPCC Helm Chart to use."
   type        = string
-  default     = "8.6.16"
+  default     = "8.6.20"
 }
 
 variable "hpcc_container" {

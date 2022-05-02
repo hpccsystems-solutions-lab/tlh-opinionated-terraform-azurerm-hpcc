@@ -397,7 +397,8 @@ resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_
 | **Variable**        | **Description**                  | **Type**                                       | **Required** |
 | :------------------ | :------------------------------- | :--------------------------------------------- | :----------- |
 | `disabled`          | Disable this Thor config.        | `bool`                                         | `yes`        |
-| `eclAgentResources` | ECL Agent resource settings.     | `object()` [_(see appendix dd)_](#Appendix-DD)   | `yes`        |
+| `eclAgentResources` | ECL Agent resource settings.     | `object()` [_(see appendix dd)_](#Appendix-DD) | `yes`        |
+| `keepJobs`          | Persist pods after job failure.  | `string`   ("_none_" or "_all_")               | `yes`        |
 | `managerResources`  | Manager resource settings.       | `object()` [_(see appendix ee)_](#Appendix-EE) | `yes`        |
 | `maxGraphs`         | Maximum number of graphs.        | `number`                                       | `yes`        |
 | `maxJobs`           | Maximum number of jobs in queue. | `number`                                       | `yes`        |

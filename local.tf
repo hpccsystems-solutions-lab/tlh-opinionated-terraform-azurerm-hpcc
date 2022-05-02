@@ -127,6 +127,8 @@ locals {
     local.ldap_shared_config
   )} : null
 
+  enabled_roxie_configs = { for roxie in var.roxie_config : roxie.name => roxie if !roxie.disabled }
+
   helm_chart_values = {
 
     global = {
