@@ -36,7 +36,7 @@ variable "storage_account_settings" {
   default = {
     authorized_ip_ranges = {}
     delete_protection    = false
-    replication_type     = "LRS"
+    replication_type     = "ZRS"
     subnet_ids           = {}
   }
 }

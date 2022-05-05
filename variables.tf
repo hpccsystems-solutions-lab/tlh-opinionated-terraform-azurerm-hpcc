@@ -9,7 +9,7 @@ variable "admin_services_storage_account_settings" {
   default = {
     authorized_ip_ranges = {}
     delete_protection    = false
-    replication_type     = "LRS"
+    replication_type     = "ZRS"
     subnet_ids           = {}
   }
 }
@@ -95,7 +95,7 @@ variable "data_storage_config" {
         storage_account_settings = {
           authorized_ip_ranges = {}
           delete_protection    = false
-          replication_type     = "LRS"
+          replication_type     = "ZRS"
           subnet_ids           = {}
         }
       }
