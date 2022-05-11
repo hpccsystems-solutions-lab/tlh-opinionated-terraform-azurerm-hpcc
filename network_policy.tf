@@ -1,4 +1,8 @@
 resource "kubernetes_network_policy" "eclwatch" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
   metadata {
     name      = "eclwatch"
     namespace = var.namespace.name
@@ -18,6 +22,10 @@ resource "kubernetes_network_policy" "eclwatch" {
 }
 
 resource "kubernetes_network_policy" "eclqueries" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
   metadata {
     name      = "eclqueries"
     namespace = var.namespace.name
@@ -37,6 +45,10 @@ resource "kubernetes_network_policy" "eclqueries" {
 }
 
 resource "kubernetes_network_policy" "esdl_sandbox" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
   metadata {
     name      = "esdl-sandbox"
     namespace = var.namespace.name
@@ -56,6 +68,10 @@ resource "kubernetes_network_policy" "esdl_sandbox" {
 }
 
 resource "kubernetes_network_policy" "roxie" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
   for_each = local.enabled_roxie_configs
 
   metadata {
@@ -77,6 +93,10 @@ resource "kubernetes_network_policy" "roxie" {
 }
 
 resource "kubernetes_network_policy" "sql2ecl" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
   metadata {
     name      = "sql2ecl"
     namespace = var.namespace.name
