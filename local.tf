@@ -1,6 +1,9 @@
 locals {
   create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
+  azurefiles_admin_storage_enabled = contains([for storage in var.admin_services_storage : storage.type], "azurefiles")
+  blobnfs_admin_storage_enabled    = contains([for storage in var.admin_services_storage : storage.type], "blobnfs")
+
   internal_data_config = var.data_storage_config.internal == null ? false : true
   external_data_config = var.data_storage_config.external == null ? false : true
 
@@ -52,37 +55,53 @@ locals {
       container_name = "hpcc-dali"
       path           = "dalistorage"
       plane_name     = "dali"
-      size           = var.admin_services_storage_size.dali
+      size           = "${var.admin_services_storage.dali.size}G"
+      storage_type   = var.admin_services_storage.dali.type
     },
     {
       category       = "debug"
       container_name = "hpcc-debug"
       path           = "debug"
       plane_name     = "debug"
-      size           = var.admin_services_storage_size.debug
+      size           = "${var.admin_services_storage.debug.size}G"
+      storage_type   = var.admin_services_storage.debug.type
     },
     {
       category       = "dll"
       container_name = "hpcc-dll"
       path           = "queries"
       plane_name     = "dll"
-      size           = var.admin_services_storage_size.dll
+      size           = "${var.admin_services_storage.dll.size}G"
+      storage_type   = var.admin_services_storage.dll.type
     },
     {
       category       = "lz"
       container_name = "hpcc-mydropzone"
       path           = "mydropzone"
       plane_name     = "mydropzone"
-      size           = var.admin_services_storage_size.lz
+      size           = "${var.admin_services_storage.lz.size}G"
+      storage_type   = var.admin_services_storage.lz.type
     },
     {
       category       = "sasha"
       container_name = "hpcc-sasha"
       path           = "sashastorage"
       plane_name     = "sasha"
-      size           = var.admin_services_storage_size.sasha
+      size           = "${var.admin_services_storage.sasha.size}G"
+      storage_type   = var.admin_services_storage.sasha.type
     }
   ]
+
+  azurefiles_services_storage = { for config in local.services_storage_config :
+    config.plane_name => {
+      category        = config.category
+      container_name  = config.container_name
+      path            = config.path
+      resource_group  = var.resource_group_name
+      size            = config.size
+      storage_account = azurerm_storage_account.azurefiles_admin_services.0.name
+    } if config.storage_type == "azurefiles"
+  }
 
   blob_nfs_services_storage = { for config in local.services_storage_config :
     config.plane_name => {
@@ -91,8 +110,8 @@ locals {
       path            = config.path
       resource_group  = var.resource_group_name
       size            = config.size
-      storage_account = azurerm_storage_account.admin_services.name
-    }
+      storage_account = azurerm_storage_account.blob_nfs_admin_services.0.name
+    } if config.storage_type == "blobnfs"
   }
 
   ldap_defaults = {
@@ -103,13 +122,13 @@ locals {
     ldapSecurePort = 636
   }
 
-  ldap_enabled         = var.ldap_config == null ? false : true
+  ldap_enabled = var.ldap_config == null ? false : true
 
   auth_mode = local.ldap_enabled ? "ldap" : "none"
   ldap_authn_secrets = local.ldap_enabled ? {
-      dali-hpccadminsecretkey = kubernetes_secret.dali_hpcc_admin.0.metadata.0.name
-      dali-ldapadminsecretkey = kubernetes_secret.dali_ldap_admin.0.metadata.0.name
-      esp-ldapadminsecretkey  = kubernetes_secret.esp_ldap_admin.0.metadata.0.name
+    dali-hpccadminsecretkey = kubernetes_secret.dali_hpcc_admin.0.metadata.0.name
+    dali-ldapadminsecretkey = kubernetes_secret.dali_ldap_admin.0.metadata.0.name
+    esp-ldapadminsecretkey  = kubernetes_secret.esp_ldap_admin.0.metadata.0.name
   } : null
 
   ldap_shared_config   = local.ldap_enabled ? merge({ ldapAddress = var.ldap_config.ldap_server }, var.ldap_tunables, local.ldap_defaults) : null
@@ -119,13 +138,13 @@ locals {
     { for k, v in var.ldap_config.dali : k => v if !contains(local.ldap_config_excludes, k) },
     { hpccAdminSecretKey = "dali-hpccadminsecretkey", ldapAdminSecretKey = "dali-ldapadminsecretkey" },
     local.ldap_shared_config
-  )} : null
+  ) } : null
 
   esp_ldap_config = local.ldap_enabled ? { ldap = merge(
     { for k, v in var.ldap_config.esp : k => v if !contains(local.ldap_config_excludes, k) },
     { ldapAdminSecretKey = "esp-ldapadminsecretkey" },
     local.ldap_shared_config
-  )} : null
+  ) } : null
 
   enabled_roxie_configs = { for roxie in var.roxie_config : roxie.name => roxie if !roxie.disabled }
 
@@ -165,39 +184,47 @@ locals {
           prefix   = "/var/lib/HPCCSystems/${v.path}"
           pvc      = kubernetes_persistent_volume_claim.blob_nfs[k].metadata.0.name
         }
-        ], local.blob_nfs_data_enabled ? [
-        merge({
-          category   = "data"
-          name       = "data"
-          numDevices = length(local.blob_nfs_data_storage)
-          prefix     = "/var/lib/HPCCSystems/hpcc-data"
-          pvc        = "pvc-blob-data"
-          }, local.hpc_cache_data_enabled ? {
-          aliases = [
-            {
-              mode      = ["random"]
-              name      = "data-cache"
-              numMounts = length(local.hpc_cache_data_storage)
-              prefix    = "/var/lib/HPCCSystems/hpcc-data-cache"
-              pvc       = "pvc-hpc-cache-data"
-            }
-          ]
-        } : {})] : [], (local.hpc_cache_data_enabled && !local.blob_nfs_data_enabled) ? [
-        {
-          category   = "data"
-          name       = "data"
-          numDevices = length(local.hpc_cache_data_storage)
-          prefix     = "/var/lib/HPCCSystems/hpcc-data"
-          pvc        = "pvc-hpc-cache-data"
-        }
-        ] : [], local.spill_space_enabled ? [
-        {
-          category         = "spill"
-          name             = "localspill"
-          prefix           = "/var/lib/HPCCSystems/spill"
-          pvc              = "pvc-spill"
-          forcePermissions = true
-        }
+        ],
+        [for k, v in local.azurefiles_services_storage :
+          {
+            category = v.category
+            name     = k
+            prefix   = "/var/lib/HPCCSystems/${v.path}"
+            pvc      = kubernetes_persistent_volume_claim.azurefiles[k].metadata.0.name
+          }
+          ], local.blob_nfs_data_enabled ? [
+          merge({
+            category   = "data"
+            name       = "data"
+            numDevices = length(local.blob_nfs_data_storage)
+            prefix     = "/var/lib/HPCCSystems/hpcc-data"
+            pvc        = "pvc-blob-data"
+            }, local.hpc_cache_data_enabled ? {
+            aliases = [
+              {
+                mode      = ["random"]
+                name      = "data-cache"
+                numMounts = length(local.hpc_cache_data_storage)
+                prefix    = "/var/lib/HPCCSystems/hpcc-data-cache"
+                pvc       = "pvc-hpc-cache-data"
+              }
+            ]
+          } : {})] : [], (local.hpc_cache_data_enabled && !local.blob_nfs_data_enabled) ? [
+          {
+            category   = "data"
+            name       = "data"
+            numDevices = length(local.hpc_cache_data_storage)
+            prefix     = "/var/lib/HPCCSystems/hpcc-data"
+            pvc        = "pvc-hpc-cache-data"
+          }
+          ] : [], local.spill_space_enabled ? [
+          {
+            category         = "spill"
+            name             = "localspill"
+            prefix           = "/var/lib/HPCCSystems/spill"
+            pvc              = "pvc-spill"
+            forcePermissions = true
+          }
         ] : []
       ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
     )

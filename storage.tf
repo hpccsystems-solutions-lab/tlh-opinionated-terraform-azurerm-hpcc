@@ -5,18 +5,47 @@ resource "random_string" "random" {
   special = false
 }
 
-resource "azurerm_storage_account" "admin_services" {
-  name                = "hpcc${random_string.random.result}services"
+resource "azurerm_storage_account" "azurefiles_admin_services" {
+  count = local.azurefiles_admin_storage_enabled ? 1 : 0
+
+  name                = "hpcc${random_string.random.result}afsvc"
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags
 
-  access_tier              = "Hot"
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  allow_blob_public_access = false
-  is_hns_enabled           = true
-  min_tls_version          = "TLS1_2"
+  access_tier                     = "Hot"
+  account_kind                    = "FileStorage"
+  account_tier                    = "Premium"
+  allow_nested_items_to_be_public = false
+  min_tls_version                 = "TLS1_2"
+
+  shared_access_key_enabled = true
+
+  enable_https_traffic_only = false
+  account_replication_type  = var.admin_services_storage_account_settings.replication_type
+
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = values(var.admin_services_storage_account_settings.authorized_ip_ranges)
+    virtual_network_subnet_ids = values(var.admin_services_storage_account_settings.subnet_ids)
+    bypass                     = ["AzureServices"]
+  }
+}
+
+resource "azurerm_storage_account" "blob_nfs_admin_services" {
+  count = local.blobnfs_admin_storage_enabled ? 1 : 0
+
+  name                = "hpcc${random_string.random.result}blobsvc"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  tags                = var.tags
+
+  access_tier                     = "Hot"
+  account_kind                    = "StorageV2"
+  account_tier                    = "Standard"
+  allow_nested_items_to_be_public = false
+  is_hns_enabled                  = true
+  min_tls_version                 = "TLS1_2"
 
   shared_access_key_enabled = false
 
@@ -33,19 +62,58 @@ resource "azurerm_storage_account" "admin_services" {
   }
 }
 
-resource "azurerm_storage_container" "admin_services" {
+resource "kubernetes_secret" "azurefiles_admin_services" {
+  count = contains([for storage in var.admin_services_storage : storage.type], "azurefiles") ? 1 : 0
+
+  depends_on = [
+    azurerm_storage_account.azurefiles_admin_services
+  ]
+
+  metadata {
+    name = "${var.namespace.name}-azurefiles-admin-services"
+    labels = {
+      name = "azurefiles-admin-services"
+    }
+  }
+
+  data = {
+    azurestorageaccountname = azurerm_storage_account.azurefiles_admin_services.0.name
+    azurestorageaccountkey  = azurerm_storage_account.azurefiles_admin_services.0.primary_access_key
+  }
+
+  type = "kubernetes.io/generic"
+}
+
+resource "azurerm_storage_share" "azurefiles_admin_services" {
+  for_each = local.azurefiles_services_storage
+
+  name                 = each.value.container_name
+  storage_account_name = azurerm_storage_account.azurefiles_admin_services.0.name
+  quota                = trimsuffix(each.value.size, "G")
+  enabled_protocol     = "NFS"
+}
+
+resource "azurerm_storage_container" "blob_nfs_admin_services" {
   for_each = local.blob_nfs_services_storage
 
   name                  = each.value.container_name
-  storage_account_name  = azurerm_storage_account.admin_services.name
+  storage_account_name  = azurerm_storage_account.blob_nfs_admin_services.0.name
   container_access_type = "private"
 }
 
-resource "azurerm_management_lock" "protect_storage_account" {
-  count = var.admin_services_storage_account_settings.delete_protection ? 1 : 0
+resource "azurerm_management_lock" "protect_admin_storage_account" {
+  depends_on = [
+    azurerm_storage_account.azurefiles_admin_services,
+    azurerm_storage_account.blob_nfs_admin_services 
+  ]
 
-  name       = "protect-storage-${azurerm_storage_account.admin_services.name}"
-  scope      = azurerm_storage_account.admin_services.id
+  for_each = var.admin_services_storage_account_settings.delete_protection ? merge(
+    local.azurefiles_admin_storage_enabled ? { "${azurerm_storage_account.azurefiles_admin_services.0.name}" = azurerm_storage_account.azurefiles_admin_services.0.id } : {},
+    local.blobnfs_admin_storage_enabled ? { "${azurerm_storage_account.blob_nfs_admin_services.0.name}" = azurerm_storage_account.blob_nfs_admin_services.0.id } : {}
+  ) : {}
+
+  name       = "protect-storage-${each.key}"
+  scope      = each.value
   lock_level = "CanNotDelete"
 }
 
