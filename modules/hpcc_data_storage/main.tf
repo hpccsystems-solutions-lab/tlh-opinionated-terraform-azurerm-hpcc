@@ -6,12 +6,12 @@ resource "azurerm_storage_account" "default" {
   location            = var.location
   tags                = var.tags
 
-  access_tier              = "Hot"
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  allow_blob_public_access = false
-  is_hns_enabled           = true
-  min_tls_version          = "TLS1_2"
+  access_tier                     = "Hot"
+  account_kind                    = "StorageV2"
+  account_tier                    = "Standard"
+  allow_nested_items_to_be_public = false
+  is_hns_enabled                  = true
+  min_tls_version                 = "TLS1_2"
 
   shared_access_key_enabled = false
 
