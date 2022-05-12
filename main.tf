@@ -16,6 +16,8 @@ module "node_tuning" {
 
 resource "helm_release" "hpcc" {
   depends_on = [
+    kubernetes_namespace.default,
+    kubernetes_persistent_volume_claim.azurefiles,
     kubernetes_persistent_volume_claim.blob_nfs,
     kubernetes_persistent_volume_claim.hpc_cache,
     kubernetes_persistent_volume_claim.spill,
