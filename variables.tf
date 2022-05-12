@@ -14,21 +14,61 @@ variable "admin_services_storage_account_settings" {
   }
 }
 
-variable "admin_services_storage_size" {
-  description = "PV sizes for admin service planes (storage billed only as consumed)."
+variable "admin_services_storage" {
+  description = "PV sizes for admin service planes in gigabytes (storage billed only as consumed)."
   type = object({
-    dali  = string
-    debug = string
-    dll   = string
-    lz    = string
-    sasha = string
+    dali = object({
+      size = number
+      type = string
+    })
+    debug = object({
+      size = number
+      type = string
+    })
+    dll = object({
+      size = number
+      type = string
+    })
+    lz = object({
+      size = number
+      type = string
+    })
+    sasha = object({
+      size = number
+      type = string
+    })
   })
   default = {
-    dali  = "100Gi"
-    debug = "100Gi"
-    dll   = "100Gi"
-    lz    = "1Pi"
-    sasha = "100Gi"
+    dali = {
+      size = 100
+      type = "azurefiles"
+    }
+    debug = {
+      size = 100
+      type = "blobnfs"
+    }
+    dll = {
+      size = 100
+      type = "blobnfs"
+    }
+    lz = {
+      size = 100
+      type = "blobnfs"
+    }
+    sasha = {
+      size = 100
+      type = "blobnfs"
+    }
+  }
+
+  validation {
+    condition     = length([for k,v in var.admin_services_storage : v.type if !contains(["azurefiles", "blobnfs"], v.type)]) == 0
+    error_message = "The type must be either \"azurefiles\" or \"blobnfs\"."
+  }
+
+  validation {
+    condition     = length([for k,v in var.admin_services_storage : v.size if v.type == "azurefiles" && v.size < 100]) == 0
+    error_message = "Size must be at least 100 for \"azurefiles\" type."
   }
 }
 
@@ -302,8 +342,8 @@ variable "roxie_config" {
 }
 
 variable "spill_volume_size" {
-  description = "Size of spill volume to be created."
-  type        = string
+  description = "Size of spill volume to be created (in GB)."
+  type        = number
   default     = null
 }
 

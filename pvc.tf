@@ -1,3 +1,32 @@
+resource "kubernetes_persistent_volume_claim" "azurefiles" {
+  depends_on = [
+    kubernetes_namespace.default,
+    kubernetes_persistent_volume.azurefiles
+  ]
+
+  for_each = local.azurefiles_services_storage
+
+  metadata {
+    name      = "pvc-azurefiles-${each.key}"
+    namespace = var.namespace.name
+  }
+  spec {
+    access_modes = ["ReadWriteMany"]
+    selector {
+      match_labels = {
+        storage-tier = "azurefiles"
+      }
+    }
+    storage_class_name = "azurefile-csi-premium"
+    resources {
+      requests = {
+        storage = kubernetes_persistent_volume.azurefiles[each.key].spec.0.capacity.storage
+      }
+    }
+    volume_name = kubernetes_persistent_volume.azurefiles[each.key].metadata.0.name
+  }
+}
+
 resource "kubernetes_persistent_volume_claim" "blob_nfs" {
   depends_on = [
     kubernetes_namespace.default,
@@ -77,7 +106,7 @@ resource "kubernetes_persistent_volume_claim" "spill" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = var.spill_volume_size
+        storage = "${var.spill_volume_size}G"
       }
     }
     selector {

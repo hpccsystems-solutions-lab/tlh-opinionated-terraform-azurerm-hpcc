@@ -1,5 +1,9 @@
 data "azurerm_subscription" "current" {}
 
+data "azuread_group" "subscription_owner" {
+  display_name = "ris-azr-group-${data.azurerm_subscription.current.display_name}-owner"
+}
+
 data "http" "my_ip" {
   url = "https://ifconfig.me"
 }
@@ -31,8 +35,8 @@ module "metadata" {
   naming_rules = module.naming.yaml
 
   market              = "us"
-  project             = "hpcc_demo"
-  location            = "eastus2"
+  project             = "hpcc-demo"
+  location            = "eastus"
   environment         = "sandbox"
   product_name        = random_string.random.result
   business_unit       = "iog"
@@ -43,7 +47,7 @@ module "metadata" {
 }
 
 module "resource_group" {
-  source = "git@github.com:Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.0.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.1.0"
 
   location = module.metadata.location
   names    = module.metadata.names
@@ -51,7 +55,7 @@ module "resource_group" {
 }
 
 module "virtual_network" {
-  source = "git@github.com:Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v5.0.0"
+  source = "git@github.com:Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v6.0.0"
 
   naming_rules = module.naming.yaml
 
@@ -62,16 +66,12 @@ module "virtual_network" {
 
   enforce_subnet_names = false
 
-  address_space = ["10.0.0.0/23"]
+  address_space = ["10.0.0.0/22"]
 
   aks_subnets = {
     demo = {
-      private = {
+      subnet_info = {
         cidrs             = ["10.0.0.0/24"]
-        service_endpoints = ["Microsoft.Storage"]
-      }
-      public = {
-        cidrs             = ["10.0.1.0/24"]
         service_endpoints = ["Microsoft.Storage"]
       }
       route_table = {
@@ -81,9 +81,9 @@ module "virtual_network" {
             address_prefix = "0.0.0.0/0"
             next_hop_type  = "Internet"
           }
-          local-vnet-address-space = {
-            address_prefix = "10.0.0.0/23"
-            next_hop_type  = "vnetlocal"
+          local-vnet-10-1-0-0-22 = {
+            address_prefix = "10.0.0.0/22"
+            next_hop_type  = "VnetLocal"
           }
         }
       }
@@ -92,29 +92,46 @@ module "virtual_network" {
 }
 
 module "aks" {
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.8"
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.10"
 
-  cluster_name    = random_string.random.result
-  cluster_version = "1.21"
-  sku_tier        = "Free"
+  depends_on = [
+    module.virtual_network
+  ]
 
   location            = module.metadata.location
-  tags                = module.metadata.tags
   resource_group_name = module.resource_group.name
 
-  ingress_node_pool = true
+  cluster_name    = "${random_string.random.result}-aks-000"
+  cluster_version = "1.21"
+  network_plugin  = "kubenet"
+  sku_tier_paid   = true
 
-  node_pools = [
+  cluster_endpoint_public_access = true
+  cluster_endpoint_access_cidrs  = ["0.0.0.0/0"]
+
+  virtual_network_resource_group_name = module.resource_group.name
+  virtual_network_name                = module.virtual_network.vnet.name
+  subnet_name                         = module.virtual_network.aks.demo.subnet.name
+  route_table_name                    = module.virtual_network.aks.demo.route_table.name
+
+  dns_resource_group_lookup = { "${var.dns_zone_name}" = var.dns_zone_resource_group }
+
+  admin_group_object_ids = [data.azuread_group.subscription_owner.object_id]
+
+  azuread_clusterrole_map = var.azuread_clusterrole_map
+
+  node_group_templates = [
     {
       name                = "workers"
-      single_vmss         = true
-      public              = false
-      node_type           = "x64-gpd-v1"
-      node_size           = "2xlarge"
+      node_os             = "ubuntu"
+      node_type           = "gpd"
+      node_type_version   = "v1"
+      node_size           = "large"
+      single_group        = true
       min_capacity        = 1
       max_capacity        = 25
-      taints              = []
       placement_group_key = ""
+      taints              = []
       labels = {
         "lnrs.io/tier" = "standard"
       }
@@ -122,13 +139,24 @@ module "aks" {
     }
   ]
 
-  virtual_network                 = module.virtual_network.aks["demo"]
-  core_services_config            = var.core_services_config
-  azuread_clusterrole_map         = var.azuread_clusterrole_map
-  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
+  core_services_config = {
+    alertmanager = {
+      smtp_host = "appmail-test.risk.regn.net"
+      smtp_from = "foo@bar.com"
+      routes    = []
+      receivers = []
+    }
 
-}
+    grafana = {
+      admin_password = "badPasswordDontUse"
+    }
 
-output "aks_login" {
-  value = "az aks get-credentials --name ${module.aks.cluster_name} --resource-group ${module.resource_group.name}"
+    ingress_internal_core = {
+      domain           = var.dns_zone_name
+      subdomain_suffix = random_string.random.result
+      public_dns       = true
+    }
+  }
+
+  tags = module.metadata.tags
 }

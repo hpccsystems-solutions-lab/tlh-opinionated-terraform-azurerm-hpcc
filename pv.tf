@@ -6,9 +6,55 @@ module "csi_driver" {
 
 resource "random_uuid" "volume_handle" {}
 
+resource "kubernetes_persistent_volume" "azurefiles" {
+  depends_on = [
+    azurerm_storage_share.azurefiles_admin_services
+  ]
+
+  for_each = local.azurefiles_services_storage
+
+  metadata {
+    annotations = {}
+    labels = {
+      storage-tier = "azurefiles"
+    }
+    name = "${var.namespace.name}-pv-azurefiles-${each.key}"
+  }
+
+  spec {
+    access_modes = ["ReadWriteMany"]
+
+    capacity = {
+      storage = each.value.size
+    }
+
+    mount_options = ["nconnect=8"]
+
+    persistent_volume_reclaim_policy = "Retain"
+
+    persistent_volume_source {
+      csi {
+        driver        = "file.csi.azure.com"
+        read_only     = false
+        volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
+        volume_attributes = {
+          protocol       = "nfs"
+          resourceGroup  = each.value.resource_group
+          storageAccount = each.value.storage_account
+          secretName     = kubernetes_secret.azurefiles_admin_services.0.metadata.0.name
+          shareName      = azurerm_storage_share.azurefiles_admin_services[each.key].name
+        }
+      }
+    }
+
+    storage_class_name = "azurefile-csi-premium"
+  }
+}
+
 resource "kubernetes_persistent_volume" "blob_nfs" {
   depends_on = [
     module.csi_driver,
+    azurerm_storage_container.blob_nfs_admin_services,
     module.data_storage
   ]
 
@@ -67,7 +113,7 @@ resource "kubernetes_persistent_volume" "hpc_cache" {
   }
   spec {
     capacity = {
-      storage = each.value.size
+      storage = "${each.value.size}"
     }
     access_modes                     = ["ReadOnlyMany"]
     persistent_volume_reclaim_policy = "Retain"
@@ -93,7 +139,7 @@ resource "kubernetes_persistent_volume" "spill" {
   }
   spec {
     capacity = {
-      storage = var.spill_volume_size
+      storage = "${var.spill_volume_size}G"
     }
     access_modes = ["ReadWriteOnce"]
     persistent_volume_source {

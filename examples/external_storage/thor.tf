@@ -27,8 +27,7 @@ module "thor" {
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
     subnet_ids = {
-      public  = module.virtual_network.aks["demo"].subnets.public.id
-      private = module.virtual_network.aks["demo"].subnets.private.id
+      aks = module.virtual_network.aks.demo.subnet.id
     }
   }
 
@@ -41,7 +40,7 @@ module "thor" {
     }
   }
 
-  spill_volume_size = "150Gi"
+  spill_volume_size = "75"
 
   roxie_config = [
     {
@@ -71,6 +70,7 @@ module "thor" {
     disabled         = false
     prefix           = "thor"
     numWorkers       = 5
+    keepJobs         = "none"
     maxJobs          = 4
     maxGraphs        = 2
     numWorkersPerPod = 1

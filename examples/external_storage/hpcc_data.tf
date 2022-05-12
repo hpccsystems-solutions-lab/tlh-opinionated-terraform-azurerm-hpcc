@@ -17,8 +17,7 @@ module "hpcc_data_storage" {
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
     subnet_ids = {
-      public  = module.virtual_network.aks["demo"].subnets.public.id
-      private = module.virtual_network.aks["demo"].subnets.private.id
+      aks = module.virtual_network.aks.demo.subnet.id
     }
   }
 }
@@ -37,8 +36,8 @@ module "hpcc_data_cache" {
   resource_group_name = module.resource_group.name
 
   dns = {
-    zone_name                = var.core_services_config.external_dns.zones.0
-    zone_resource_group_name = var.core_services_config.external_dns.resource_group_name
+    zone_name                = var.dns_zone_name
+    zone_resource_group_name = var.dns_zone_resource_group
   }
 
   resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_provider.object_id
@@ -51,6 +50,6 @@ module "hpcc_data_cache" {
     }
   }
 
-  subnet_id = module.virtual_network.aks["demo"].subnets.private.id
+  subnet_id = module.virtual_network.aks.demo.subnet.id
   tags      = module.metadata.tags
 }
