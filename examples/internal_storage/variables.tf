@@ -1,7 +1,11 @@
-variable "core_services_config" {
-  description = "cluster config"
-  type        = any
-  default     = {}
+variable "dns_zone_name" {
+  description = "Azure DNS zone."
+  type        = string
+}
+
+variable "dns_zone_resource_group" {
+  description = "Azure DNS zone resource group."
+  type        = string
 }
 
 variable "azuread_clusterrole_map" {
@@ -22,11 +26,6 @@ variable "azuread_clusterrole_map" {
   }
 }
 
-variable "api_server_authorized_ip_ranges" {
-  description = "Map of authorized CIDRs / IPs"
-  type        = map(string)
-}
-
 variable "storage_account_authorized_ip_ranges" {
   description = "Map of authorized CIDRs / IPs"
   type        = map(string)
@@ -35,12 +34,6 @@ variable "storage_account_authorized_ip_ranges" {
 variable "hpcc_helm_chart_version" {
   description = "HPCC helm chart version"
   type        = string
-}
-
-variable "service_endpoints" {
-  description = "Creates a virtual network rule in the subnet_id (values are virtual network subnet ids)."
-  type        = map(string)
-  default     = {}
 }
 
 variable "hpcc_container" {
@@ -54,22 +47,10 @@ variable "hpcc_container" {
 
 variable "hpcc_container_registry_auth" {
   description = "Registry authentication for HPCC containers."
-  type        = object({
-    password   = string
-    username   = string
-  })
-  default = null
-  sensitive = true
-}
-
-variable "hpc_cache" {
-  description = "Creates the hpc-cache for the cluster."
   type = object({
-    dns = object({
-      zone_name                = string
-      zone_resource_group_name = string
-    })
-    size = string
+    password = string
+    username = string
   })
-  default = null
+  default   = null
+  sensitive = true
 }

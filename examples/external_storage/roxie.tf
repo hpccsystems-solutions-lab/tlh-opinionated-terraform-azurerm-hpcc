@@ -27,12 +27,11 @@ module "roxie" {
   install_blob_csi_driver = false
 
   admin_services_storage_account_settings = {
-    replication_type     = "LRS"
+    replication_type     = "ZRS"
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
     subnet_ids = {
-      public  = module.virtual_network.aks["demo"].subnets.public.id
-      private = module.virtual_network.aks["demo"].subnets.private.id
+      aks = module.virtual_network.aks.demo.subnet.id
     }
   }
 
