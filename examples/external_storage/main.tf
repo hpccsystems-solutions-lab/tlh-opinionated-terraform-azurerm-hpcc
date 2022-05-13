@@ -68,6 +68,15 @@ module "virtual_network" {
 
   address_space = ["10.0.0.0/22"]
 
+  subnets = {
+    hpc_cache = { cidrs = ["10.0.1.0/26"]
+      allow_vnet_inbound      = true
+      allow_vnet_outbound     = true
+      allow_internet_outbound = true
+      service_endpoints       = ["Microsoft.Storage"]
+    }
+  }
+
   aks_subnets = {
     demo = {
       subnet_info = {

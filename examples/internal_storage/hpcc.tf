@@ -40,7 +40,8 @@ module "hpcc" {
           authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
           delete_protection    = false
           subnet_ids = {
-            aks = module.virtual_network.aks.demo.subnet.id
+            aks       = module.virtual_network.aks.demo.subnet.id
+            hpc_cache = module.virtual_network.subnets.hpc_cache.id
           }
         }
       }
@@ -53,7 +54,7 @@ module "hpcc" {
         size                        = "small"
         cache_update_frequency      = "3h"
         storage_account_data_planes = null
-        subnet_id                   = module.virtual_network.aks.demo.subnet.id
+        subnet_id                   = module.virtual_network.subnets.hpc_cache.id
       }
     }
     external = null
