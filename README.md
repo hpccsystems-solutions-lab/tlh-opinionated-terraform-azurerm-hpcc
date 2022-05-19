@@ -54,6 +54,7 @@ See [examples](/examples) for general usage.
 | `admin_services_storage_size`             | PV sizes for admin service planes (storage billed only as consumed). | `object()` [_(see appendix b)_](#Appendix-B)         | `{}`        | `no`         |
 | `data_storage_config`                     | HPCC Data storage config.                                            | `object()` [_(see appendix c)_](#Appendix-C)         | `nil`       | `yes`        |
 | `enable_node_tuning`                      | Enable node tuning daemonset (only needed once per AKS cluster).     | `bool`                                               | `true`      | `no`         |
+| `environment_variables`                   | Adds default environment variables for all components.               | `map(string)`                                        | `{}`        | `no`         |
 | `helm_chart_overrides`                    | Helm chart values, in yaml format, to be merged last.                | `string`                                             | `nil`       | `no`         |
 | `helm_chart_timeout`                      | Helm timeout for hpcc chart in seconds.                              | `number`                                             | `600`       | `no`         |
 | `helm_chart_version`                      | Version of the HPCC Helm Chart to use.                               | `string`                                             | `8.6.16`    | `no`         |

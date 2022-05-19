@@ -145,6 +145,12 @@ variable "data_storage_config" {
   }
 }
 
+variable "environment_variables" {
+  description = "Adds default environment variables for all components."
+  type        = map(string)
+  default     = {}
+}
+
 variable "enable_node_tuning" {
   description = "Enable node tuning daemonset (only needed once per AKS cluster)."
   type        = bool

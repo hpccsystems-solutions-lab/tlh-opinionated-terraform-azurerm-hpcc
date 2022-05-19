@@ -151,6 +151,7 @@ locals {
   helm_chart_values = {
 
     global = {
+      env = [ for k,v in var.environment_variables: { name = k, value = v} ]
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
         root       = var.hpcc_container.image_root
