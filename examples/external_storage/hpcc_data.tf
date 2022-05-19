@@ -18,6 +18,7 @@ module "hpcc_data_storage" {
     delete_protection    = false
     subnet_ids = {
       aks = module.virtual_network.aks.demo.subnet.id
+      hpc_cache = module.virtual_network.subnets.hpc_cache.id
     }
   }
 }
@@ -50,6 +51,6 @@ module "hpcc_data_cache" {
     }
   }
 
-  subnet_id = module.virtual_network.aks.demo.subnet.id
+  subnet_id = module.virtual_network.subnets.hpc_cache.id
   tags      = module.metadata.tags
 }
