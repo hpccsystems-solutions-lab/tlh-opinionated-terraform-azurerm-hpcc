@@ -143,6 +143,13 @@ variable "data_storage_config" {
     }
     external = null
   }
+
+  validation {
+    condition = (var.data_storage_config.internal == null ? true :
+                 var.data_storage_config.internal.hpc_cache == null ? true :
+                 contains(["never", "30s", "3h"], var.data_storage_config.internal.hpc_cache.cache_update_frequency))
+    error_message = "HPC Cache update frequency must be \"never\", \"30s\" or \"3h\"."
+  }
 }
 
 variable "environment_variables" {

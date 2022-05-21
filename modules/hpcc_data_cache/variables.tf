@@ -49,6 +49,11 @@ variable "storage_targets" {
       storage_account_name = string
     }))
   }))
+
+  validation {
+    condition     = length([ for target in var.storage_targets: target.cache_update_frequency if !contains(["never", "30s", "3h"], target.cache_update_frequency) ]) == 0
+    error_message = "HPC Cache update frequency must be \"never\", \"30s\" or \"3h\"."
+  }
 }
 
 variable "subnet_id" {
