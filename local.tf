@@ -148,6 +148,31 @@ locals {
 
   enabled_roxie_configs = { for roxie in var.roxie_config : roxie.name => roxie if !roxie.disabled }
 
+  roxie_config_excludes = ["nodeSelector"]
+  roxie_config = [for roxie in var.roxie_config :
+    { for k, v in roxie : k => v if !contains(local.roxie_config_excludes, k) }
+  ]
+
+  thor_config_excludes = ["nodeSelector"]
+  thor_config = [for thor in var.thor_config :
+    { for k, v in thor : k => v if !contains(local.thor_config_excludes, k) }
+  ]
+
+  admin_placements = [for k, v in var.admin_services_node_selector :
+    ( k == "all" ? { pods = ["${k}"], placement = { nodeSelector = v } } :
+                   { pods = ["type:${k}"], placement = { nodeSelector = v } } )
+  ]
+
+  roxie_placements = [for roxie in var.roxie_config :
+    { pods = ["target:${roxie.name}"], placement = { nodeSelector = roxie.nodeSelector } } if length(roxie.nodeSelector) > 0
+  ]
+
+  thor_placements = [for thor in var.thor_config :
+    { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector } } if length(thor.nodeSelector) > 0
+  ]
+
+  placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
+
   helm_chart_values = {
 
     global = {
@@ -241,6 +266,8 @@ locals {
       }
     }
 
+    placements = local.placements
+
     dali = [
       merge({
         name = "mydali"
@@ -330,9 +357,9 @@ locals {
       }, local.esp_ldap_config)
     ]
 
-    roxie = var.roxie_config
+    roxie = local.roxie_config
 
-    thor = var.thor_config
+    thor = local.thor_config
 
     eclscheduler = [
       {

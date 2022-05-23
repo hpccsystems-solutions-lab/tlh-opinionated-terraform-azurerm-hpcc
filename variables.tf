@@ -1,3 +1,15 @@
+variable "admin_services_node_selector" {
+  description = "Node selector for admin services pods."
+  type        = map(map(string))
+  default     = {}
+
+  validation {
+    condition = length([for service in keys(var.admin_services_node_selector) :
+    service if !contains(["all", "dali", "esp", "eclagent", "eclccserver"], service)]) == 0
+    error_message = "The keys must be one of \"all\", \"dali\", \"esp\", \"eclagent\" or \"eclccserver\"."
+  }
+}
+
 variable "admin_services_storage_account_settings" {
   description = "Settings for admin services storage account."
   type = object({
@@ -313,9 +325,13 @@ variable "resource_group_name" {
 variable "roxie_config" {
   description = "Configuration for Roxie(s)."
   type = list(object({
-    name     = string
-    disabled = bool
-    prefix   = string
+    disabled       = bool
+    name           = string
+    nodeSelector   = map(string)
+    numChannels    = number
+    prefix         = string
+    replicas       = number
+    serverReplicas = number
     services = list(object({
       name        = string
       servicePort = number
@@ -323,18 +339,19 @@ variable "roxie_config" {
       numThreads  = number
       visibility  = string
     }))
-    replicas       = number
-    numChannels    = number
-    serverReplicas = number
     topoServer = object({
       replicas = number
     })
   }))
   default = [
     {
-      name     = "roxie"
-      disabled = true
-      prefix   = "roxie"
+      disabled       = true
+      name           = "roxie"
+      nodeSelector   = {}
+      numChannels    = 2
+      prefix         = "roxie"
+      replicas       = 2
+      serverReplicas = 0
       services = [
         {
           name        = "roxie"
@@ -344,9 +361,6 @@ variable "roxie_config" {
           visibility  = "local"
         }
       ]
-      replicas       = 2
-      numChannels    = 2
-      serverReplicas = 0
       topoServer = {
         replicas = 1
       }
@@ -368,17 +382,18 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
+    keepJobs = string
     managerResources = object({
       cpu    = string
       memory = string
     })
-    keepJobs         = string
     maxGraphs        = number
     maxJobs          = number
     name             = string
-    prefix           = string
+    nodeSelector     = map(string)
     numWorkers       = number
     numWorkersPerPod = number
+    prefix           = string
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -402,6 +417,7 @@ variable "thor_config" {
     maxGraphs        = 2
     maxJobs          = 4
     name             = "thor"
+    nodeSelector     = {}
     numWorkers       = 2
     numWorkersPerPod = 1
     prefix           = "thor"
