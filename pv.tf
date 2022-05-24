@@ -144,7 +144,7 @@ resource "kubernetes_persistent_volume" "spill" {
     access_modes = ["ReadWriteOnce"]
     persistent_volume_source {
       host_path {
-        path = "/host/mnt"
+        path = "/mnt"
       }
     }
     storage_class_name = "spill"
