@@ -5,6 +5,7 @@ on:
     branches: [main, dev]
     paths:
       - "**.tf"
+  workflow_dispatch:
 
 jobs:
   terraform:
