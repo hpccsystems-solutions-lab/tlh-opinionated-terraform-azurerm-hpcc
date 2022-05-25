@@ -332,6 +332,13 @@ variable "roxie_config" {
     prefix         = string
     replicas       = number
     serverReplicas = number
+    checkFileDate = bool
+    logFullQueries = bool
+    copyResources = bool
+    parallelLoadQueries = number
+    traceLevel = number
+    soapTraceLevel = number
+    traceRemoteFiles = bool
     services = list(object({
       name        = string
       servicePort = number
@@ -352,6 +359,14 @@ variable "roxie_config" {
       prefix         = "roxie"
       replicas       = 2
       serverReplicas = 0
+      checkFileDate = false
+      logFullQueries = false
+      copyResources = false
+      logFullQueries = false
+      parallelLoadQueries = 1
+      traceLevel = 1
+      soapTraceLevel = 1
+      traceRemoteFiles = false
       services = [
         {
           name        = "roxie"
