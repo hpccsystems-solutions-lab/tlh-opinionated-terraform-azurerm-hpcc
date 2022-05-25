@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        source: [root, example]
+        source: [module, example-internal]
         include:
-          - source: example
+          - source: example-internal
             work_dir: examples/internal_storage
           - source: root
             work_dir: .
