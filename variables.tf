@@ -74,12 +74,12 @@ variable "admin_services_storage" {
   }
 
   validation {
-    condition     = length([for k,v in var.admin_services_storage : v.type if !contains(["azurefiles", "blobnfs"], v.type)]) == 0
+    condition     = length([for k, v in var.admin_services_storage : v.type if !contains(["azurefiles", "blobnfs"], v.type)]) == 0
     error_message = "The type must be either \"azurefiles\" or \"blobnfs\"."
   }
 
   validation {
-    condition     = length([for k,v in var.admin_services_storage : v.size if v.type == "azurefiles" && v.size < 100]) == 0
+    condition     = length([for k, v in var.admin_services_storage : v.size if v.type == "azurefiles" && v.size < 100]) == 0
     error_message = "Size must be at least 100 for \"azurefiles\" type."
   }
 }
@@ -158,8 +158,8 @@ variable "data_storage_config" {
 
   validation {
     condition = (var.data_storage_config.internal == null ? true :
-                 var.data_storage_config.internal.hpc_cache == null ? true :
-                 contains(["never", "30s", "3h"], var.data_storage_config.internal.hpc_cache.cache_update_frequency))
+      var.data_storage_config.internal.hpc_cache == null ? true :
+    contains(["never", "30s", "3h"], var.data_storage_config.internal.hpc_cache.cache_update_frequency))
     error_message = "HPC Cache update frequency must be \"never\", \"30s\" or \"3h\"."
   }
 }
@@ -325,13 +325,20 @@ variable "resource_group_name" {
 variable "roxie_config" {
   description = "Configuration for Roxie(s)."
   type = list(object({
-    disabled       = bool
-    name           = string
-    nodeSelector   = map(string)
-    numChannels    = number
-    prefix         = string
-    replicas       = number
-    serverReplicas = number
+    disabled            = bool
+    name                = string
+    nodeSelector        = map(string)
+    numChannels         = number
+    prefix              = string
+    replicas            = number
+    serverReplicas      = number
+    checkFileDate       = bool
+    logFullQueries      = bool
+    copyResources       = bool
+    parallelLoadQueries = number
+    traceLevel          = number
+    soapTraceLevel      = number
+    traceRemoteFiles    = bool
     services = list(object({
       name        = string
       servicePort = number
@@ -345,13 +352,21 @@ variable "roxie_config" {
   }))
   default = [
     {
-      disabled       = true
-      name           = "roxie"
-      nodeSelector   = {}
-      numChannels    = 2
-      prefix         = "roxie"
-      replicas       = 2
-      serverReplicas = 0
+      disabled            = true
+      name                = "roxie"
+      nodeSelector        = {}
+      numChannels         = 2
+      prefix              = "roxie"
+      replicas            = 2
+      serverReplicas      = 0
+      checkFileDate       = false
+      logFullQueries      = false
+      copyResources       = false
+      logFullQueries      = false
+      parallelLoadQueries = 1
+      traceLevel          = 1
+      soapTraceLevel      = 1
+      traceRemoteFiles    = false
       services = [
         {
           name        = "roxie"
