@@ -104,7 +104,7 @@ resource "azurerm_storage_container" "blob_nfs_admin_services" {
 resource "azurerm_management_lock" "protect_admin_storage_account" {
   depends_on = [
     azurerm_storage_account.azurefiles_admin_services,
-    azurerm_storage_account.blob_nfs_admin_services 
+    azurerm_storage_account.blob_nfs_admin_services
   ]
 
   for_each = var.admin_services_storage_account_settings.delete_protection ? merge(
