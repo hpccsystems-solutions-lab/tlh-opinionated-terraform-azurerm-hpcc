@@ -345,7 +345,6 @@ variable "roxie_config" {
   }))
   default = [
     {
-<<<<<<< HEAD
       disabled       = true
       name           = "roxie"
       nodeSelector   = {}
@@ -353,16 +352,6 @@ variable "roxie_config" {
       prefix         = "roxie"
       replicas       = 2
       serverReplicas = 0
-=======
-      name     = "roxie"
-      disabled = true
-      prefix   = "roxie"
-      checkFileDate = false
-      logFullQueries = true
-      copyResources = false
-      logFullQueries = true
-      parallelLoadQueries = 1
->>>>>>> defaults
       services = [
         {
           name        = "roxie"
@@ -372,15 +361,6 @@ variable "roxie_config" {
           visibility  = "local"
         }
       ]
-<<<<<<< HEAD
-=======
-      replicas       = 2
-      numChannels    = 2
-      serverReplicas = 0
-      traceLevel = 1
-      soapTraceLevel = 1
-      traceRemoteFiles = false
->>>>>>> defaults
       topoServer = {
         replicas = 1
       }
