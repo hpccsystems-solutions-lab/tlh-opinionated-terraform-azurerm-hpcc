@@ -47,7 +47,7 @@ module "hpcc" {
       }
       hpc_cache = {
         dns = {
-          zone_name                = var.dns_zone_name 
+          zone_name                = var.dns_zone_name
           zone_resource_group_name = var.dns_zone_resource_group
         }
         resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_provider.object_id
