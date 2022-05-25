@@ -1,5 +1,7 @@
 # terraform-azurerm-hpcc
 
+## generated module documentation can be found [here](/terraform.md)
+
 ## Overview
 
 This module is designed to provide a simple and opinionated way to build standard HPCC Systems Platforms and utilizes the [terraform-azurerm-aks](https://github.com/LexisNexis-RBA/terraform-azurerm-aks) module. This module takes a set of configuration options and creates a fully functional HPCC Systems deployment.
@@ -27,7 +29,7 @@ Support and use of this module.
 
 This module is designed to provide a standard, opinonated, but configurable, deployment of the HPCC Systems platform on AKS.
 
-See [examples](/examples) for general usage. 
+See [examples](/examples) for general usage.
 
 ---
 
