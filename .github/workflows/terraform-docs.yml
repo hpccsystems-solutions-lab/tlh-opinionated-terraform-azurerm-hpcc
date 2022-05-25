@@ -1,4 +1,4 @@
-name: Generate terraform docs
+name: generate terraform docs
 on:
   push:
     branches: [dev]
@@ -7,7 +7,6 @@ on:
     branches: [main, dev]
     paths:
       - "**.tf"
-  workflow_dispatch:
 
 jobs:
   docs:

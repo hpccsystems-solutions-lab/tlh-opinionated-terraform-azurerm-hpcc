@@ -159,8 +159,8 @@ locals {
   ]
 
   admin_placements = [for k, v in var.admin_services_node_selector :
-    ( k == "all" ? { pods = ["${k}"], placement = { nodeSelector = v } } :
-                   { pods = ["type:${k}"], placement = { nodeSelector = v } } )
+    (k == "all" ? { pods = ["${k}"], placement = { nodeSelector = v } } :
+    { pods = ["type:${k}"], placement = { nodeSelector = v } })
   ]
 
   roxie_placements = [for roxie in var.roxie_config :
@@ -176,7 +176,7 @@ locals {
   helm_chart_values = {
 
     global = {
-      env = [ for k,v in var.environment_variables: { name = k, value = v} ]
+      env = [for k, v in var.environment_variables : { name = k, value = v }]
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
         root       = var.hpcc_container.image_root
