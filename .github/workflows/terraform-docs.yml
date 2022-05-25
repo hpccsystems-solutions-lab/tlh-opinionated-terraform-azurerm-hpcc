@@ -22,5 +22,5 @@ jobs:
         with:
           working-dir: .
           output-file: Terraform.md
-          output-method: replace
+          output-method: inject
           git-push: "true"
