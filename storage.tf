@@ -16,7 +16,7 @@ resource "azurerm_storage_account" "azurefiles_admin_services" {
   access_tier                     = "Hot"
   account_kind                    = "FileStorage"
   account_tier                    = "Premium"
-  #allow_nested_items_to_be_public = false
+  allow_nested_items_to_be_public = false
   min_tls_version                 = "TLS1_2"
 
   shared_access_key_enabled = true
@@ -43,7 +43,7 @@ resource "azurerm_storage_account" "blob_nfs_admin_services" {
   access_tier                     = "Hot"
   account_kind                    = "StorageV2"
   account_tier                    = "Standard"
-  #allow_nested_items_to_be_public = false
+  allow_nested_items_to_be_public = false
   is_hns_enabled                  = true
   min_tls_version                 = "TLS1_2"
 
