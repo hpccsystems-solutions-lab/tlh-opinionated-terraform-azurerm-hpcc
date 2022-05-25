@@ -10,6 +10,18 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        source: [root, example]
+        include:
+          - source: example
+            work_dir: examples/internal_storage
+          - source: root
+            work_dir: .
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ matrix.work_dir }}
     env:
       TF_INPUT: false
       TF_IN_AUTOMATION: true
