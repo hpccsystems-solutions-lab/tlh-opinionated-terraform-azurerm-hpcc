@@ -349,6 +349,10 @@ variable "roxie_config" {
     topoServer = object({
       replicas = number
     })
+    channelResources = object({
+      cpu    = string
+      memory = string
+    })
   }))
   default = [
     {
@@ -378,6 +382,10 @@ variable "roxie_config" {
       ]
       topoServer = {
         replicas = 1
+      }
+      channelResources = {
+        cpu    = "1"
+        memory = "4"
       }
     }
   ]
