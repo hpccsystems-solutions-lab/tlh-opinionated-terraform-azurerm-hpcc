@@ -1,22 +1,15 @@
 name: generate terraform docs
 on:
   push:
-    branches: [dev]
-
-  pull_request:
-    branches: [main, dev]
+    branches: [main]
     paths:
       - "**.tf"
-  workflow_dispatch:
 
 jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
       - name: Render terraform docs
         uses: terraform-docs/gh-actions@v1
         with:
