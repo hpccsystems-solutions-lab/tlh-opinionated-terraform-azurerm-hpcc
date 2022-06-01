@@ -1,48 +1,7 @@
-terraform {
-  required_version = "~> 1.0"
-
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.1"
-    }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "~> 2.19"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.5"
-    }
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.11"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.1"
-    }
-    shell = {
-      source  = "scottwinkler/shell"
-      version = "~> 1.7"
-    }
-    time = {
-      source  = "hashicorp/time"
-      version = "~> 0.7.2"
-    }
-    vault = {
-      source  = "hashicorp/vault"
-      version = "~> 2.21"
-    }
-  }
-}
 
 provider "azurerm" {
-  storage_use_azuread = true
+  storage_use_azuread        = true
+  skip_provider_registration = true
   features {}
 }
 

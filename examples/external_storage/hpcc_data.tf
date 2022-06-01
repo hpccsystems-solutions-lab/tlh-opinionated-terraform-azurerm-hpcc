@@ -17,7 +17,7 @@ module "hpcc_data_storage" {
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
     subnet_ids = {
-      aks = module.virtual_network.aks.demo.subnet.id
+      aks       = module.virtual_network.aks.demo.subnet.id
       hpc_cache = module.virtual_network.subnets.hpc_cache.id
     }
   }
