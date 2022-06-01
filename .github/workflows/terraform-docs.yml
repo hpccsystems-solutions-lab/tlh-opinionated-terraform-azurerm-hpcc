@@ -1,11 +1,9 @@
 name: generate terraform docs
 on:
-  pull_request:
+  push:
     branches: [main]
     paths:
       - "**.tf"
-  workflow_dispatch:
-
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -21,3 +19,5 @@ jobs:
           output-file: Terraform.md
           output-method: inject
           git-push: "true"
+          args: --sort-by-required
+          git-commit-message: "terraform-docs: automated action"
