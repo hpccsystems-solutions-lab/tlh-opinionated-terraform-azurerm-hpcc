@@ -41,7 +41,8 @@ module "hpcc_data_cache" {
     zone_resource_group_name = var.dns_zone_resource_group
   }
 
-  resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_provider.object_id
+  # resource_provider_object_id = data.azuread_service_principal.hpc_cache_resource_provider.object_id
+  resource_provider_object_id = "d76481b9-94f9-4ce5-b322-e24b3c1646f0"
   size                        = "small"
 
   storage_targets = {

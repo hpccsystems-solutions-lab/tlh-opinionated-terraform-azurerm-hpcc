@@ -5,8 +5,8 @@ variable "containers" {
     debian  = string
   })
   default = {
-    busybox = "docker.io/library/busybox:1.34"
-    debian  = "docker.io/library/debian:bullseye-slim"
+    busybox = local.acr_defaults.busybox
+    debian  = local.acr_defaults.debian
   }
 }
 
@@ -38,4 +38,15 @@ variable "namespace" {
       name = "hpcc-node-tuning"
     }
   }
+}
+
+variable "environment" {
+  description = "Environment HPCC is being deployed to."
+  type = string
+  default = "dev"
+}
+
+variable "productname" {
+  description = "Environment HPCC is being deployed to."
+  type = string
 }

@@ -12,6 +12,9 @@ module "node_tuning" {
 
   containers              = var.node_tuning_containers
   container_registry_auth = var.node_tuning_container_registry_auth
+  environment = var.environment
+  productname = var.productname
+
 }
 
 resource "helm_release" "hpcc" {
