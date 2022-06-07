@@ -308,13 +308,13 @@ variable "node_tuning_containers" {
 
 variable "environment" {
   description = "Environment HPCC is being deployed to."
-  type = string
-  default = "dev"
+  type        = string
+  default     = "dev"
 }
 
 variable "productname" {
   description = "Environment HPCC is being deployed to."
-  type = string
+  type        = string
 }
 
 variable "node_tuning_container_registry_auth" {
