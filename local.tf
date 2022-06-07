@@ -15,7 +15,7 @@ locals {
   external_hpcc_data    = (local.external_data_config ? (var.data_storage_config.external.hpcc == null ? false : true) : false)
 
   acr_default = var.node_tuning_containers == null ? {
-    busybox = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
+    busybox = format("us%s%sacr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
     debian  = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
 
