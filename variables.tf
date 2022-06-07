@@ -304,8 +304,8 @@ variable "node_tuning_containers" {
     debian  = string
   })
   default = {
-    busybox = format("us%s%sacr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
-    debian  = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
+    busybox = local.acr_default.busybox
+    debian  = local.acr_default.debian
   }
 }
 
