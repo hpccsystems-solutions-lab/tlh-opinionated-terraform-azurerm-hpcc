@@ -164,16 +164,6 @@ variable "data_storage_config" {
   }
 }
 
-variable "environment" {
-  description = "Environment HPCC is being deployed to."
-  type = string
-  default = "dev"
-}
-
-variable "productname" {
-  description = "Environment HPCC is being deployed to."
-  type = string
-}
 
 
 variable "environment_variables" {
@@ -313,7 +303,21 @@ variable "node_tuning_containers" {
     busybox = string
     debian  = string
   })
-  default = null
+  default = {
+    busybox = format("us%s%sacr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
+    debian  = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
+  }
+}
+
+variable "environment" {
+  description = "Environment HPCC is being deployed to."
+  type = string
+  default = "dev"
+}
+
+variable "productname" {
+  description = "Environment HPCC is being deployed to."
+  type = string
 }
 
 variable "node_tuning_container_registry_auth" {

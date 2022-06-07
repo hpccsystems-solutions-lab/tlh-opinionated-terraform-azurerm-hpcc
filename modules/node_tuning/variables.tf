@@ -4,10 +4,10 @@ variable "containers" {
     busybox = string
     debian  = string
   })
-  default = {
-    busybox = local.acr_defaults.busybox
-    debian  = local.acr_defaults.debian
-  }
+  # default = {
+  #   busybox = "docker.io/library/busybox:1.34"
+  #   debian  = "docker.io/library/debian:bullseye-slim"
+  # }
 }
 
 variable "container_registry_auth" {
@@ -40,13 +40,3 @@ variable "namespace" {
   }
 }
 
-variable "environment" {
-  description = "Environment HPCC is being deployed to."
-  type = string
-  default = "dev"
-}
-
-variable "productname" {
-  description = "Environment HPCC is being deployed to."
-  type = string
-}
