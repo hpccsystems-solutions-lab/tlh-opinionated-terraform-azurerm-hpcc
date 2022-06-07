@@ -303,10 +303,7 @@ variable "node_tuning_containers" {
     busybox = string
     debian  = string
   })
-  default = {
-    busybox = local.acr_default.busybox
-    debian  = local.acr_default.debian
-  }
+  default = {}
 }
 
 variable "environment" {

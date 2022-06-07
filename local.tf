@@ -14,10 +14,15 @@ locals {
   external_data_cache   = (local.external_data_config ? (var.data_storage_config.external.hpc_cache == null ? false : true) : false)
   external_hpcc_data    = (local.external_data_config ? (var.data_storage_config.external.hpcc == null ? false : true) : false)
 
-  acr_default = {
+  acr_default = var.node_tuning_containers == {} ? {
     busybox = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
     debian  = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
-  }
+  } : var.node_tuning_containers
+
+  # acr_default = {
+  #   busybox = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
+  #   debian  = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
+  # }
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
       local.external_data_storage ? var.data_storage_config.external.blob_nfs : null)
