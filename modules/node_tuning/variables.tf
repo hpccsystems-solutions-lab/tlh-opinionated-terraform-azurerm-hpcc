@@ -4,10 +4,6 @@ variable "containers" {
     busybox = string
     debian  = string
   })
-  # default = {
-  #   busybox = "docker.io/library/busybox:1.34"
-  #   debian  = "docker.io/library/debian:bullseye-slim"
-  # }
 }
 
 variable "container_registry_auth" {
