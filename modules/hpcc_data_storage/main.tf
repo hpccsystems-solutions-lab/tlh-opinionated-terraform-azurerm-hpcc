@@ -9,7 +9,7 @@ resource "azurerm_storage_account" "default" {
   access_tier                     = "Hot"
   account_kind                    = "StorageV2"
   account_tier                    = "Standard"
-  #allow_nested_items_to_be_public = false
+  allow_nested_items_to_be_public = false
   is_hns_enabled                  = true
   min_tls_version                 = "TLS1_2"
 
