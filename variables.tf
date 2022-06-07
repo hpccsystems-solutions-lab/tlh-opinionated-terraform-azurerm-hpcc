@@ -303,7 +303,7 @@ variable "node_tuning_containers" {
     busybox = string
     debian  = string
   })
-  default = {}
+  default = null
 }
 
 variable "environment" {
