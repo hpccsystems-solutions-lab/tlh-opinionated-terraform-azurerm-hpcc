@@ -10,8 +10,12 @@ module "node_tuning" {
 
   count = var.enable_node_tuning ? 1 : 0
 
-  containers              = var.node_tuning_containers
+  # containers              = var.node_tuning_containers
+  containers = local.acr_default
+
   container_registry_auth = var.node_tuning_container_registry_auth
+
+
 }
 
 resource "helm_release" "hpcc" {

@@ -164,6 +164,8 @@ variable "data_storage_config" {
   }
 }
 
+
+
 variable "environment_variables" {
   description = "Adds default environment variables for all components."
   type        = map(string)
@@ -301,10 +303,18 @@ variable "node_tuning_containers" {
     busybox = string
     debian  = string
   })
-  default = {
-    busybox = "docker.io/library/busybox:1.34"
-    debian  = "docker.io/library/debian:bullseye-slim"
-  }
+  default = null
+}
+
+variable "environment" {
+  description = "Environment HPCC is being deployed to."
+  type        = string
+  default     = "dev"
+}
+
+variable "productname" {
+  description = "Environment HPCC is being deployed to."
+  type        = string
 }
 
 variable "node_tuning_container_registry_auth" {
