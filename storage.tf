@@ -49,7 +49,7 @@ resource "azurerm_storage_account" "blob_nfs_admin_services" {
 
   shared_access_key_enabled = false
 
-  nfsv3_enabled             = true
+  nfsv3_enabled             = false
   enable_https_traffic_only = true
   account_replication_type  = var.admin_services_storage_account_settings.replication_type
 

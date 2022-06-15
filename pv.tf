@@ -88,7 +88,7 @@ resource "kubernetes_persistent_volume" "blob_nfs" {
           resourceGroup  = each.value.resource_group
           storageAccount = each.value.storage_account
           containerName  = each.value.container_name
-          protocol       = "nfs"
+          protocol       = "smb"
         }
       }
     }
