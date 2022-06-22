@@ -21,7 +21,7 @@ resource "azurerm_storage_account" "azurefiles_admin_services" {
 
   shared_access_key_enabled = true
 
-  enable_https_traffic_only = false
+  enable_https_traffic_only = true
   account_replication_type  = var.admin_services_storage_account_settings.replication_type
 
   network_rules {
