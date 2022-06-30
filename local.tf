@@ -177,7 +177,27 @@ locals {
   ]
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
+  
+  remote_storage_enabled = var.remote_storage_plane == null ? false : true
 
+  remote_storage_plane = local.remote_storage_enabled ? flatten([
+    for subscription_key, subscription_val in var.remote_storage_plane : [
+      for sa_key, sa_val in subscription_val.target_storage_accounts : {
+        subscription_name      = subscription_key
+        dfs_service_name       = subscription_val.dfs_service_name
+        storage_account_name   = sa_val.name
+        storage_account_prefix = sa_val.prefix
+        storage_account_key    = sa_key
+        volume_name            = format("%s-remote-hpcc-data-pv-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+        volume_claim_name      = format("%s-remote-hpcc-data-pvc-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+      }
+    ]
+  ]) : []
+
+  remote_storage_helm_values = { for k, v in var.remote_storage_plane : k => {
+    dfs_service_name = v.dfs_service_name
+    numDevices       = length(v.target_storage_accounts)
+  } }
   helm_chart_values = {
 
     global = {
