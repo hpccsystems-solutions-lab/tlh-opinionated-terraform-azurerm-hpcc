@@ -276,6 +276,14 @@ locals {
             pvc              = "pvc-spill"
             forcePermissions = true
           }
+        ] : [], local.remote_storage_enabled ? [ for k, v in local.remote_storage_helm_values : 
+        {
+          category = "remote"
+          prefix = format("/var/lib/HPCCSystems/%s-data", k)
+          name = format("%s-remote-hpcc-data", k)
+          pvc = format("%s-remote-hpcc-data", k)
+          numDevices = v.numDevices
+        }          
         ] : []
         ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
           name    = format("%s-data", k)
