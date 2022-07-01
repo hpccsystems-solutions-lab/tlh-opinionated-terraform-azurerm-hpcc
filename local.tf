@@ -277,17 +277,16 @@ locals {
             forcePermissions = true
           }
         ] : []
-      ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {},
-      local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
-        name    = format("%s-data", k)
-        service = v.dfs_service_name
-        planes = [
-          {
-            remote = "data"
-            local  = format("%s-remote-hpcc-data", k)
-          }
-        ]
-      }] } : {}
+        ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
+          name    = format("%s-data", k)
+          service = v.dfs_service_name
+          planes = [
+            {
+              remote = "data"
+              local  = format("%s-remote-hpcc-data", k)
+            }
+          ]
+      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {},
     )
 
     certificates = {
