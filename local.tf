@@ -188,8 +188,8 @@ locals {
         storage_account_name   = sa_val.name
         storage_account_prefix = sa_val.prefix
         storage_account_key    = sa_key
-        volume_name            = format("%s-remote-hpcc-data-pv-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
-        volume_claim_name      = format("%s-remote-hpcc-data-pvc-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+        volume_name            = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+        volume_claim_name      = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
       }
     ]
   ]) : []
