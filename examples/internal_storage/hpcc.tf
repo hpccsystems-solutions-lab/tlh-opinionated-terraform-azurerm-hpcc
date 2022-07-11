@@ -7,7 +7,7 @@ module "hpcc" {
 
   environment = "dev"
   productname = "rampsthor"
-
+  
   helm_chart_version           = var.hpcc_helm_chart_version
   hpcc_container               = var.hpcc_container
   hpcc_container_registry_auth = var.hpcc_container_registry_auth

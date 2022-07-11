@@ -21,7 +21,7 @@ resource "azurerm_storage_account" "azurefiles_admin_services" {
 
   shared_access_key_enabled = true
 
-  enable_https_traffic_only = true
+  enable_https_traffic_only = false
   account_replication_type  = var.admin_services_storage_account_settings.replication_type
 
   network_rules {
@@ -90,7 +90,7 @@ resource "azurerm_storage_share" "azurefiles_admin_services" {
   name                 = each.value.container_name
   storage_account_name = azurerm_storage_account.azurefiles_admin_services.0.name
   quota                = trimsuffix(each.value.size, "G")
-  enabled_protocol     = "SMB"
+  enabled_protocol     = "NFS"
 }
 
 resource "azurerm_storage_container" "blob_nfs_admin_services" {

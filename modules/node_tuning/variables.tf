@@ -1,6 +1,6 @@
 variable "containers" {
   description = "URIs for containers."
-  type = object({
+  type        = object({
     busybox = string
     debian  = string
   })
@@ -8,11 +8,11 @@ variable "containers" {
 
 variable "container_registry_auth" {
   description = "Registry authentication for containers."
-  type = object({
-    password = string
-    username = string
+  type        = object({
+    password   = string
+    username   = string
   })
-  default   = null
+  default = null
   sensitive = true
 }
 
