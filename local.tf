@@ -347,6 +347,16 @@ locals {
 
     esp = [
       merge({
+        name        = "dfs"
+        application = "dfs"
+        auth        = local.auth_mode
+        replicas    = 1
+        service = {
+          servicePort = 8520
+          visibility  = "local"
+        }
+      }, local.esp_ldap_config),
+      merge({
         name        = "eclwatch"
         application = "eclwatch"
         auth        = local.auth_mode
