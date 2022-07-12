@@ -6,6 +6,11 @@ resource "kubernetes_network_policy" "eclwatch" {
   metadata {
     name      = "eclwatch"
     namespace = var.namespace.name
+    annotations = {
+      "app.kubernetes.io/managed-by" = "Helm"
+      "meta.helm.sh/release-name" = "hpcc"
+      "meta.helm.sh/release-namespace" = "hpcc"
+    }
   }
 
   spec {
