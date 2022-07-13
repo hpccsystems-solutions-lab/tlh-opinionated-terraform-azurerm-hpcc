@@ -286,9 +286,26 @@ locals {
           servicePort = 7200
           visibility  = "local"
         }
+      },
+      {
+        name        = "spray-service"
+        application = "spray"
+        service = {
+          servicePort = 7300
+          visibility  = "local"
+        }
+      },
+      {
+        name = "rowservice"
+        application = "rowservice"
+        disabled = var.enable_rowservice
+        service = {
+          servicePort = 7600
+          visibility  = "local"
+        }
       }
     ]
-    
+
     dali = [
       merge({
         name = "mydali"

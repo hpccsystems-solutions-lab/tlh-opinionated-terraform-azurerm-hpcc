@@ -708,3 +708,9 @@ variable "enable_directio" {
   type        = bool
   default     = true
 }
+
+variable "enable_rowservice" {
+  description = "This will enable or disable rowservice service"
+  type        = bool
+  default     = true
+}
