@@ -198,11 +198,15 @@ locals {
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
           }
           type    = "LoadBalancer"
-          ingress = []
+          ingress = [
+            {}
+          ]
         }
         global = {
           type    = "LoadBalancer"
-          ingress = []
+          ingress = [
+            {}
+          ]
         }
       }
     }
