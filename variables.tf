@@ -702,3 +702,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "enable_directio" {
+  description = "This will enable or disable directio service"
+  type        = bool
+  default     = true
+}

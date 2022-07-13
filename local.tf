@@ -277,6 +277,18 @@ locals {
 
     placements = local.placements
 
+    dafilesrv = [
+      {
+        name        = "direct-access"
+        application = "directio"
+        disabled    = var.enable_directio
+        service = {
+          servicePort = 7200
+          visibility  = "local"
+        }
+      }
+    ]
+    
     dali = [
       merge({
         name = "mydali"
