@@ -281,7 +281,7 @@ locals {
       {
         name        = "direct-access"
         application = "directio"
-        disabled    = var.enable_directio
+        disabled    = var.disable_directio
         service = {
           servicePort = 7200
           visibility  = "local"
@@ -298,7 +298,7 @@ locals {
       {
         name = "rowservice"
         application = "rowservice"
-        disabled = var.enable_rowservice
+        disabled = var.disable_rowservice
         service = {
           servicePort = 7600
           visibility  = "local"

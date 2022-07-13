@@ -703,13 +703,13 @@ variable "tags" {
   default     = {}
 }
 
-variable "enable_directio" {
+variable "disable_directio" {
   description = "Set false to enable directio, true to disable. Defaults to disabled."
   type        = bool
   default     = true
 }
 
-variable "enable_rowservice" {
+variable "disable_rowservice" {
   description = "Set false to enable row_service, true to disable. Defaults to disabled."
   type        = bool
   default     = true
