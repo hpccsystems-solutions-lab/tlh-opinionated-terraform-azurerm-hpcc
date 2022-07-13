@@ -289,7 +289,7 @@ locals {
           numDevices = v.numDevices
         }          
         ] : []
-        ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
+        )}, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
           name    = format("%s-data", k)
           service = v.dfs_service_name
           planes = [
