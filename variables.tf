@@ -710,7 +710,7 @@ variable "disable_directio" {
 }
 
 variable "disable_rowservice" {
-  description = "Set false to enable row_service, true to disable. Defaults to disabled."
+  description = "Set false to enable row_service, true to disable. Defaults to disabled. Requires Certificates Enabled as of now to setup row service."
   type        = bool
   default     = true
 }
