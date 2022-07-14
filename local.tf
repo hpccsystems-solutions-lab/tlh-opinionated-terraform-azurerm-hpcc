@@ -197,13 +197,13 @@ locals {
             "helm.sh/resource-policy"                                 = "keep"
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
           }
-          type    = "LoadBalancer"
+          type = "LoadBalancer"
           ingress = [
             {}
           ]
         }
         global = {
-          type    = "LoadBalancer"
+          type = "LoadBalancer"
           ingress = [
             {}
           ]
@@ -296,9 +296,9 @@ locals {
         }
       },
       {
-        name = "rowservice"
+        name        = "rowservice"
         application = "stream"
-        disabled = var.disable_rowservice
+        disabled    = var.disable_rowservice
         service = {
           servicePort = 7600
           visibility  = "local"
