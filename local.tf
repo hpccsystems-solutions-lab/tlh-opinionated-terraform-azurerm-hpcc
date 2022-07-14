@@ -297,7 +297,7 @@ locals {
       },
       {
         name = "rowservice"
-        application = "rowservice"
+        application = "stream"
         disabled = var.disable_rowservice
         service = {
           servicePort = 7600
