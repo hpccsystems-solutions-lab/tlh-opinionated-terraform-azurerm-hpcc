@@ -627,7 +627,7 @@ variable "roxie_config" {
       }
       channelResources = {
         cpu    = "1"
-        memory = "4"
+        memory = "4G"
       }
     }
   ]
