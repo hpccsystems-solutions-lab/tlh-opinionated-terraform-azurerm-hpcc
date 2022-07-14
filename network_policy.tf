@@ -1,116 +1,116 @@
-resource "kubernetes_network_policy" "eclwatch" {
-  depends_on = [
-    kubernetes_namespace.default
-  ]
+# resource "kubernetes_network_policy" "eclwatch" {
+#   depends_on = [
+#     kubernetes_namespace.default
+#   ]
 
-  metadata {
-    name      = "eclwatch"
-    namespace = var.namespace.name
-  }
+#   metadata {
+#     name      = "eclwatch"
+#     namespace = var.namespace.name
+#   }
 
-  spec {
-    pod_selector {
-      match_labels = {
-        server = "eclwatch"
-      }
-    }
+#   spec {
+#     pod_selector {
+#       match_labels = {
+#         server = "eclwatch"
+#       }
+#     }
 
-    ingress {}
+#     ingress {}
 
-    policy_types = ["Ingress"]
-  }
-}
+#     policy_types = ["Ingress"]
+#   }
+# }
 
-resource "kubernetes_network_policy" "eclqueries" {
-  depends_on = [
-    kubernetes_namespace.default
-  ]
+# resource "kubernetes_network_policy" "eclqueries" {
+#   depends_on = [
+#     kubernetes_namespace.default
+#   ]
 
-  metadata {
-    name      = "eclqueries"
-    namespace = var.namespace.name
-  }
+#   metadata {
+#     name      = "eclqueries"
+#     namespace = var.namespace.name
+#   }
 
-  spec {
-    pod_selector {
-      match_labels = {
-        server = "eclqueries"
-      }
-    }
+#   spec {
+#     pod_selector {
+#       match_labels = {
+#         server = "eclqueries"
+#       }
+#     }
 
-    ingress {}
+#     ingress {}
 
-    policy_types = ["Ingress"]
-  }
-}
+#     policy_types = ["Ingress"]
+#   }
+# }
 
-resource "kubernetes_network_policy" "esdl_sandbox" {
-  depends_on = [
-    kubernetes_namespace.default
-  ]
+# resource "kubernetes_network_policy" "esdl_sandbox" {
+#   depends_on = [
+#     kubernetes_namespace.default
+#   ]
 
-  metadata {
-    name      = "esdl-sandbox"
-    namespace = var.namespace.name
-  }
+#   metadata {
+#     name      = "esdl-sandbox"
+#     namespace = var.namespace.name
+#   }
 
-  spec {
-    pod_selector {
-      match_labels = {
-        server = "esdl-sandbox"
-      }
-    }
+#   spec {
+#     pod_selector {
+#       match_labels = {
+#         server = "esdl-sandbox"
+#       }
+#     }
 
-    ingress {}
+#     ingress {}
 
-    policy_types = ["Ingress"]
-  }
-}
+#     policy_types = ["Ingress"]
+#   }
+# }
 
-resource "kubernetes_network_policy" "roxie" {
-  depends_on = [
-    kubernetes_namespace.default
-  ]
+# resource "kubernetes_network_policy" "roxie" {
+#   depends_on = [
+#     kubernetes_namespace.default
+#   ]
 
-  for_each = local.enabled_roxie_configs
+#   for_each = local.enabled_roxie_configs
 
-  metadata {
-    name      = each.value.name
-    namespace = var.namespace.name
-  }
+#   metadata {
+#     name      = each.value.name
+#     namespace = var.namespace.name
+#   }
 
-  spec {
-    pod_selector {
-      match_labels = {
-        server = "${each.value.name}-server"
-      }
-    }
+#   spec {
+#     pod_selector {
+#       match_labels = {
+#         server = "${each.value.name}-server"
+#       }
+#     }
 
-    ingress {}
+#     ingress {}
 
-    policy_types = ["Ingress"]
-  }
-}
+#     policy_types = ["Ingress"]
+#   }
+# }
 
-resource "kubernetes_network_policy" "sql2ecl" {
-  depends_on = [
-    kubernetes_namespace.default
-  ]
+# resource "kubernetes_network_policy" "sql2ecl" {
+#   depends_on = [
+#     kubernetes_namespace.default
+#   ]
 
-  metadata {
-    name      = "sql2ecl"
-    namespace = var.namespace.name
-  }
+#   metadata {
+#     name      = "sql2ecl"
+#     namespace = var.namespace.name
+#   }
 
-  spec {
-    pod_selector {
-      match_labels = {
-        server = "sql2ecl"
-      }
-    }
+#   spec {
+#     pod_selector {
+#       match_labels = {
+#         server = "sql2ecl"
+#       }
+#     }
 
-    ingress {}
+#     ingress {}
 
-    policy_types = ["Ingress"]
-  }
-}
+#     policy_types = ["Ingress"]
+#   }
+# }

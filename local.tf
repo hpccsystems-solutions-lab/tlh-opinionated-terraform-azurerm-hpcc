@@ -197,12 +197,16 @@ locals {
             "helm.sh/resource-policy"                                 = "keep"
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
           }
-          type    = "LoadBalancer"
-          ingress = []
+          type = "LoadBalancer"
+          ingress = [
+            {}
+          ]
         }
         global = {
-          type    = "LoadBalancer"
-          ingress = []
+          type = "LoadBalancer"
+          ingress = [
+            {}
+          ]
         }
       }
     }
@@ -273,6 +277,35 @@ locals {
 
     placements = local.placements
 
+    dafilesrv = [
+      {
+        name        = "direct-access"
+        application = "directio"
+        disabled    = var.disable_directio
+        service = {
+          servicePort = 7200
+          visibility  = "local"
+        }
+      },
+      {
+        name        = "spray-service"
+        application = "spray"
+        service = {
+          servicePort = 7300
+          visibility  = "local"
+        }
+      },
+      {
+        name        = "rowservice"
+        application = "stream"
+        disabled    = var.disable_rowservice
+        service = {
+          servicePort = 7600
+          visibility  = "local"
+        }
+      }
+    ]
+
     dali = [
       merge({
         name = "mydali"
@@ -309,6 +342,16 @@ locals {
     ]
 
     esp = [
+      merge({
+        name        = "dfs"
+        application = "dfs"
+        auth        = local.auth_mode
+        replicas    = 1
+        service = {
+          servicePort = 8520
+          visibility  = "local"
+        }
+      }, local.esp_ldap_config),
       merge({
         name        = "eclwatch"
         application = "eclwatch"
