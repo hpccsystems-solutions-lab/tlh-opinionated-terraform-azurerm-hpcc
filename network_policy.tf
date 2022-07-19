@@ -6,11 +6,14 @@
 #   metadata {
 #     name      = "eclwatch"
 #     namespace = var.namespace.name
+<<<<<<< HEAD
 #     annotations = {
 #       "app.kubernetes.io/managed-by" = "Helm"
 #       "meta.helm.sh/release-name" = "hpcc"
 #       "meta.helm.sh/release-namespace" = "hpcc"
 #     }
+=======
+>>>>>>> main
 #   }
 
 #   spec {
@@ -34,11 +37,14 @@
 #   metadata {
 #     name      = "eclqueries"
 #     namespace = var.namespace.name
+<<<<<<< HEAD
 #     annotations = {
 #       "app.kubernetes.io/managed-by" = "Helm"
 #       "meta.helm.sh/release-name" = "hpcc"
 #       "meta.helm.sh/release-namespace" = "hpcc"
 #     }
+=======
+>>>>>>> main
 #   }
 
 #   spec {
@@ -62,11 +68,14 @@
 #   metadata {
 #     name      = "esdl-sandbox"
 #     namespace = var.namespace.name
+<<<<<<< HEAD
 #     annotations = {
 #       "app.kubernetes.io/managed-by" = "Helm"
 #       "meta.helm.sh/release-name" = "hpcc"
 #       "meta.helm.sh/release-namespace" = "hpcc"
 #     }    
+=======
+>>>>>>> main
 #   }
 
 #   spec {
@@ -92,11 +101,14 @@
 #   metadata {
 #     name      = each.value.name
 #     namespace = var.namespace.name
+<<<<<<< HEAD
 #     annotations = {
 #       "app.kubernetes.io/managed-by" = "Helm"
 #       "meta.helm.sh/release-name" = "hpcc"
 #       "meta.helm.sh/release-namespace" = "hpcc"
 #     }    
+=======
+>>>>>>> main
 #   }
 
 #   spec {
@@ -120,11 +132,14 @@
 #   metadata {
 #     name      = "sql2ecl"
 #     namespace = var.namespace.name
+<<<<<<< HEAD
 #     annotations = {
 #       "app.kubernetes.io/managed-by" = "Helm"
 #       "meta.helm.sh/release-name" = "hpcc"
 #       "meta.helm.sh/release-namespace" = "hpcc"
 #     }    
+=======
+>>>>>>> main
 #   }
 
 #   spec {
