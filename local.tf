@@ -180,12 +180,12 @@ locals {
 
   onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
 
-  onprem_lz_helm_values = local.onprem_lz_enabled ? [ for k, v in var.onprem_lz_helm_values : { 
+  onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_helm_values : {
     category = "lz"
-    name    = k
-    prefix    = v.prefix
-    hosts = v.hosts
-   } ] : null
+    name     = k
+    prefix   = v.prefix
+    hosts    = v.hosts
+  }] : null
 
   helm_chart_values = {
 
@@ -269,7 +269,7 @@ locals {
             pvc              = "pvc-spill"
             forcePermissions = true
           }
-        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], 
+        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
       ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
     )
 

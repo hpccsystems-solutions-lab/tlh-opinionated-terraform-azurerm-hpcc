@@ -168,7 +168,7 @@ variable "onprem_lz_settings" {
   description = "Input for allowing OnPrem LZ."
   type = map(object({
     prefix = string
-    hosts = list(string)
+    hosts  = list(string)
   }))
   default = {}
 }
