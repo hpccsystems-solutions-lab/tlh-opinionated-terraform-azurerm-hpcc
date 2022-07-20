@@ -180,7 +180,7 @@ locals {
 
   onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
 
-  onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_helm_values : {
+  onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
     category = "lz"
     name     = k
     prefix   = v.prefix
