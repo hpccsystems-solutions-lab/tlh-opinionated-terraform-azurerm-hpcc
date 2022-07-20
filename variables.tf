@@ -164,7 +164,14 @@ variable "data_storage_config" {
   }
 }
 
-
+variable "onprem_lz_settings" {
+  description = "Input for allowing OnPrem LZ."
+  type = map(object({
+    prefix = string
+    hosts = list(string)
+  }))
+  default = {}
+}
 
 variable "environment_variables" {
   description = "Adds default environment variables for all components."

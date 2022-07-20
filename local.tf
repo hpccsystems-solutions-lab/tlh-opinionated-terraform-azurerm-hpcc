@@ -178,6 +178,15 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
+  onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
+
+  onprem_lz_helm_values = local.onprem_lz_enabled ? [ for k, v in local.onprem_lz_helm_values : { 
+    category = "lz"
+    name    = k
+    prefix    = v.prefix
+    hosts = v.hosts
+   } ] : null
+
   helm_chart_values = {
 
     global = {
@@ -260,7 +269,7 @@ locals {
             pvc              = "pvc-spill"
             forcePermissions = true
           }
-        ] : []
+        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], 
       ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
     )
 
