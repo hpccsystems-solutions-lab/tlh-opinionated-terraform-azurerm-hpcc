@@ -178,10 +178,20 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
+  onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
+
+  onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
+    category = "lz"
+    name     = k
+    prefix   = v.prefix
+    hosts    = v.hosts
+  }] : null
+
   helm_chart_values = {
 
     global = {
       env = [for k, v in var.environment_variables : { name = k, value = v }]
+      busybox = local.acr_default.busybox
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
         root       = var.hpcc_container.image_root
@@ -260,7 +270,7 @@ locals {
             pvc              = "pvc-spill"
             forcePermissions = true
           }
-        ] : []
+        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
       ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
     )
 
