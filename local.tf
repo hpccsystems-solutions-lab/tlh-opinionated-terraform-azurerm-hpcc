@@ -190,7 +190,7 @@ locals {
   helm_chart_values = {
 
     global = {
-      env = [for k, v in var.environment_variables : { name = k, value = v }]
+      env     = [for k, v in var.environment_variables : { name = k, value = v }]
       busybox = local.acr_default.busybox
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
@@ -348,7 +348,7 @@ locals {
         name      = "myeclccserver"
         replicas  = 1
         maxActive = 4
-        useChildProcesses: var.eclccserver_settings.use_child_processes
+        useChildProcesses : var.eclccserver_settings.use_child_processes
         resources = {
           cpu    = var.eclccserver_settings.cpu
           memory = var.eclccserver_settings.memory

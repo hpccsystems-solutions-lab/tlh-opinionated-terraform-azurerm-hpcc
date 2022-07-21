@@ -726,12 +726,12 @@ variable "eclccserver_settings" {
   description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
   type = object({
     use_child_process = bool
-    cpu    = string
-    memory = string
+    cpu               = string
+    memory            = string
   })
   default = {
     use_child_process = false
-    cpu    = "1"
-    memory = "4G"
+    cpu               = "1"
+    memory            = "4G"
   }
 }
