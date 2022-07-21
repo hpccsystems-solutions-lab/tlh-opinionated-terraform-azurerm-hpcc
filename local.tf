@@ -348,9 +348,10 @@ locals {
         name      = "myeclccserver"
         replicas  = 1
         maxActive = 4
+        useChildProcesses: var.eclccserver_settings.use_child_processes
         resources = {
-          cpu    = var.eclccserver.cpu
-          memory = var.eclccserver.memory
+          cpu    = var.eclccserver_settings.cpu
+          memory = var.eclccserver_settings.memory
         }
       }
     ]
