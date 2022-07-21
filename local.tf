@@ -338,6 +338,10 @@ locals {
         name      = "myeclccserver"
         replicas  = 1
         maxActive = 4
+        resources = {
+          cpu    = var.eclccserver.cpu
+          memory = var.eclccserver.memory
+        }
       }
     ]
 

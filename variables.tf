@@ -714,3 +714,15 @@ variable "disable_rowservice" {
   type        = bool
   default     = true
 }
+
+variable "eclccserver" {
+  description = "cpu and memory values of the eclccserver."
+  type = object({
+    cpu    = string
+    memory = string
+  })
+  default = {
+    cpu    = "1"
+    memory = "4G"
+  }
+}

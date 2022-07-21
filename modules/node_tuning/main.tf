@@ -24,7 +24,7 @@ resource "kubernetes_secret" "container_registry_auth" {
 
   data = {
     ".dockerconfigjson" = jsonencode({
-      auths = { for url in local.auth_urls:
+      auths = { for url in local.auth_urls :
         url => {
           auth = base64encode("${var.container_registry_auth.username}:${var.container_registry_auth.password}")
         }
@@ -91,9 +91,9 @@ resource "kubernetes_daemonset" "node_tuning" {
           }
         }
         container {
-          name               = "node-tuning-complete"
-          image              = var.containers.busybox
-          image_pull_policy  = "IfNotPresent"
+          name              = "node-tuning-complete"
+          image             = var.containers.busybox
+          image_pull_policy = "IfNotPresent"
           resources {
             limits = {
               cpu    = "20m"
@@ -108,9 +108,9 @@ resource "kubernetes_daemonset" "node_tuning" {
           args    = ["echo `date` --- node tuning completed successfully; while true; do echo `date` --- sleeping 1 hour && sleep 3600; done"]
         }
         init_container {
-          name               = "node-udev-edit"
-          image              = var.containers.debian
-          image_pull_policy  = "IfNotPresent"
+          name              = "node-udev-edit"
+          image             = var.containers.debian
+          image_pull_policy = "IfNotPresent"
           resources {
             limits = {
               cpu    = "1000m"
