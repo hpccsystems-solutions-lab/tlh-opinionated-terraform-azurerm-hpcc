@@ -277,7 +277,7 @@ variable "ldap_tunables" {
   })
   default = {
     cacheTimeout                  = 5
-    checkScopeScans               = true
+    checkScopeScans               = false
     ldapTimeoutSecs               = 131
     maxConnections                = 10
     passwordExpirationWarningDays = 10
