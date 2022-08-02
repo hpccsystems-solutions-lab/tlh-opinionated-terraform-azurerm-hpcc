@@ -735,3 +735,37 @@ variable "eclccserver_settings" {
     memory            = "4G"
   }
 }
+
+variable "dali_settings" {
+  description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
+  type = object({
+    coalescer = object({
+      interval     = number
+      at           = string
+      minDeltaSize = number
+      resources = object({
+        cpu    = string
+        memory = string
+      })
+    })
+    resources = object({
+      cpu    = string
+      memory = string
+    })
+  })
+  default = {
+    coalescer = {
+      interval     = 24
+      at           = "* * * * *"
+      minDeltaSize = 50000
+      resources = {
+        cpu    = "1"
+        memory = "4G"
+      }
+    }
+    resources = {
+      cpu    = "2"
+      memory = "8G"
+    }
+  }
+}

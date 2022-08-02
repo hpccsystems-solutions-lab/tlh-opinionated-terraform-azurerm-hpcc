@@ -325,7 +325,18 @@ locals {
             service = {
               servicePort = 8877
             }
+            interval     = var.dali_settings.coalescer.interval
+            at           = var.dali_settings.coalescer.at
+            minDeltaSize = var.dali_settings.coalescer.minDeltaSize
+            resources = {
+              cpu    = var.dali_settings.coalescer.resources.cpu
+              memory = var.dali_settings.coalescer.resources.memory
+            }
           }
+        }
+        resources = {
+          cpu    = var.dali_settings.resources.memory
+          memory = var.dali_settings.resources.memory
         }
       }, local.dali_ldap_config)
     ]
@@ -345,9 +356,9 @@ locals {
 
     eclccserver = [
       {
-        name      = "myeclccserver"
-        replicas  = 1
-        maxActive = 4
+        name              = "myeclccserver"
+        replicas          = 1
+        maxActive         = 4
         useChildProcesses = var.eclccserver_settings.use_child_process
         resources = {
           cpu    = var.eclccserver_settings.cpu
