@@ -355,14 +355,28 @@ locals {
 
     eclagent = [
       {
-        name      = "hthor"
-        replicas  = 1
-        maxActive = 4
+        name              = "hthor"
+        replicas          = 1
+        maxActive         = 4
+        prefix            = "hthor"
+        useChildProcesses = false
+        type              = "hthor"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       },
       {
-        name      = "roxie-workunit"
-        replicas  = 1
-        maxActive = 4
+        name              = "roxie-workunit"
+        replicas          = 1
+        maxActive         = 20
+        prefix            = "roxie_workunit"
+        useChildProcesses = true
+        type              = "roxie"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       }
     ]
 
