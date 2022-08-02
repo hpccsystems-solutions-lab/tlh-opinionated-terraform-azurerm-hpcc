@@ -346,6 +346,13 @@ locals {
       }, local.dali_ldap_config)
     ]
 
+    dfuserver = [
+      {
+        name    = "dfuserver"
+        maxJobs = 3
+      }
+    ]
+
     eclagent = [
       {
         name      = "hthor"
