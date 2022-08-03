@@ -774,7 +774,7 @@ variable "dali_settings" {
 
 variable "sasha_config" {
   description = "Configuration for Sasha."
-  type = object({
+  type = list(object({
     disabled = bool
     wu-archiver = object({
       disabled = bool
@@ -822,8 +822,8 @@ variable "sasha_config" {
       expiryDefault        = number
       user                 = string
     })
-  })
-  default = {
+  }))
+  default = [{
     disabled = true
     wu-archiver = {
       disabled = false
@@ -871,5 +871,5 @@ variable "sasha_config" {
       expiryDefault        = 4
       user                 = "sasha"
     }
-  }
+  }]
 }
