@@ -803,7 +803,7 @@ variable "sasha_config" {
       cutoff   = number
       at       = string
       throttle = number
-      duration = number
+      # duration = number
     })
 
     dfurecovery-archiver = object({
@@ -852,7 +852,7 @@ variable "sasha_config" {
       cutoff   = 14
       at       = "* * * * *"
       throttle = 0
-      duration = 0
+      # duration = 0
     }
 
     dfurecovery-archiver = {
