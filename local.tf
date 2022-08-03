@@ -340,7 +340,7 @@ locals {
           }
         }
         resources = {
-          cpu    = var.dali_settings.resources.memory
+          cpu    = var.dali_settings.resources.cpu
           memory = var.dali_settings.resources.memory
         }
       }, local.dali_ldap_config)
