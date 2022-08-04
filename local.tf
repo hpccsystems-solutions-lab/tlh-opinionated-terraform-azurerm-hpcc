@@ -163,11 +163,6 @@ locals {
     { for k, v in thor : k => v if !contains(local.thor_config_excludes, k) }
   ]
 
-  # sasha_config_excludes = ["nodeSelector"]
-  # sasha_config = [for sasha in var.sasha_config :
-  #   { for k, v in sasha : k => v if !contains(local.sasha_config_excludes, k) }
-  # ]
-
   admin_placements = [for k, v in var.admin_services_node_selector :
     (k == "all" ? { pods = ["${k}"], placement = { nodeSelector = v } } :
     { pods = ["type:${k}"], placement = { nodeSelector = v } })
