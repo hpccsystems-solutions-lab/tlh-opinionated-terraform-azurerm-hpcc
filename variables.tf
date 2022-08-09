@@ -775,7 +775,7 @@ variable "dali_settings" {
 variable "sasha_config" {
   description = "Configuration for Sasha."
   type = object({
-    disabled = optional(bool)
+    disabled = optional(string)
     wu-archiver = object({
       disabled = optional(bool)
       service = object({
@@ -823,7 +823,7 @@ variable "sasha_config" {
     })
   })
   default = {
-    disabled = false
+   # disabled = false
     wu-archiver = {
       disabled = false
       service = {
