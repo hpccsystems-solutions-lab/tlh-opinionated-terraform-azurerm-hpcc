@@ -772,102 +772,102 @@ variable "dali_settings" {
 
 ###sasha config
 
-variable "sasha_config" {
-  description = "Configuration for Sasha."
-  type = object({
-    disabled = bool
-    wu-archiver = object({
-      disabled = bool
-      service = object({
-        servicePort = number
-      })
-      plane           = string
-      interval        = number
-      limit           = number
-      cutoff          = number
-      backup          = number
-      at              = string
-      throttle        = number
-      retryinterval   = number
-      keepResultFiles = bool
-    })
+# variable "sasha_config" {
+#   description = "Configuration for Sasha."
+#   type = object({
+#     disabled = bool
+#     wu-archiver = object({
+#       disabled = bool
+#       service = object({
+#         servicePort = number
+#       })
+#       plane           = string
+#       interval        = number
+#       limit           = number
+#       cutoff          = number
+#       backup          = number
+#       at              = string
+#       throttle        = number
+#       retryinterval   = number
+#       keepResultFiles = bool
+#     })
 
-    dfuwu-archiver = object({
-      disabled = bool
-      service = object({
-        servicePort = number
-      })
-      plane    = string
-      interval = number
-      limit    = number
-      cutoff   = number
-      at       = string
-      throttle = number
-    })
+#     dfuwu-archiver = object({
+#       disabled = bool
+#       service = object({
+#         servicePort = number
+#       })
+#       plane    = string
+#       interval = number
+#       limit    = number
+#       cutoff   = number
+#       at       = string
+#       throttle = number
+#     })
 
-    dfurecovery-archiver = object({
-      disabled = bool
-      interval = number
-      limit    = number
-      cutoff   = number
-      at       = string
-    })
+#     dfurecovery-archiver = object({
+#       disabled = bool
+#       interval = number
+#       limit    = number
+#       cutoff   = number
+#       at       = string
+#     })
 
-    file-expiry = object({
-      disabled             = bool
-      interval             = number
-      at                   = string
-      persistExpiryDefault = number
-      expiryDefault        = number
-      user                 = string
-    })
-  })
-  default = {
-    disabled = true
-    wu-archiver = {
-      disabled = false
-      service = {
-        servicePort = 8877
-      }
-      plane           = "sasha"
-      interval        = 6
-      limit           = 400
-      cutoff          = 3
-      backup          = 0
-      at              = "* * * * *"
-      throttle        = 0
-      retryinterval   = 6
-      keepResultFiles = false
-    }
+#     file-expiry = object({
+#       disabled             = bool
+#       interval             = number
+#       at                   = string
+#       persistExpiryDefault = number
+#       expiryDefault        = number
+#       user                 = string
+#     })
+#   })
+#   default = {
+#     disabled = true
+#     wu-archiver = {
+#       disabled = false
+#       service = {
+#         servicePort = 8877
+#       }
+#       plane           = "sasha"
+#       interval        = 6
+#       limit           = 400
+#       cutoff          = 3
+#       backup          = 0
+#       at              = "* * * * *"
+#       throttle        = 0
+#       retryinterval   = 6
+#       keepResultFiles = false
+#     }
 
-    dfuwu-archiver = {
-      disabled = false
-      service = {
-        servicePort = 8877
-      }
-      plane    = "sasha"
-      interval = 24
-      limit    = 100
-      cutoff   = 14
-      at       = "* * * * *"
-      throttle = 0
-    }
+#     dfuwu-archiver = {
+#       disabled = false
+#       service = {
+#         servicePort = 8877
+#       }
+#       plane    = "sasha"
+#       interval = 24
+#       limit    = 100
+#       cutoff   = 14
+#       at       = "* * * * *"
+#       throttle = 0
+#     }
 
-    dfurecovery-archiver = {
-      disabled = false
-      interval = 12
-      limit    = 20
-      cutoff   = 4
-      at       = "* * * * *"
-    }
+#     dfurecovery-archiver = {
+#       disabled = false
+#       interval = 12
+#       limit    = 20
+#       cutoff   = 4
+#       at       = "* * * * *"
+#     }
 
-    file-expiry = {
-      disabled             = false
-      interval             = 1
-      at                   = "* * * * *"
-      persistExpiryDefault = 7
-      expiryDefault        = 4
-      user                 = "sasha"
-    }
-  }
-}
+#     file-expiry = {
+#       disabled             = false
+#       interval             = 1
+#       at                   = "* * * * *"
+#       persistExpiryDefault = 7
+#       expiryDefault        = 4
+#       user                 = "sasha"
+#     }
+#   }
+# }
