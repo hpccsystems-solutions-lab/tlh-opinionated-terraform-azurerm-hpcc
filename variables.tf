@@ -823,7 +823,7 @@ variable "sasha_config" {
     })
   })
   default = {
-    #disabled = false
+    disabled = false
     wu-archiver = {
       disabled = false
       service = {

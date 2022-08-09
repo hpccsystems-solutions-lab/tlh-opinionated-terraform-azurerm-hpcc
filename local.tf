@@ -458,8 +458,6 @@ locals {
 
     sasha = var.sasha_config
 
-    # sasha = var.sasha_config.disabled == true ? var.sasha_config : false
-
     eclscheduler = [
       {
         name = "eclscheduler"
