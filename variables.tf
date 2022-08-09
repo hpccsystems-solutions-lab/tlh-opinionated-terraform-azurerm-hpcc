@@ -775,9 +775,9 @@ variable "dali_settings" {
 variable "sasha_config" {
   description = "Configuration for Sasha."
   type = object({
-    disabled = optional(string)
+    disabled = bool
     wu-archiver = object({
-      disabled = optional(bool)
+      disabled = bool
       service = object({
         servicePort = number
       })
@@ -793,7 +793,7 @@ variable "sasha_config" {
     })
 
     dfuwu-archiver = object({
-      disabled = optional(bool)
+      disabled = bool
       service = object({
         servicePort = number
       })
@@ -806,7 +806,7 @@ variable "sasha_config" {
     })
 
     dfurecovery-archiver = object({
-      disabled = optional(bool)
+      disabled = bool
       interval = number
       limit    = number
       cutoff   = number
@@ -814,7 +814,7 @@ variable "sasha_config" {
     })
 
     file-expiry = object({
-      disabled             = optional(bool)
+      disabled             = bool
       interval             = number
       at                   = string
       persistExpiryDefault = number
@@ -823,7 +823,7 @@ variable "sasha_config" {
     })
   })
   default = {
-   # disabled = false
+    disabled = false
     wu-archiver = {
       disabled = false
       service = {
@@ -862,7 +862,7 @@ variable "sasha_config" {
     }
 
     file-expiry = {
-      disabled             = true
+      disabled             = false
       interval             = 1
       at                   = "* * * * *"
       persistExpiryDefault = 7
