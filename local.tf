@@ -325,21 +325,53 @@ locals {
             service = {
               servicePort = 8877
             }
+            interval     = var.dali_settings.coalescer.interval
+            at           = var.dali_settings.coalescer.at
+            minDeltaSize = var.dali_settings.coalescer.minDeltaSize
+            resources = {
+              cpu    = var.dali_settings.coalescer.resources.cpu
+              memory = var.dali_settings.coalescer.resources.memory
+            }
           }
+        }
+        resources = {
+          cpu    = var.dali_settings.resources.cpu
+          memory = var.dali_settings.resources.memory
         }
       }, local.dali_ldap_config)
     ]
 
+    dfuserver = [
+      {
+        name    = "dfuserver"
+        maxJobs = 3
+      }
+    ]
+
     eclagent = [
       {
-        name      = "hthor"
-        replicas  = 1
-        maxActive = 4
+        name              = "hthor"
+        replicas          = 1
+        maxActive         = 4
+        prefix            = "hthor"
+        useChildProcesses = false
+        type              = "hthor"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       },
       {
-        name      = "roxie-workunit"
-        replicas  = 1
-        maxActive = 4
+        name              = "roxie-workunit"
+        replicas          = 1
+        maxActive         = 20
+        prefix            = "roxie_workunit"
+        useChildProcesses = true
+        type              = "roxie"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       }
     ]
 
@@ -423,6 +455,8 @@ locals {
     roxie = local.roxie_config
 
     thor = local.thor_config
+
+   # sasha = var.sasha_config
 
     eclscheduler = [
       {
