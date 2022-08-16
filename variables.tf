@@ -770,6 +770,24 @@ variable "dali_settings" {
   }
 }
 
+variable "dfuserver_settings" {
+  description = "DFUServer settings"
+  type = object({
+    maxJobs = number
+    resources = object({
+      cpu    = string
+      memory = string
+    })
+  })
+  default = {
+    maxJobs = 3
+    resources = {
+      cpu    = "1"
+      memory = "2G"
+    }
+  }
+}
+
 ###sasha config
 
 # variable "sasha_config" {
