@@ -345,6 +345,10 @@ locals {
       {
         name    = "dfuserver"
         maxJobs = 3
+        resources = {
+          cpu    = 1
+          memory = "2G"
+        }
       }
     ]
 
