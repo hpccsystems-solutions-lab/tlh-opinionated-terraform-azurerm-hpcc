@@ -346,8 +346,10 @@ locals {
         name    = "dfuserver"
         maxJobs = var.dfuserver_settings.maxJobs
         resources = {
-          cpu    = var.dfuserver_settings.resources.cpu
-          memory = var.dfuserver_settings.resources.memory
+          # cpu    = var.dfuserver_settings.resources.cpu
+          # memory = var.dfuserver_settings.resources.memory
+          cpu = "1"
+          memory = "2G"
         }
       }
     ]
