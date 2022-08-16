@@ -15,8 +15,8 @@ locals {
   external_hpcc_data    = (local.external_data_config ? (var.data_storage_config.external.hpcc == null ? false : true) : false)
 
   acr_default = var.node_tuning_containers == null ? {
-    busybox = format("us%s%sacr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
-    debian  = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
+    busybox = format("%s%scr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
+    debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
 
   storage_config = {
@@ -325,29 +325,61 @@ locals {
             service = {
               servicePort = 8877
             }
+            interval     = var.dali_settings.coalescer.interval
+            at           = var.dali_settings.coalescer.at
+            minDeltaSize = var.dali_settings.coalescer.minDeltaSize
+            resources = {
+              cpu    = var.dali_settings.coalescer.resources.cpu
+              memory = var.dali_settings.coalescer.resources.memory
+            }
           }
+        }
+        resources = {
+          cpu    = var.dali_settings.resources.cpu
+          memory = var.dali_settings.resources.memory
         }
       }, local.dali_ldap_config)
     ]
 
+    dfuserver = [
+      {
+        name    = "dfuserver"
+        maxJobs = 3
+      }
+    ]
+
     eclagent = [
       {
-        name      = "hthor"
-        replicas  = 1
-        maxActive = 4
+        name              = "hthor"
+        replicas          = 1
+        maxActive         = 4
+        prefix            = "hthor"
+        useChildProcesses = false
+        type              = "hthor"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       },
       {
-        name      = "roxie-workunit"
-        replicas  = 1
-        maxActive = 4
+        name              = "roxie-workunit"
+        replicas          = 1
+        maxActive         = 20
+        prefix            = "roxie_workunit"
+        useChildProcesses = true
+        type              = "roxie"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       }
     ]
 
     eclccserver = [
       {
-        name      = "myeclccserver"
-        replicas  = 1
-        maxActive = 4
+        name              = "myeclccserver"
+        replicas          = 1
+        maxActive         = 4
         useChildProcesses = var.eclccserver_settings.use_child_process
         resources = {
           cpu    = var.eclccserver_settings.cpu
@@ -423,6 +455,8 @@ locals {
     roxie = local.roxie_config
 
     thor = local.thor_config
+
+    # sasha = var.sasha_config
 
     eclscheduler = [
       {
