@@ -90,26 +90,6 @@ variable "enforce_private_link_endpoint_network_policies" {
   type        = bool
   default     = true
 }
-/*
-variable "azuread_clusterrole_map" {
-  description = "Map of Azure AD User and Group Ids to configure in Kubernetes clusterrolebindings"
-  type = object(
-    {
-      cluster_admin_users  = map(string)
-      cluster_view_users   = map(string)
-      standard_view_users  = map(string)
-      standard_view_groups = map(string)
-    }
-  )
-  default = {
-    cluster_admin_users = {
-      admin = "19983b89-67ea-4bda-989d-365b1b9310fc"
-    }
-    cluster_view_users   = {}
-    standard_view_users  = {}
-    standard_view_groups = {}
-  }
-} */
 
 variable "api_server_authorized_ip_ranges" {
   description = "Map of authorized CIDRs / IPs"
@@ -131,10 +111,6 @@ variable "hpcc_storage_config" {
   )
 }
 
-# variable "hpcc_helm_version" {
-#   description = "HPCC Helm Version"
-#   type        = string
-# }
 
 variable "hpcc_helm_chart_version" {
   description = "HPCC helm chart version"
@@ -212,19 +188,6 @@ variable "hpc_cache_dns_name" {
   })
 }
 
-# variable "hpc_cache_name" {
-#   type = object({
-#     zone_name                = string
-#     zone_resource_group_name = string
-#   })
-# }
-
-# Admin Subnets
-# variable "azure_admin_subnets" {
-#   description = "Azure Admin Subnets (for service endpoints)"
-#   type        = map(string)
-#   default     = {}
-# }
 
 variable "azuread_clusterrole_map" {
   description = "Map of Azure AD User and Group Ids to configure in Kubernetes clusterrolebindings"
@@ -244,7 +207,7 @@ variable "azuread_clusterrole_map" {
       admin                    = "b326fe2c-1d5d-4baf-b872-6f21ba9659cb"
       "gianmi01@risk.regn.net" = "d51096fd-443e-492b-a07b-cfd462cd9e4e"
       "sadika01@risk.regn.net" = "19983b89-67ea-4bda-989d-365b1b9310fc"
-      #"sreych01@risk.regn.net" = "dbd7c8f3-80d3-4b83-9c08-65ad27bdbf44"
+      "sreych01@risk.regn.net" = "dbd7c8f3-80d3-4b83-9c08-65ad27bdbf44"
       "guzmki01@risk.regn.net" = "b326fe2c-1d5d-4baf-b872-6f21ba9659cb"
     }
     cluster_view_users   = {}
@@ -252,65 +215,3 @@ variable "azuread_clusterrole_map" {
     standard_view_groups = {}
   }
 }
-
-
-
-
-
-
-# variable "dns_zone_name" {
-#   description = "Azure DNS zone."
-#   type        = string
-# }
-
-# variable "dns_zone_resource_group" {
-#   description = "Azure DNS zone resource group."
-#   type        = string
-# }
-
-# variable "azuread_clusterrole_map" {
-#   description = "Map of Azure AD User and Group Ids to configure in Kubernetes clusterrolebindings"
-#   type = object(
-#     {
-#       cluster_admin_users  = map(string)
-#       cluster_view_users   = map(string)
-#       standard_view_users  = map(string)
-#       standard_view_groups = map(string)
-#     }
-#   )
-#   default = {
-#     cluster_admin_users  = {}
-#     cluster_view_users   = {}
-#     standard_view_users  = {}
-#     standard_view_groups = {}
-#   }
-# }
-
-# variable "storage_account_authorized_ip_ranges" {
-#   description = "Map of authorized CIDRs / IPs"
-#   type        = map(string)
-# }
-
-# variable "hpcc_helm_chart_version" {
-#   description = "HPCC helm chart version"
-#   type        = string
-# }
-
-# variable "hpcc_container" {
-#   description = "HPCC container registry info."
-#   type = object({
-#     image_name = string
-#     image_root = string
-#     version    = string
-#   })
-# }
-
-# variable "hpcc_container_registry_auth" {
-#   description = "Registry authentication for HPCC containers."
-#   type = object({
-#     password = string
-#     username = string
-#   })
-#   default   = null
-#   sensitive = true
-# }

@@ -47,20 +47,7 @@ locals {
     }
   ]
 
-  /*
- k8s_exec_auth_env = {
-    AAD_SERVICE_PRINCIPAL_CLIENT_ID     = module.default_azure_credentials.client_id
-    AAD_SERVICE_PRINCIPAL_CLIENT_SECRET = module.default_azure_credentials.client_secret
-  }
-*/
-  /*azure_auth_env = {
-    AZURE_TENANT_ID       = module.default_azure_credentials.tenant_id
-    AZURE_SUBSCRIPTION_ID = module.default_azure_credentials.subscription_id
-    AZURE_CLIENT_ID       = module.default_azure_credentials.client_id
-    AZURE_CLIENT_SECRET   = module.default_azure_credentials.client_secret
-  }*/
-
-  azure_auth_env = {
+ azure_auth_env = {
     AZURE_TENANT_ID       = data.azurerm_client_config.current.tenant_id
     AZURE_SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
   }
