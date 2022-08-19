@@ -1,7 +1,7 @@
 locals {
   account_code = "us-prctrox-dev"
 
-  cluster_name = "us-aks-000"
+  cluster_name = "us-dev-aks-000"
 
   cluster_version = "1.21"
 
