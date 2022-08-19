@@ -1,7 +1,7 @@
 locals {
   account_code = "us-prctrox-dev"
 
-  cluster_name = "us-kg-aks-009"
+  cluster_name = "us-aks-000"
 
   cluster_version = "1.21"
 
@@ -12,10 +12,6 @@ locals {
   cluster_name_short = trimprefix(local.cluster_name, "${local.account_code}-")
   azuread_clusterrole_map = {
     cluster_admin_users = {
-      "gianmi01@risk.regn.net" = "d51096fd-443e-492b-a07b-cfd462cd9e4e"
-      "sadika01@risk.regn.net" = "19983b89-67ea-4bda-989d-365b1b9310fc"
-      "sreych01@risk.regn.net" = "dbd7c8f3-80d3-4b83-9c08-65ad27bdbf44"
-      "guzmki01@risk.regn.net" = "b326fe2c-1d5d-4baf-b872-6f21ba9659cb"
     }
     cluster_view_users   = {}
     standard_view_users  = {}
@@ -47,9 +43,15 @@ locals {
     }
   ]
 
+  k8s_exec_auth_env = {
+    AAD_SERVICE_PRINCIPAL_CLIENT_ID     = module.default_azure_credentials.client_id
+    AAD_SERVICE_PRINCIPAL_CLIENT_SECRET = module.default_azure_credentials.client_secret
+  }
  azure_auth_env = {
-    AZURE_TENANT_ID       = data.azurerm_client_config.current.tenant_id
-    AZURE_SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
+    AZURE_TENANT_ID       = module.default_azure_credentials.tenant_id
+    AZURE_SUBSCRIPTION_ID = module.default_azure_credentials.subscription_id
+    AZURE_CLIENT_ID       = module.default_azure_credentials.client_id
+    AZURE_CLIENT_SECRET   = module.default_azure_credentials.client_secret
   }
   
   admin_group_object_ids = [var.aad_group_id]

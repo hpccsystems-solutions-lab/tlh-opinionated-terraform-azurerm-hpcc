@@ -15,7 +15,6 @@ resource "random_string" "random" {
   special = false
 }
 
-data "azurerm_client_config" "current" {}
 
 data "azurerm_subscription" "current" {}
 
@@ -35,7 +34,7 @@ module "metadata" {
   location            = "eastus2"
   sre_team            = "SupercomputerOps@lexisnexisrisk.com"
   environment         = "sandbox"
-  product_name        = random_string.random.result
+  product_name        = "prct"
   business_unit       = "infra"
   product_group       = "hpccops"
   subscription_id     = data.azurerm_subscription.current.subscription_id

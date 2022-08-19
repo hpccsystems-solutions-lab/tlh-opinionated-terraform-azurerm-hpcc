@@ -111,7 +111,6 @@ variable "hpcc_storage_config" {
   )
 }
 
-
 variable "hpcc_helm_chart_version" {
   description = "HPCC helm chart version"
   type        = string
@@ -166,15 +165,6 @@ variable "jfrog_registry" {
   sensitive = true
 }
 
-variable "container_registry_auth" {
-  description = "values to set as secrets for JFrog repo access"
-  type = object({
-    username = string
-    password = string # API Token
-  })
-  sensitive = true
-}
-
 variable "hpc_cache_enabled" {
   description = "Creates the hpc-cache for the cluster."
   type        = bool
@@ -200,18 +190,4 @@ variable "azuread_clusterrole_map" {
       standard_view_groups = map(string)
     }
   )
-
-  default = {
-    cluster_admin_users = {
-      # admin = "D8CF1037-605C-477D-AF52-81A156C45427"
-      admin                    = "b326fe2c-1d5d-4baf-b872-6f21ba9659cb"
-      "gianmi01@risk.regn.net" = "d51096fd-443e-492b-a07b-cfd462cd9e4e"
-      "sadika01@risk.regn.net" = "19983b89-67ea-4bda-989d-365b1b9310fc"
-      "sreych01@risk.regn.net" = "dbd7c8f3-80d3-4b83-9c08-65ad27bdbf44"
-      "guzmki01@risk.regn.net" = "b326fe2c-1d5d-4baf-b872-6f21ba9659cb"
-    }
-    cluster_view_users   = {}
-    standard_view_users  = {}
-    standard_view_groups = {}
-  }
 }

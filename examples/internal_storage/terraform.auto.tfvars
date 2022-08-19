@@ -55,16 +55,11 @@ jfrog_registry = {
   image_name = "platform-core-ln",
   version    = "8.6.20-rc1"
 }
-container_registry_auth = {
-  username = "wagnerrh@risk.regn.net",
-  password = "AKCp8mYUomCJV4Z3ki2jHJP9ZvV3AiFg4aRYWxSueummgupdyskKN2PqoZ3gUFGx8nhJtHE8Z"
-}
 
-#### Cache Storage target DNS 
+# Cache Storage target DNS 
 hpc_cache_dns_name = {
   zone_name                = "us-infrastructure-dev.azure.lnrsg.io"
   zone_resource_group_name = "app-dns-prod-eastus2"
 }
-
 
 environment = "dev"
