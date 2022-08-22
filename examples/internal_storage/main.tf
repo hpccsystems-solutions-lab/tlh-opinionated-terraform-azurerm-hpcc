@@ -1,11 +1,13 @@
 provider "azurerm" {
-  storage_use_azuread = true
+  tenant_id = module.azure_credentials.tenant_id
+  subscription_id = module.azure_credentials.subscription_id
+  client_id = module.azure_credentials.client_id
+  client_secret = module.azure_credentials.client_secret
   features {}
 }
 
 module "naming" {
   source = "github.com/Azure-Terraform/example-naming-template.git?ref=v1.0.0"
-
 }
 
 resource "random_string" "random" {
@@ -15,14 +17,13 @@ resource "random_string" "random" {
   special = false
 }
 
+data "azurerm_client_config" "current" {}
 
 data "azurerm_subscription" "current" {}
-
 
 data "http" "my_ip" {
   url = "https://ifconfig.me"
 }
-
 
 module "metadata" {
     source = "github.com/Azure-Terraform/terraform-azurerm-metadata.git?ref=v1.5.0"
@@ -44,11 +45,11 @@ module "metadata" {
 
 module "resource_group" {
   source = "git@github.com:Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.1.0"
-
   location = module.metadata.location
   names    = module.metadata.names
   tags     = module.metadata.tags
 }
+
 
 #############
 ##vnet##
@@ -122,16 +123,6 @@ module "virtual_network" {
       }
     }
   }
-  # peers = {
-  #   expressroute = {
-  #     id                           = var.expressroute_id
-  #     allow_virtual_network_access = true
-  #     allow_forwarded_traffic      = true
-  #     allow_gateway_transit        = false
-  #     use_remote_gateways          = true
-  #   }
-  # }
-
 }
 
 
@@ -151,64 +142,33 @@ module "aks" {
   cluster_name    = local.cluster_name
   cluster_version = local.cluster_version
 
+  sku_tier_paid   = false
 
-  ingress_node_pool = true
+  cluster_endpoint_public_access = true
+  cluster_endpoint_access_cidrs  = ["0.0.0.0/0"]
 
-  sku_tier = var.sku_tier
+  virtual_network_resource_group_name = module.resource_group.name
+  virtual_network_name                = module.virtual_network.vnet.name
+  subnet_name                         = module.virtual_network.aks.demo.subnet.name
+  route_table_name                    = module.virtual_network.aks.demo.route_table.name
 
-  virtual_network = module.virtual_network.aks["roxie"]
+  dns_resource_group_lookup = { "${local.internal_domain}" = local.dns_resource_group }
 
   azuread_clusterrole_map         = local.azuread_clusterrole_map
-  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
 
-  node_pools = [
-   {
-      name                = "thorpool"
-      node_os             = "ubuntu"
-      node_type           = "x64-gp-v1"
-      node_size           = "xlarge"
-      single_vmss         = true
-      public              = false
-      min_capacity        = 1
-      max_capacity        = 50
-      placement_group_key = ""
-      labels = {
-        "lnrs.io/tier" = "standard"
-        "workload"     = "thorpool"
-      }
-      taints = []
-      tags   = {}
-    },
+  node_group_templates = [
     {
-      name                = "roxiepool"
+      name                = "workers"
       node_os             = "ubuntu"
-      node_type           = "x64-gp-v1"
-      node_size           = "xlarge"
-      single_vmss         = true
-      public              = false
-      min_capacity        = 1
-      max_capacity        = 10
-      placement_group_key = ""
+      node_type           = "gp"
+      node_type_version   = "v1"
+      node_size           = "large"
+      single_group        = false
+      min_capacity        = 0
+      max_capacity        = 18
+      placement_group_key = null
       labels = {
         "lnrs.io/tier" = "standard"
-        "workload"     = "roxiepool"
-      }
-      taints = []
-      tags   = {}
-    },
-    {
-      name                = "servpool"
-      node_os             = "ubuntu"
-      node_type           = "x64-gp-v1"
-      node_size           = "xlarge"
-      single_vmss         = true
-      public              = false
-      min_capacity        = 2
-      max_capacity        = 4
-      placement_group_key = ""
-      labels = {
-        "lnrs.io/tier" = "standard"
-        "workload"     = "servpool"
       }
       taints = []
       tags   = {}
@@ -285,12 +245,10 @@ module "acr" {
   public_network_access_enabled = false
   disable_unique_suffix         = true
   acr_admins                    = local.azuread_clusterrole_map.cluster_admin_users
-  
   acr_contributors = { aks = module.aks.kubelet_identity.object_id }
   access_list                   = local.acr_trusted_ips
   service_endpoints = {
     "iaas-outbound" = module.virtual_network.subnets["iaas-outbound"].id
-   
   }
 }
 
@@ -298,7 +256,6 @@ module "acr" {
 #################
 ##hpcc##
 #################
-
 module "hpcc" {
   depends_on = [
     module.aks
@@ -333,7 +290,6 @@ module "hpcc" {
     authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
     delete_protection    = false
 
-
     subnet_ids = merge({
       aks = module.virtual_network.subnets["iaas-outbound"].id
     }, var.azure_admin_subnets)
@@ -347,7 +303,7 @@ module "hpcc" {
             replication_type     = "ZRS"
             authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
             delete_protection    = false
-    
+ 
             subnet_ids = merge({
               aks = module.virtual_network.subnets["iaas-outbound"].id
             },  var.azure_admin_subnets)

@@ -10,6 +10,8 @@ variable "azure_admin_subnets" {
 
 variable "aad_group_id" {
   default = null
+  # description = "Group id of the Vault Service Principal."
+  # This variable is populate by the Terraform Enterprise workspace"
   
 }
 
@@ -111,6 +113,7 @@ variable "hpcc_storage_config" {
   )
 }
 
+
 variable "hpcc_helm_chart_version" {
   description = "HPCC helm chart version"
   type        = string
@@ -124,7 +127,7 @@ variable "hpcc_container" {
     version    = string
   })
   sensitive = true
-  #default   = null
+  # default   = null
 }
 
 variable "hpcc_container_registry_auth" {
@@ -165,6 +168,15 @@ variable "jfrog_registry" {
   sensitive = true
 }
 
+variable "container_registry_auth" {
+  description = "values to set as secrets for JFrog repo access"
+  type = object({
+    username = string
+    password = string # API Token
+  })
+  sensitive = true
+}
+
 variable "hpc_cache_enabled" {
   description = "Creates the hpc-cache for the cluster."
   type        = bool
@@ -190,4 +202,12 @@ variable "azuread_clusterrole_map" {
       standard_view_groups = map(string)
     }
   )
+
+  default = {
+    cluster_admin_users = {
+    }
+    cluster_view_users   = {}
+    standard_view_users  = {}
+    standard_view_groups = {}
+  }
 }
