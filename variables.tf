@@ -736,39 +736,39 @@ variable "eclccserver_settings" {
   }
 }
 
-variable "dali_settings" {
-  description = "dali settings"
-  type = object({
-    coalescer = object({
-      interval     = number
-      at           = string
-      minDeltaSize = number
-      resources = object({
-        cpu    = string
-        memory = string
-      })
-    })
-    resources = object({
-      cpu    = string
-      memory = string
-    })
-  })
-  default = {
-    coalescer = {
-      interval     = 24
-      at           = "* * * * *"
-      minDeltaSize = 50000
-      resources = {
-        cpu    = "1"
-        memory = "4G"
-      }
-    }
-    resources = {
-      cpu    = "2"
-      memory = "8G"
-    }
-  }
-}
+# variable "dali_settings" {
+#   description = "dali settings"
+#   type = object({
+#     coalescer = object({
+#       interval     = number
+#       at           = string
+#       minDeltaSize = number
+#       resources = object({
+#         cpu    = string
+#         memory = string
+#       })
+#     })
+#     resources = object({
+#       cpu    = string
+#       memory = string
+#     })
+#   })
+#   default = {
+#     coalescer = {
+#       interval     = 24
+#       at           = "* * * * *"
+#       minDeltaSize = 50000
+#       resources = {
+#         cpu    = "1"
+#         memory = "4G"
+#       }
+#     }
+#     resources = {
+#       cpu    = "2"
+#       memory = "8G"
+#     }
+#   }
+# }
 
 variable "dfuserver_settings" {
   description = "DFUServer settings"
