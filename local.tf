@@ -372,16 +372,16 @@ locals {
       }, local.dali_ldap_config)
     ]
 
-    dfuserver = [
-      {
-        name    = "dfuserver"
-        maxJobs = var.dfuserver_settings.maxJobs
-        resources = {
-          cpu    = var.dfuserver_settings.resources.cpu
-          memory = var.dfuserver_settings.resources.memory
-        }
-      }
-    ]
+    # dfuserver = [
+    #   {
+    #     name    = "dfuserver"
+    #     maxJobs = var.dfuserver_settings.maxJobs
+    #     resources = {
+    #       cpu    = var.dfuserver_settings.resources.cpu
+    #       memory = var.dfuserver_settings.resources.memory
+    #     }
+    #   }
+    # ]
 
     eclagent = [
       {
