@@ -347,41 +347,41 @@ locals {
       }
     ]
 
-    # dali = [
-    #   merge({
-    #     name = "mydali"
-    #     auth = local.auth_mode
-    #     services = {
-    #       coalescer = {
-    #         service = {
-    #           servicePort = 8877
-    #         }
-    #         interval     = var.dali_settings.coalescer.interval
-    #         at           = var.dali_settings.coalescer.at
-    #         minDeltaSize = var.dali_settings.coalescer.minDeltaSize
-    #         resources = {
-    #           cpu    = var.dali_settings.coalescer.resources.cpu
-    #           memory = var.dali_settings.coalescer.resources.memory
-    #         }
-    #       }
-    #     }
-    #     resources = {
-    #       cpu    = var.dali_settings.resources.cpu
-    #       memory = var.dali_settings.resources.memory
-    #     }
-    #   }, local.dali_ldap_config)
-    # ]
+    dali = [
+      merge({
+        name = "mydali"
+        auth = local.auth_mode
+        services = {
+          coalescer = {
+            service = {
+              servicePort = 8877
+            }
+            interval     = var.dali_settings.coalescer.interval
+            at           = var.dali_settings.coalescer.at
+            minDeltaSize = var.dali_settings.coalescer.minDeltaSize
+            resources = {
+              cpu    = var.dali_settings.coalescer.resources.cpu
+              memory = var.dali_settings.coalescer.resources.memory
+            }
+          }
+        }
+        resources = {
+          cpu    = var.dali_settings.resources.cpu
+          memory = var.dali_settings.resources.memory
+        }
+      }, local.dali_ldap_config)
+    ]
 
-    # dfuserver = [
-    #   {
-    #     name    = "dfuserver"
-    #     maxJobs = var.dfuserver_settings.maxJobs
-    #     resources = {
-    #       cpu    = var.dfuserver_settings.resources.cpu
-    #       memory = var.dfuserver_settings.resources.memory
-    #     }
-    #   }
-    # ]
+    dfuserver = [
+      {
+        name    = "dfuserver"
+        maxJobs = var.dfuserver_settings.maxJobs
+        resources = {
+          cpu    = var.dfuserver_settings.resources.cpu
+          memory = var.dfuserver_settings.resources.memory
+        }
+      }
+    ]
 
     eclagent = [
       {
