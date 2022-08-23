@@ -1,0 +1,8 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: hpcc-remote-issuer
+  namespace: hpcc
+spec:
+  ca: 
+   secretName: hpcc-remote-issuer-key-pair

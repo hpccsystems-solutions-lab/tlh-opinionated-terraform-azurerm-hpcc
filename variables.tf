@@ -889,3 +889,13 @@ variable "dfuserver_settings" {
 #     }
 #   }
 # }
+
+variable "internal_domain" {
+  description = "DNS Domain name"
+  type        = string
+}
+
+variable "cluster_name" {
+  description = "The name of aks cluster."
+  type        = string
+}

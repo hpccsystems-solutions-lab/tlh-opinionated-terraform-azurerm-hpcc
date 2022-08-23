@@ -275,12 +275,43 @@ locals {
     )
 
     certificates = {
-      enabled = false
+      enabled = true
       issuers = {
         local = {
-          name = "letsencrypt-issuer"
-          kind = "ClusterIssuer"
-          spec = null
+          name = "hpcc-local-issuer"
+          kind = "Issuer"
+          spec = {
+            ca = {
+              secretName = "hpcc-local-issuer-key-pair"
+            }
+          }
+        }
+        public = {
+          name   = "hpcc-public-issuer"
+          kind   = "Issuer"
+          domain = var.internal_domain
+          spec = {
+            selfSigned = {}
+          }
+        }
+        remote = {
+          enabled = true
+          name    = "hpcc-remote-issuer"
+          kind    = "Issuer"
+          spec = {
+            ca = {
+              secretName = "hpcc-remote-issuer-key-pair"
+            }
+          }
+        }
+        signing = {
+          name = "hpcc-signing-issuer"
+          kind = "Issuer"
+          spec = {
+            ca = {
+              secretName = "hpcc-signing-issuer-key-pair"
+            }
+          }
         }
       }
     }
@@ -396,8 +427,13 @@ locals {
       merge({
         name        = "dfs"
         application = "dfs"
-        auth        = local.auth_mode
-        replicas    = 1
+        remoteClients = [
+          {
+            name = "insuranceprod"
+          }
+        ]
+        auth     = local.auth_mode
+        replicas = 1
         service = {
           servicePort = 8520
           visibility  = "local"
