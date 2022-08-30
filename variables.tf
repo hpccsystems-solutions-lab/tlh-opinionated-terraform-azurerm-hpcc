@@ -788,6 +788,16 @@ variable "dfuserver_settings" {
   }
 }
 
+variable "spray_service_settings" {
+  description = "spray services settings"
+  type = object({
+    replicas = number
+  })
+  default = {
+    replicas = 7
+  }
+}
+
 ###sasha config
 
 # variable "sasha_config" {
