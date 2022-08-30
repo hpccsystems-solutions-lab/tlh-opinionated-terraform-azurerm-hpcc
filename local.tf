@@ -19,6 +19,9 @@ locals {
     debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
 
+  external_dns_hosts_enabled = var.custom_external_dns_hosts != null
+  custom_external_dns_hosts  = local.external_dns_hosts_enabled ? join(",", [for host in var.custom_external_dns_hosts : format("%s.%s", host, var.domain)]) : null
+
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
       local.external_data_storage ? var.data_storage_config.external.blob_nfs : null)
@@ -203,10 +206,10 @@ locals {
           type = "ClusterIP"
         }
         local = {
-          annotations = {
+          annotations = merge({
             "helm.sh/resource-policy"                                 = "keep"
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-          }
+          }, local.external_dns_hosts_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = local.custom_external_dns_hosts } : {})
           type = "LoadBalancer"
           ingress = [
             {}

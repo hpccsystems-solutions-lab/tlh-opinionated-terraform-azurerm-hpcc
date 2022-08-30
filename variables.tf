@@ -84,6 +84,16 @@ variable "admin_services_storage" {
   }
 }
 
+variable "domain_name" {
+  type = string
+  default = null
+}
+
+variable "custom_external_dns_hosts" {
+  type = list(string)
+  default = null
+}
+
 variable "data_storage_config" {
   description = "Data plane config for HPCC."
   type = object({
