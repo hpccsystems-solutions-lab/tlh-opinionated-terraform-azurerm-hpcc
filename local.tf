@@ -331,6 +331,7 @@ locals {
       {
         name        = "spray-service"
         application = "spray"
+        replicas    = 7
         service = {
           servicePort = 7300
           visibility  = "local"
