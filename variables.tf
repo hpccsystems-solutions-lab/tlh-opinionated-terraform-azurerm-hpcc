@@ -794,7 +794,7 @@ variable "spray_service_settings" {
     replicas = number
   })
   default = {
-    replicas = 7
+    replicas = 3
   }
 }
 
