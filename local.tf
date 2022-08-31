@@ -20,7 +20,7 @@ locals {
   } : var.node_tuning_containers
 
   external_dns_zone_enabled = var.dns_domain_name != null
-  domain = coaelesce(var.dns_domain_name, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
+  domain = coalesce(var.dns_domain_name, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
 
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
