@@ -19,8 +19,8 @@ locals {
     debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
 
-  external_dns_hosts_enabled = var.custom_external_dns_hosts != null
-  custom_external_dns_hosts  = local.external_dns_hosts_enabled ? join(",", [for host in var.custom_external_dns_hosts : format("%s.%s", host, var.domain)]) : null
+  external_dns_zone_enabled = var.dns_domain_name != null
+  domain = coaelesce(var.dns_domain_name, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
 
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
@@ -206,10 +206,10 @@ locals {
           type = "ClusterIP"
         }
         local = {
-          annotations = merge({
+          annotations = {
             "helm.sh/resource-policy"                                 = "keep"
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-          }, local.external_dns_hosts_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = local.custom_external_dns_hosts } : {})
+          }
           type = "LoadBalancer"
           ingress = [
             {}
@@ -298,6 +298,7 @@ locals {
         service = {
           servicePort = 7200
           visibility  = "local"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "directio", local.domain) } : {}
         }
       },
       {
@@ -306,6 +307,7 @@ locals {
         service = {
           servicePort = 7300
           visibility  = "local"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {}
         }
       },
       {
@@ -315,6 +317,7 @@ locals {
         service = {
           servicePort = 7600
           visibility  = "local"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "rowservice", local.domain) } : {}
         }
       }
     ]
@@ -404,6 +407,7 @@ locals {
         service = {
           servicePort = 8520
           visibility  = "local"
+          
         }
       }, local.esp_ldap_config),
       merge({
@@ -415,6 +419,7 @@ locals {
           port        = 8888
           servicePort = 8010
           visibility  = "local"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {}
         }
       }, local.esp_ldap_config),
       merge({
@@ -425,6 +430,7 @@ locals {
         service = {
           servicePort = 8010
           visibility  = "cluster"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclservices", local.domain) } : {}
         }
       }, local.esp_ldap_config),
       merge({
@@ -435,6 +441,7 @@ locals {
         service = {
           servicePort = 8002
           visibility  = "local"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclqueries", local.domain) } : {}
         }
       }, local.esp_ldap_config),
       merge({
@@ -445,6 +452,7 @@ locals {
         service = {
           servicePort = 8899
           visibility  = "local"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "esdl-sandbox", local.domain) } : {}
         }
       }, local.esp_ldap_config),
       merge({
@@ -455,6 +463,7 @@ locals {
         service = {
           servicePort = 8510
           visibility  = "local"
+          annotations = local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "sql2ecl", local.domain) } : {}
         }
       }, local.esp_ldap_config)
     ]
