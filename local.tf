@@ -426,11 +426,11 @@ locals {
 
     esp = [
       merge({
-        name        = "dfs"
-        application = "dfs"
+        name          = "dfs"
+        application   = "dfs"
         remoteClients = var.esp_remoteclients
-        auth     = local.auth_mode
-        replicas = 1
+        auth          = local.auth_mode
+        replicas      = 1
         service = {
           servicePort = 8520
           visibility  = "local"
@@ -493,7 +493,7 @@ locals {
 
     thor = local.thor_config
 
-   # sasha = var.sasha_config
+    sasha = var.sasha_config
 
     eclscheduler = [
       {
