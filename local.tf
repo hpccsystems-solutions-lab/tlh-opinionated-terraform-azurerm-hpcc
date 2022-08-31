@@ -497,7 +497,7 @@ locals {
 
     thor = local.thor_config
 
-    # sasha = var.sasha_config
+    sasha = var.sasha_config
 
     eclscheduler = [
       {
