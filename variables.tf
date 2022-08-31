@@ -909,3 +909,13 @@ variable "cluster_name" {
   description = "The name of aks cluster."
   type        = string
 }
+
+variable "esp_remoteclients" {
+  description = "name of the remote client cert to be installed"
+  type  = list(any)
+  default = [
+    {
+      name = "insuranceprod"
+    }
+  ]
+}

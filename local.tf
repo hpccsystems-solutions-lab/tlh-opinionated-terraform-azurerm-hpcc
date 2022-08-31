@@ -428,11 +428,7 @@ locals {
       merge({
         name        = "dfs"
         application = "dfs"
-        remoteClients = [
-          {
-            name = "insuranceprod"
-          }
-        ]
+        remoteClients = var.esp_remoteclients
         auth     = local.auth_mode
         replicas = 1
         service = {
@@ -497,7 +493,7 @@ locals {
 
     thor = local.thor_config
 
-    sasha = var.sasha_config
+   # sasha = var.sasha_config
 
     eclscheduler = [
       {
