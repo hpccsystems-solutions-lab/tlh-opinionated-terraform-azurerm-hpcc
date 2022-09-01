@@ -19,8 +19,8 @@ locals {
     debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
 
-  external_dns_zone_enabled = var.dns_domain_name != null
-  domain                    = coalesce(var.dns_domain_name, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
+  external_dns_zone_enabled = var.internal_domain != null
+  domain                    = coalesce(var.internal_domain, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
 
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
@@ -449,7 +449,10 @@ locals {
         service = {
           servicePort = 8520
           visibility  = "local"
-
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "dfs", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({

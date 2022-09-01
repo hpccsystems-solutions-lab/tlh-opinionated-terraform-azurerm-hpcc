@@ -84,9 +84,6 @@ variable "admin_services_storage" {
   }
 }
 
-variable "dns_domain_name" {
-  type = string
-}
 
 variable "data_storage_config" {
   description = "Data plane config for HPCC."
