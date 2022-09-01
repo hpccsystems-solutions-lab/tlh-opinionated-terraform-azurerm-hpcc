@@ -19,6 +19,9 @@ locals {
     debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
 
+  external_dns_zone_enabled = var.internal_domain != null
+  domain                    = coalesce(var.internal_domain, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
+
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
       local.external_data_storage ? var.data_storage_config.external.blob_nfs : null)
@@ -326,6 +329,10 @@ locals {
         service = {
           servicePort = 7200
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "directio", local.domain) } : {})
         }
       },
       {
@@ -335,6 +342,10 @@ locals {
         service = {
           servicePort = 7300
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
       },
       {
@@ -344,6 +355,10 @@ locals {
         service = {
           servicePort = 7600
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "rowservice", local.domain) } : {})
         }
       }
     ]
@@ -434,6 +449,10 @@ locals {
         service = {
           servicePort = 8520
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "dfs", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -445,6 +464,10 @@ locals {
           port        = 8888
           servicePort = 8010
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -455,6 +478,10 @@ locals {
         service = {
           servicePort = 8010
           visibility  = "cluster"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclservices", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -465,6 +492,10 @@ locals {
         service = {
           servicePort = 8002
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclqueries", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -475,6 +506,10 @@ locals {
         service = {
           servicePort = 8899
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "esdl-sandbox", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -485,6 +520,10 @@ locals {
         service = {
           servicePort = 8510
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "sql2ecl", local.domain) } : {})
         }
       }, local.esp_ldap_config)
     ]
