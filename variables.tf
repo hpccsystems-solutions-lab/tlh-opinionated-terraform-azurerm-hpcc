@@ -84,6 +84,7 @@ variable "admin_services_storage" {
   }
 }
 
+
 variable "data_storage_config" {
   description = "Data plane config for HPCC."
   type = object({
