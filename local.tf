@@ -534,6 +534,7 @@ locals {
 
     sasha = var.sasha_config
 
+
     eclscheduler = [
       {
         name = "eclscheduler"
