@@ -789,7 +789,7 @@ variable "dfuserver_settings" {
   }
 }
 
-    
+
 variable "spray_service_settings" {
   description = "spray services settings"
   type = object({
@@ -921,3 +921,10 @@ variable "esp_remoteclients" {
     }
   ]
 }
+
+##placements##
+
+# variable "placements" {
+#   description = "placements for hppc"
+#   type = list(map(any))
+# }

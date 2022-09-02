@@ -319,8 +319,178 @@ locals {
       }
     }
 
-    placements = local.placements
+    #placements = local.placements
 
+    placements = [
+      {
+        pods = ["all"]
+        placement = {
+          nodeSelector = {
+            workload = "servpool"
+          }
+          tolerations = {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "servpool"
+            effect   = "NoSchedule"
+          }
+        }
+      },
+
+      {
+        pods = ["thor"]
+        placement = {
+          nodeSelector = {
+            workload = "thorpool"
+          }
+          tolerations = {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "thorpool"
+            effect   = "NoSchedule"
+          }
+        }
+      },
+
+      {
+        pods = ["spray-service"]
+        placement = {
+          nodeSelector = {
+            workload = "spraypool"
+          }
+          tolerations = {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "spraypool"
+            effect   = "NoSchedule"
+          }
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "spray-service"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "spray-service"
+              }
+            }
+          }
+        }
+      },
+
+      {
+        pods = ["eclwatch"]
+        placement = {
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "eclwatch"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclwatch"
+              }
+            }
+          }
+        }
+      },
+
+      {
+        pods = ["eclservices"]
+        placement = {
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "eclservices"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclservices"
+              }
+            }
+          }
+        }
+      },
+
+      {
+        pods = ["eclqueries"]
+        placement = {
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "eclqueries"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclqueries"
+              }
+            }
+          }
+        }
+      },
+
+      {
+        pods = ["dfs"]
+        placement = {
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "dfs"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "dfs"
+              }
+            }
+          }
+        }
+      },
+
+      {
+        pods = ["direct-access"]
+        placement = {
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "direct-access"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "direct-access"
+              }
+            }
+          }
+        }
+      },
+
+      {
+        pods = ["thorworker"]
+        placement = {
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "thorworker"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "thorworker"
+              }
+            }
+          }
+        }
+      },
+
+      {
+        pods = ["roxie-agent"]
+        placement = {
+          topologySpreadConstraints = {
+            maxSkew           = 1
+            topologyKey       = "roxie-agent"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "roxie-agent"
+              }
+            }
+          }
+        }
+      }
+
+    ]
+    ###########
     dafilesrv = [
       {
         name        = "direct-access"

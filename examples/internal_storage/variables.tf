@@ -12,7 +12,7 @@ variable "aad_group_id" {
   default = null
   # description = "Group id of the Vault Service Principal."
   # This variable is populate by the Terraform Enterprise workspace"
-  
+
 }
 
 variable "sku_tier" {
