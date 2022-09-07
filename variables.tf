@@ -165,6 +165,19 @@ variable "data_storage_config" {
   }
 }
 
+
+
+variable "remote_storage_plane" {
+  description = "Input for attaching remote storage plane"
+  type = map(object({
+    dfs_service_name = string
+    target_storage_accounts = map(object({
+      name   = string
+      prefix = string
+    }))
+  }))
+  default = {}
+}
 variable "onprem_lz_settings" {
   description = "Input for allowing OnPrem LZ."
   type = map(object({
@@ -789,7 +802,7 @@ variable "dfuserver_settings" {
   }
 }
 
-    
+
 variable "spray_service_settings" {
   description = "spray services settings"
   type = object({

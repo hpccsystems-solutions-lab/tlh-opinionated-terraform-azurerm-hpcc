@@ -26,6 +26,7 @@ module "certmanager" {
   depends_on = [kubernetes_namespace.default]
 }
 
+
 resource "helm_release" "hpcc" {
   depends_on = [
     kubernetes_namespace.default,

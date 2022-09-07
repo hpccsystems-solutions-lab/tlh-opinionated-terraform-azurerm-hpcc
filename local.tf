@@ -181,6 +181,26 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
+  remote_storage_enabled = var.remote_storage_plane == null ? false : true
+
+  remote_storage_plane = local.remote_storage_enabled ? flatten([
+    for subscription_key, subscription_val in var.remote_storage_plane : [
+      for sa_key, sa_val in subscription_val.target_storage_accounts : {
+        subscription_name      = subscription_key
+        dfs_service_name       = subscription_val.dfs_service_name
+        storage_account_name   = sa_val.name
+        storage_account_prefix = sa_val.prefix
+        storage_account_key    = sa_key
+        volume_name            = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+        volume_claim_name      = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+      }
+    ]
+  ]) : []
+
+  remote_storage_helm_values = { for k, v in var.remote_storage_plane : k => {
+    dfs_service_name = v.dfs_service_name
+    numDevices       = length(v.target_storage_accounts)
+  } }
   onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
 
   onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
@@ -274,7 +294,25 @@ locals {
             forcePermissions = true
           }
         ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
-      ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
+        local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
+          {
+            category   = "remote"
+            prefix     = format("/var/lib/HPCCSystems/%s-data", k)
+            name       = format("%s-remote-hpcc-data", k)
+            pvc        = format("%s-remote-hpcc-data", k)
+            numDevices = v.numDevices
+          }
+        ] : []
+        ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
+          name    = format("%s-data", k)
+          service = v.dfs_service_name
+          planes = [
+            {
+              remote = "data"
+              local  = format("%s-remote-hpcc-data", k)
+            }
+          ]
+      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
     )
 
     certificates = {
