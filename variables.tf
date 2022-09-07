@@ -84,6 +84,7 @@ variable "admin_services_storage" {
   }
 }
 
+
 variable "data_storage_config" {
   description = "Data plane config for HPCC."
   type = object({
@@ -164,6 +165,7 @@ variable "data_storage_config" {
   }
 }
 
+<<<<<<< HEAD
 variable "remote_storage_plane" {
   description = "Input for attaching remote storage plane"
   type = map(object({
@@ -172,6 +174,13 @@ variable "remote_storage_plane" {
       name   = string
       prefix = string
     }))
+=======
+variable "onprem_lz_settings" {
+  description = "Input for allowing OnPrem LZ."
+  type = map(object({
+    prefix = string
+    hosts  = list(string)
+>>>>>>> main
   }))
   default = {}
 }
@@ -280,7 +289,7 @@ variable "ldap_tunables" {
   })
   default = {
     cacheTimeout                  = 5
-    checkScopeScans               = true
+    checkScopeScans               = false
     ldapTimeoutSecs               = 131
     maxConnections                = 10
     passwordExpirationWarningDays = 10
@@ -723,4 +732,203 @@ variable "disable_rowservice" {
   description = "Set false to enable row_service, true to disable. Defaults to disabled. Requires Certificates Enabled as of now to setup row service."
   type        = bool
   default     = true
+}
+
+variable "eclccserver_settings" {
+  description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
+  type = object({
+    use_child_process = bool
+    cpu               = string
+    memory            = string
+  })
+  default = {
+    use_child_process = false
+    cpu               = "1"
+    memory            = "4G"
+  }
+}
+
+variable "dali_settings" {
+  description = "dali settings"
+  type = object({
+    coalescer = object({
+      interval     = number
+      at           = string
+      minDeltaSize = number
+      resources = object({
+        cpu    = string
+        memory = string
+      })
+    })
+    resources = object({
+      cpu    = string
+      memory = string
+    })
+  })
+  default = {
+    coalescer = {
+      interval     = 24
+      at           = "* * * * *"
+      minDeltaSize = 50000
+      resources = {
+        cpu    = "1"
+        memory = "4G"
+      }
+    }
+    resources = {
+      cpu    = "2"
+      memory = "8G"
+    }
+  }
+}
+
+variable "dfuserver_settings" {
+  description = "DFUServer settings"
+  type = object({
+    maxJobs = number
+    resources = object({
+      cpu    = string
+      memory = string
+    })
+  })
+  default = {
+    maxJobs = 3
+    resources = {
+      cpu    = "1"
+      memory = "2G"
+    }
+  }
+}
+
+    
+variable "spray_service_settings" {
+  description = "spray services settings"
+  type = object({
+    replicas = number
+  })
+  default = {
+    replicas = 3
+  }
+}
+
+###sasha config
+
+variable "sasha_config" {
+  description = "Configuration for Sasha."
+  type = object({
+    disabled = bool
+    wu-archiver = object({
+      disabled = bool
+      service = object({
+        servicePort = number
+      })
+      plane           = string
+      interval        = number
+      limit           = number
+      cutoff          = number
+      backup          = number
+      at              = string
+      throttle        = number
+      retryinterval   = number
+      keepResultFiles = bool
+    })
+
+    dfuwu-archiver = object({
+      disabled = bool
+      service = object({
+        servicePort = number
+      })
+      plane    = string
+      interval = number
+      limit    = number
+      cutoff   = number
+      at       = string
+      throttle = number
+    })
+
+    dfurecovery-archiver = object({
+      disabled = bool
+      interval = number
+      limit    = number
+      cutoff   = number
+      at       = string
+    })
+
+    file-expiry = object({
+      disabled             = bool
+      interval             = number
+      at                   = string
+      persistExpiryDefault = number
+      expiryDefault        = number
+      user                 = string
+    })
+  })
+  default = {
+    disabled = false
+    wu-archiver = {
+      disabled = false
+      service = {
+        servicePort = 8877
+      }
+      plane           = "sasha"
+      interval        = 6
+      limit           = 400
+      cutoff          = 3
+      backup          = 0
+      at              = "* * * * *"
+      throttle        = 0
+      retryinterval   = 6
+      keepResultFiles = false
+    }
+
+    dfuwu-archiver = {
+      disabled = false
+      service = {
+        servicePort = 8877
+      }
+      plane    = "sasha"
+      interval = 24
+      limit    = 100
+      cutoff   = 14
+      at       = "* * * * *"
+      throttle = 0
+    }
+
+    dfurecovery-archiver = {
+      disabled = false
+      interval = 12
+      limit    = 20
+      cutoff   = 4
+      at       = "* * * * *"
+    }
+
+    file-expiry = {
+      disabled             = false
+      interval             = 1
+      at                   = "* * * * *"
+      persistExpiryDefault = 7
+      expiryDefault        = 4
+      user                 = "sasha"
+    }
+  }
+}
+
+variable "internal_domain" {
+  description = "DNS Domain name"
+  type        = string
+}
+
+variable "cluster_name" {
+  description = "The name of aks cluster."
+  type        = string
+}
+
+variable "esp_remoteclients" {
+  description = "name of the remote client cert to be installed"
+  type        = list(map(string))
+  default = [
+    {
+      name = "insuranceprod"
+    }
+  ]
 }

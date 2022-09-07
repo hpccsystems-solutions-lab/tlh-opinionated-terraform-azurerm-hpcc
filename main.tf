@@ -15,7 +15,15 @@ module "node_tuning" {
 
   container_registry_auth = var.node_tuning_container_registry_auth
 
+}
 
+module "certmanager" {
+  source              = "./modules/certmanager"
+  internal_domain     = var.internal_domain
+  resource_group_name = var.resource_group_name
+  cluster_name        = var.cluster_name
+
+  depends_on = [kubernetes_namespace.default]
 }
 
 
@@ -30,7 +38,8 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.dali_hpcc_admin,
     kubernetes_secret.dali_ldap_admin,
     kubernetes_secret.esp_ldap_admin,
-    module.node_tuning
+    module.node_tuning,
+    module.certmanager
   ]
 
   timeout = var.helm_chart_timeout

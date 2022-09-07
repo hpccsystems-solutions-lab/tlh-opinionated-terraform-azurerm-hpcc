@@ -15,9 +15,12 @@ locals {
   external_hpcc_data    = (local.external_data_config ? (var.data_storage_config.external.hpcc == null ? false : true) : false)
 
   acr_default = var.node_tuning_containers == null ? {
-    busybox = format("us%s%sacr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
-    debian  = format("us%s%sacr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
+    busybox = format("%s%scr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
+    debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
+
+  external_dns_zone_enabled = var.internal_domain != null
+  domain                    = coalesce(var.internal_domain, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
 
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
@@ -178,6 +181,7 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
+<<<<<<< HEAD
   remote_storage_enabled = var.remote_storage_plane == null ? false : true
 
   remote_storage_plane = local.remote_storage_enabled ? flatten([
@@ -198,10 +202,22 @@ locals {
     dfs_service_name = v.dfs_service_name
     numDevices       = length(v.target_storage_accounts)
   } }
+=======
+  onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
+
+  onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
+    category = "lz"
+    name     = k
+    prefix   = v.prefix
+    hosts    = v.hosts
+  }] : null
+
+>>>>>>> main
   helm_chart_values = {
 
     global = {
-      env = [for k, v in var.environment_variables : { name = k, value = v }]
+      env     = [for k, v in var.environment_variables : { name = k, value = v }]
+      busybox = local.acr_default.busybox
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
         root       = var.hpcc_container.image_root
@@ -280,6 +296,7 @@ locals {
             pvc              = "pvc-spill"
             forcePermissions = true
           }
+<<<<<<< HEAD
         ] : [], local.remote_storage_enabled ? [ for k, v in local.remote_storage_helm_values : 
         {
           category = "remote"
@@ -299,15 +316,50 @@ locals {
             }
           ]
       }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {},
+=======
+        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
+      ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
+>>>>>>> main
     )
 
     certificates = {
-      enabled = false
+      enabled = true
       issuers = {
         local = {
-          name = "letsencrypt-issuer"
-          kind = "ClusterIssuer"
-          spec = null
+          name = "hpcc-local-issuer"
+          kind = "Issuer"
+          spec = {
+            ca = {
+              secretName = "hpcc-local-issuer-key-pair"
+            }
+          }
+        }
+        public = {
+          name   = "hpcc-public-issuer"
+          kind   = "Issuer"
+          domain = var.internal_domain
+          spec = {
+            selfSigned = {}
+          }
+        }
+        remote = {
+          enabled = true
+          name    = "hpcc-remote-issuer"
+          kind    = "Issuer"
+          spec = {
+            ca = {
+              secretName = "hpcc-remote-issuer-key-pair"
+            }
+          }
+        }
+        signing = {
+          name = "hpcc-signing-issuer"
+          kind = "Issuer"
+          spec = {
+            ca = {
+              secretName = "hpcc-signing-issuer-key-pair"
+            }
+          }
         }
       }
     }
@@ -322,14 +374,23 @@ locals {
         service = {
           servicePort = 7200
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "directio", local.domain) } : {})
         }
       },
       {
         name        = "spray-service"
         application = "spray"
+        replicas    = var.spray_service_settings.replicas
         service = {
           servicePort = 7300
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
       },
       {
@@ -339,6 +400,10 @@ locals {
         service = {
           servicePort = 7600
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "rowservice", local.domain) } : {})
         }
       }
     ]
@@ -352,41 +417,87 @@ locals {
             service = {
               servicePort = 8877
             }
+            interval     = var.dali_settings.coalescer.interval
+            at           = var.dali_settings.coalescer.at
+            minDeltaSize = var.dali_settings.coalescer.minDeltaSize
+            resources = {
+              cpu    = var.dali_settings.coalescer.resources.cpu
+              memory = var.dali_settings.coalescer.resources.memory
+            }
           }
+        }
+        resources = {
+          cpu    = var.dali_settings.resources.cpu
+          memory = var.dali_settings.resources.memory
         }
       }, local.dali_ldap_config)
     ]
 
+    dfuserver = [
+      {
+        name    = "dfuserver"
+        maxJobs = var.dfuserver_settings.maxJobs
+        resources = {
+          cpu    = var.dfuserver_settings.resources.cpu
+          memory = var.dfuserver_settings.resources.memory
+        }
+      }
+    ]
+
     eclagent = [
       {
-        name      = "hthor"
-        replicas  = 1
-        maxActive = 4
+        name              = "hthor"
+        replicas          = 1
+        maxActive         = 4
+        prefix            = "hthor"
+        useChildProcesses = false
+        type              = "hthor"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       },
       {
-        name      = "roxie-workunit"
-        replicas  = 1
-        maxActive = 4
+        name              = "roxie-workunit"
+        replicas          = 1
+        maxActive         = 20
+        prefix            = "roxie_workunit"
+        useChildProcesses = true
+        type              = "roxie"
+        resources = {
+          cpu    = 1
+          memory = "4G"
+        }
       }
     ]
 
     eclccserver = [
       {
-        name      = "myeclccserver"
-        replicas  = 1
-        maxActive = 4
+        name              = "myeclccserver"
+        replicas          = 1
+        maxActive         = 4
+        useChildProcesses = var.eclccserver_settings.use_child_process
+        resources = {
+          cpu    = var.eclccserver_settings.cpu
+          memory = var.eclccserver_settings.memory
+        }
       }
     ]
 
     esp = [
       merge({
-        name        = "dfs"
-        application = "dfs"
-        auth        = local.auth_mode
-        replicas    = 1
+        name          = "dfs"
+        application   = "dfs"
+        remoteClients = var.esp_remoteclients
+        auth          = local.auth_mode
+        replicas      = 1
         service = {
           servicePort = 8520
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "dfs", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -398,6 +509,10 @@ locals {
           port        = 8888
           servicePort = 8010
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -408,6 +523,10 @@ locals {
         service = {
           servicePort = 8010
           visibility  = "cluster"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclservices", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -418,6 +537,10 @@ locals {
         service = {
           servicePort = 8002
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclqueries", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -428,6 +551,10 @@ locals {
         service = {
           servicePort = 8899
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "esdl-sandbox", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -438,6 +565,10 @@ locals {
         service = {
           servicePort = 8510
           visibility  = "local"
+          annotations = merge({
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "lnrs.io/zone-type"                                       = "public"
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "sql2ecl", local.domain) } : {})
         }
       }, local.esp_ldap_config)
     ]
@@ -445,6 +576,9 @@ locals {
     roxie = local.roxie_config
 
     thor = local.thor_config
+
+    sasha = var.sasha_config
+
 
     eclscheduler = [
       {
