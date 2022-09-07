@@ -165,7 +165,8 @@ variable "data_storage_config" {
   }
 }
 
-<<<<<<< HEAD
+
+
 variable "remote_storage_plane" {
   description = "Input for attaching remote storage plane"
   type = map(object({
@@ -174,13 +175,14 @@ variable "remote_storage_plane" {
       name   = string
       prefix = string
     }))
-=======
+  }))
+  default = {}
+}
 variable "onprem_lz_settings" {
   description = "Input for allowing OnPrem LZ."
   type = map(object({
     prefix = string
     hosts  = list(string)
->>>>>>> main
   }))
   default = {}
 }
@@ -800,7 +802,7 @@ variable "dfuserver_settings" {
   }
 }
 
-    
+
 variable "spray_service_settings" {
   description = "spray services settings"
   type = object({

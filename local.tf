@@ -181,7 +181,6 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
-<<<<<<< HEAD
   remote_storage_enabled = var.remote_storage_plane == null ? false : true
 
   remote_storage_plane = local.remote_storage_enabled ? flatten([
@@ -202,7 +201,6 @@ locals {
     dfs_service_name = v.dfs_service_name
     numDevices       = length(v.target_storage_accounts)
   } }
-=======
   onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
 
   onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
@@ -212,7 +210,6 @@ locals {
     hosts    = v.hosts
   }] : null
 
->>>>>>> main
   helm_chart_values = {
 
     global = {
@@ -296,8 +293,8 @@ locals {
             pvc              = "pvc-spill"
             forcePermissions = true
           }
-<<<<<<< HEAD
-        ] : [], local.remote_storage_enabled ? [ for k, v in local.remote_storage_helm_values : 
+        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
+        local.remote_storage_enabled ? [ for k, v in local.remote_storage_helm_values : 
         {
           category = "remote"
           prefix = format("/var/lib/HPCCSystems/%s-data", k)
@@ -315,11 +312,7 @@ locals {
               local  = format("%s-remote-hpcc-data", k)
             }
           ]
-      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {},
-=======
-        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
-      ) }, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
->>>>>>> main
+      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
     )
 
     certificates = {
