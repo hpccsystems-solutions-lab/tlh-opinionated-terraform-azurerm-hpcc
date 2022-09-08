@@ -176,7 +176,7 @@ variable "remote_storage_plane" {
       prefix = string
     }))
   }))
-  default = {}
+  default = null
 }
 variable "onprem_lz_settings" {
   description = "Input for allowing OnPrem LZ."
