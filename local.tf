@@ -181,7 +181,7 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
-  remote_storage_enabled = var.remote_storage_plane != {} ? true : false
+  remote_storage_enabled = var.remote_storage_plane == {} ? false : true
 
   remote_storage_plane = local.remote_storage_enabled ? flatten([
     for subscription_key, subscription_val in var.remote_storage_plane : [
@@ -197,10 +197,11 @@ locals {
     ]
   ]) : []
 
-  remote_storage_helm_values = { for k, v in var.remote_storage_plane : k => {
+  remote_storage_helm_values = local.remote_storage_enabled ?  { for k, v in var.remote_storage_plane : k => {
     dfs_service_name = v.dfs_service_name
     numDevices       = length(v.target_storage_accounts)
-  } }
+  } } : {}
+
   onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
 
   onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
