@@ -181,7 +181,7 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
-  remote_storage_enabled = var.remote_storage_plane == {} ? false : true
+  remote_storage_enabled = var.remote_storage_plane == null ? false : true
 
   remote_storage_plane = local.remote_storage_enabled ? flatten([
     for subscription_key, subscription_val in var.remote_storage_plane : [
