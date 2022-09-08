@@ -200,7 +200,7 @@ locals {
   remote_storage_helm_values = local.remote_storage_enabled ?  { for k, v in var.remote_storage_plane : k => {
     dfs_service_name = v.dfs_service_name
     numDevices       = length(v.target_storage_accounts)
-  } } : {}
+  } } : null
 
   onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
 
