@@ -395,34 +395,34 @@ locals {
         }
       },
 
-      # {
-      #   pods = ["spray-service"]
-      #   placement = {
-      #     nodeSelector = {
-      #       workload = "spraypool"
-      #     }
-      #     tolerations = [
-      #       {
-      #         key      = "hpcc"
-      #         operator = "Equal"
-      #         value    = "spraypool"
-      #         effect   = "NoSchedule"
-      #       }
-      #     ]
-      #     topologySpreadConstraints = [
-      #       {
-      #         maxSkew           = var.placements.spray-service.maxskew
-      #         topologyKey       = "spray-service"
-      #         whenUnsatisfiable = "ScheduleAnyway"
-      #         labelSelector = {
-      #           matchLabels = {
-      #             server = "spray-service"
-      #           }
-      #         }
-      #       }
-      #     ]
-      #   }
-      # },
+      {
+        pods = ["spray-service"]
+        placement = {
+          nodeSelector = {
+            workload = "spraypool"
+          }
+          tolerations = [
+            {
+              key      = "hpcc"
+              operator = "Equal"
+              value    = "spraypool"
+              effect   = "NoSchedule"
+            }
+          ]
+          topologySpreadConstraints = [
+            {
+              maxSkew           = var.placements.spray-service.maxskew
+              topologyKey       = "spray-service"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "spray-service"
+                }
+              }
+            }
+          ]
+        }
+      },
 
       {
         pods = ["eclwatch"]
