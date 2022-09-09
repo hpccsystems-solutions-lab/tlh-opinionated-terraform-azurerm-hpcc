@@ -197,7 +197,7 @@ locals {
     ]
   ]) : []
 
-  remote_storage_helm_values = local.remote_storage_enabled ?  { for k, v in var.remote_storage_plane : k => {
+  remote_storage_helm_values = local.remote_storage_enabled ? { for k, v in var.remote_storage_plane : k => {
     dfs_service_name = v.dfs_service_name
     numDevices       = length(v.target_storage_accounts)
   } } : null
@@ -369,11 +369,11 @@ locals {
           }
           tolerations = [
             {
-            key      = "hpcc"
-            operator = "Equal"
-            value    = "servpool"
-            effect   = "NoSchedule"
-          }
+              key      = "hpcc"
+              operator = "Equal"
+              value    = "servpool"
+              effect   = "NoSchedule"
+            }
           ]
         }
       },
@@ -385,12 +385,12 @@ locals {
             workload = "thorpool"
           }
           tolerations = [
-             {
-            key      = "hpcc"
-            operator = "Equal"
-            value    = "thorpool"
-            effect   = "NoSchedule"
-          }
+            {
+              key      = "hpcc"
+              operator = "Equal"
+              value    = "thorpool"
+              effect   = "NoSchedule"
+            }
           ]
         }
       },
@@ -403,23 +403,23 @@ locals {
           }
           tolerations = [
             {
-            key      = "hpcc"
-            operator = "Equal"
-            value    = "spraypool"
-            effect   = "NoSchedule"
-          }
+              key      = "hpcc"
+              operator = "Equal"
+              value    = "spraypool"
+              effect   = "NoSchedule"
+            }
           ]
           topologySpreadConstraints = [
             {
-            maxSkew           = 1
-            topologyKey       = "spray-service"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "spray-service"
+              maxSkew           = 1
+              topologyKey       = "spray-service"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "spray-service"
+                }
               }
             }
-          }
           ]
         }
       },
@@ -428,16 +428,16 @@ locals {
         pods = ["eclwatch"]
         placement = {
           topologySpreadConstraints = [
-             {
-            maxSkew           = 1
-            topologyKey       = "eclwatch"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "eclwatch"
+            {
+              maxSkew           = 1
+              topologyKey       = "eclwatch"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "eclwatch"
+                }
               }
             }
-          }
           ]
         }
       },
@@ -447,15 +447,15 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-            maxSkew           = 1
-            topologyKey       = "eclservices"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "eclservices"
+              maxSkew           = 1
+              topologyKey       = "eclservices"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "eclservices"
+                }
               }
             }
-          }
           ]
         }
       },
@@ -465,15 +465,15 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-            maxSkew           = 1
-            topologyKey       = "eclqueries"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "eclqueries"
+              maxSkew           = 1
+              topologyKey       = "eclqueries"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "eclqueries"
+                }
               }
             }
-          }
           ]
         }
       },
@@ -483,15 +483,15 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-            maxSkew           = 1
-            topologyKey       = "dfs"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "dfs"
+              maxSkew           = 1
+              topologyKey       = "dfs"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "dfs"
+                }
               }
             }
-          }
           ]
         }
       },
@@ -501,15 +501,15 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-            maxSkew           = 1
-            topologyKey       = "direct-access"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "direct-access"
+              maxSkew           = 1
+              topologyKey       = "direct-access"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "direct-access"
+                }
               }
             }
-          }
           ]
         }
       },
@@ -519,15 +519,15 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-            maxSkew           = 1
-            topologyKey       = "thorworker"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "thorworker"
+              maxSkew           = 1
+              topologyKey       = "thorworker"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "thorworker"
+                }
               }
             }
-          }
           ]
         }
       },
@@ -537,15 +537,15 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-            maxSkew           = 1
-            topologyKey       = "roxie-agent"
-            whenUnsatisfiable = "ScheduleAnyway"
-            labelSelector = {
-              matchLabels = {
-                server = "roxie-agent"
+              maxSkew           = 1
+              topologyKey       = "roxie-agent"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  server = "roxie-agent"
+                }
               }
             }
-          }
           ]
         }
       }
