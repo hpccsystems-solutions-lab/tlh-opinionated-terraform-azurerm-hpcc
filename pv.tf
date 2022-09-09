@@ -150,3 +150,30 @@ resource "kubernetes_persistent_volume" "spill" {
     storage_class_name = "spill"
   }
 }
+
+resource "kubernetes_persistent_volume" "remotedata" {
+  for_each = {
+    for remote_storage in local.remote_storage_plane : "${remote_storage.subscription_name}.${remote_storage.storage_account_name}" => remote_storage
+  }
+  metadata {
+    name = each.value.volume_name
+    labels = {
+      storage-tier = "blobnfs"
+    }
+  }
+  spec {
+    capacity = {
+      storage = "1T"
+    }
+    access_modes                     = ["ReadOnlyMany"]
+    persistent_volume_reclaim_policy = "Retain"
+    persistent_volume_source {
+      nfs {
+        server = format("%s.blob.core.windows.net", each.value.storage_account_name)
+        path   = each.value.storage_account_prefix
+      }
+    }
+    storage_class_name = "blobnfs"
+    mount_options      = ["nfsvers=3", "sec=sys", "nolock"]
+  }
+}

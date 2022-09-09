@@ -118,3 +118,33 @@ resource "kubernetes_persistent_volume_claim" "spill" {
     volume_name        = kubernetes_persistent_volume.spill.0.metadata.0.name
   }
 }
+
+resource "kubernetes_persistent_volume_claim" "remotedata" {
+  wait_until_bound = true
+  for_each = {
+    for remote_storage in local.remote_storage_plane : "${remote_storage.subscription_name}.${remote_storage.storage_account_name}" => remote_storage
+  }
+  metadata {
+    name      = each.value.volume_claim_name
+    namespace = "hpcc"
+  }
+  spec {
+    access_modes       = ["ReadOnlyMany"]
+    storage_class_name = "blobnfs"
+    resources {
+      requests = {
+        storage = "1T"
+      }
+    }
+    selector {
+      match_labels = {
+        storage-tier = "blobnfs"
+      }
+    }
+    volume_name = each.value.volume_name
+  }
+
+  timeouts {
+    create = "5m"
+  }
+}
