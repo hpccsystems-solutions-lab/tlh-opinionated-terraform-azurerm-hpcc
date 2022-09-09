@@ -367,12 +367,14 @@ locals {
           nodeSelector = {
             workload = "servpool"
           }
-          tolerations = {
+          tolerations = [
+            {
             key      = "hpcc"
             operator = "Equal"
             value    = "servpool"
             effect   = "NoSchedule"
           }
+          ]
         }
       },
 
@@ -382,12 +384,14 @@ locals {
           nodeSelector = {
             workload = "thorpool"
           }
-          tolerations = {
+          tolerations = [
+             {
             key      = "hpcc"
             operator = "Equal"
             value    = "thorpool"
             effect   = "NoSchedule"
           }
+          ]
         }
       },
 
@@ -397,12 +401,14 @@ locals {
           nodeSelector = {
             workload = "spraypool"
           }
-          tolerations = {
+          tolerations = [
+            {
             key      = "hpcc"
             operator = "Equal"
             value    = "spraypool"
             effect   = "NoSchedule"
           }
+          ]
           topologySpreadConstraints = {
             maxSkew           = 1
             topologyKey       = "spray-service"
