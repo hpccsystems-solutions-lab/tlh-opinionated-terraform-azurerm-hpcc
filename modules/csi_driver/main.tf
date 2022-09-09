@@ -19,11 +19,11 @@ resource "helm_release" "csi_driver" {
   version    = var.helm_chart_version
 
   set {
-    name  = "controller.tolerations.key"
+    name  = "controller.tolerations[0].key"
     value = "hpcc"
   }
   set {
-    name  = "controller.tolerations.operator"
+    name  = "controller.tolerations[0].operator"
     value = "Exists"
   }
 }
