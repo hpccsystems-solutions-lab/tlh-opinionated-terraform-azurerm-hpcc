@@ -409,7 +409,8 @@ locals {
             effect   = "NoSchedule"
           }
           ]
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+            {
             maxSkew           = 1
             topologyKey       = "spray-service"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -419,13 +420,15 @@ locals {
               }
             }
           }
+          ]
         }
       },
 
       {
         pods = ["eclwatch"]
         placement = {
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+             {
             maxSkew           = 1
             topologyKey       = "eclwatch"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -435,13 +438,15 @@ locals {
               }
             }
           }
+          ]
         }
       },
 
       {
         pods = ["eclservices"]
         placement = {
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+            {
             maxSkew           = 1
             topologyKey       = "eclservices"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -451,13 +456,15 @@ locals {
               }
             }
           }
+          ]
         }
       },
 
       {
         pods = ["eclqueries"]
         placement = {
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+            {
             maxSkew           = 1
             topologyKey       = "eclqueries"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -467,13 +474,15 @@ locals {
               }
             }
           }
+          ]
         }
       },
 
       {
         pods = ["dfs"]
         placement = {
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+            {
             maxSkew           = 1
             topologyKey       = "dfs"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -483,13 +492,15 @@ locals {
               }
             }
           }
+          ]
         }
       },
 
       {
         pods = ["direct-access"]
         placement = {
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+            {
             maxSkew           = 1
             topologyKey       = "direct-access"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -499,13 +510,15 @@ locals {
               }
             }
           }
+          ]
         }
       },
 
       {
         pods = ["thorworker"]
         placement = {
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+            {
             maxSkew           = 1
             topologyKey       = "thorworker"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -515,13 +528,15 @@ locals {
               }
             }
           }
+          ]
         }
       },
 
       {
         pods = ["roxie-agent"]
         placement = {
-          topologySpreadConstraints = {
+          topologySpreadConstraints = [
+            {
             maxSkew           = 1
             topologyKey       = "roxie-agent"
             whenUnsatisfiable = "ScheduleAnyway"
@@ -531,6 +546,7 @@ locals {
               }
             }
           }
+          ]
         }
       }
 
