@@ -411,7 +411,7 @@ locals {
           ]
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.spray-service.maxskew
               topologyKey       = "spray-service"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {
@@ -429,7 +429,7 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.eclwatch.maxskew
               topologyKey       = "eclwatch"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {
@@ -447,7 +447,7 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.eclservices.maxskew
               topologyKey       = "eclservices"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {
@@ -465,7 +465,7 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.eclqueries.maxskew
               topologyKey       = "eclqueries"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {
@@ -483,7 +483,7 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.dfs.maxskew
               topologyKey       = "dfs"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {
@@ -501,7 +501,7 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.direct-access.maxskew
               topologyKey       = "direct-access"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {
@@ -519,7 +519,7 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.thorworker.maxskew
               topologyKey       = "thorworker"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {
@@ -537,7 +537,7 @@ locals {
         placement = {
           topologySpreadConstraints = [
             {
-              maxSkew           = 1
+              maxSkew           = var.placements.roxie-agent.maxskew
               topologyKey       = "roxie-agent"
               whenUnsatisfiable = "ScheduleAnyway"
               labelSelector = {

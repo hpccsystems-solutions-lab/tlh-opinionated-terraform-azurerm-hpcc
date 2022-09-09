@@ -935,9 +935,77 @@ variable "esp_remoteclients" {
   ]
 }
 
-##placements##
+variable "placements" {
+  description = "maxskew topologyspreadconstraints placements value for hppc"
+  type = object({
+    spray-service = object({
+      maxskew = number
+    })
 
-# variable "placements" {
-#   description = "placements for hppc"
-#   type = list(map(any))
-# }
+    eclwatch = object({
+      maxskew = number
+    })
+
+    eclservices = object({
+      maxskew = number
+    })
+
+    eclqueries = object({
+      maxskew = number
+    })
+
+    dfs = object({
+      maxskew = number
+    })
+
+    direct-access = object({
+      maxskew = number
+    })
+
+    thorworker = object({
+      maxskew = number
+    })
+
+    roxie-agent = object({
+      maxskew = number
+    })
+  })
+
+  default = {
+    spray-service = {
+      maxskew = 1
+    }
+
+    eclwatch = {
+      maxskew = 1
+    }
+
+    eclservices = {
+      maxskew = 1
+    }
+
+    spray-service = {
+      maxskew = 1
+    }
+
+    eclqueries = {
+      maxskew = 1
+    }
+
+    dfs = {
+      maxskew = 1
+    }
+
+    direct-access = {
+      maxskew = 1
+    }
+
+    thorworker = {
+      maxskew = 1
+    }
+
+    roxie-agent = {
+      maxskew = 1
+    }
+  }
+}
