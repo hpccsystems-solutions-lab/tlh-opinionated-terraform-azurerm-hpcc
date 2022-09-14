@@ -366,7 +366,7 @@ locals {
         application = "directio"
         disabled    = var.disable_directio
         service = {
-          servicePort = 7200
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -379,7 +379,7 @@ locals {
         application = "spray"
         replicas    = var.spray_service_settings.replicas
         service = {
-          servicePort = 7300
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -392,7 +392,7 @@ locals {
         application = "stream"
         disabled    = var.disable_rowservice
         service = {
-          servicePort = 7600
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -409,7 +409,7 @@ locals {
         services = {
           coalescer = {
             service = {
-              servicePort = 8877
+              servicePort = 443
             }
             interval     = var.dali_settings.coalescer.interval
             at           = var.dali_settings.coalescer.at
@@ -486,7 +486,7 @@ locals {
         auth          = local.auth_mode
         replicas      = 1
         service = {
-          servicePort = 8520
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -501,7 +501,7 @@ locals {
         replicas    = 1
         service = {
           port        = 8888
-          servicePort = 8010
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -515,7 +515,7 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service = {
-          servicePort = 8010
+          servicePort = 443
           visibility  = "cluster"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -529,7 +529,7 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service = {
-          servicePort = 8002
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -543,7 +543,7 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service = {
-          servicePort = 8899
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -557,7 +557,7 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service = {
-          servicePort = 8510
+          servicePort = 443
           visibility  = "local"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
