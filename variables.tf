@@ -17,8 +17,8 @@ variable "admin_services_storage_account_settings" {
     delete_protection               = bool
     replication_type                = string
     subnet_ids                      = map(string)
-    blob_delete_retention_days      = number
-    container_delete_retention_days = number
+    blob_delete_retention_days      = optional(number)
+    container_delete_retention_days = optional(number)
   })
   default = {
     authorized_ip_ranges            = {}
@@ -100,8 +100,8 @@ variable "data_storage_config" {
           delete_protection               = bool
           replication_type                = string
           subnet_ids                      = map(string)
-          blob_delete_retention_days      = number
-          container_delete_retention_days = number
+          blob_delete_retention_days      = optional(number)
+          container_delete_retention_days = optional(number)
         })
       })
       hpc_cache = object({
