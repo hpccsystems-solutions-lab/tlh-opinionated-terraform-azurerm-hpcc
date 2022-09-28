@@ -27,10 +27,10 @@ resource "azurerm_storage_account" "default" {
   }
   blob_properties {
     delete_retention_policy {
-      days = var.storage_account_settings.blob_delete_retention_days
+      days = var.storage_account_settings.blob_soft_delete_retention_days
     }
     container_delete_retention_policy {
-      days = var.storage_account_settings.container_delete_retention_days
+      days = var.storage_account_settings.container_soft_delete_retention_days
     }
 }  
 }
