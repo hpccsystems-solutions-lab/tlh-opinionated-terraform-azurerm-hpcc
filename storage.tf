@@ -37,7 +37,7 @@ resource "azurerm_storage_account" "azurefiles_admin_services" {
     container_delete_retention_policy {
       days = var.admin_services_storage_account_settings.container_delete_retention_days
     }
-}
+  }
 }
 
 resource "azurerm_storage_account" "blob_nfs_admin_services" {
@@ -76,7 +76,7 @@ resource "azurerm_storage_account" "blob_nfs_admin_services" {
     container_delete_retention_policy {
       days = var.admin_services_storage_account_settings.container_delete_retention_days
     }
-}  
+  }
 }
 
 resource "kubernetes_secret" "azurefiles_admin_services" {
