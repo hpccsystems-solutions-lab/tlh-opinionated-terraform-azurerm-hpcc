@@ -28,7 +28,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
       storage = each.value.size
     }
 
-    mount_options = ["nconnect=8"]
+    mount_options = ["nconnect=8","nfsvers=3"]
 
     persistent_volume_reclaim_policy = "Retain"
 
