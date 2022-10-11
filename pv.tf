@@ -28,7 +28,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
       storage = each.value.size
     }
 
-    mount_options = ["nconnect=8","nfsvers=3"]
+    mount_options = ["nconnect=8"]
 
     persistent_volume_reclaim_policy = "Retain"
 
@@ -38,7 +38,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
         read_only     = false
         volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
         volume_attributes = {
-          protocol       = "nfs"
+          protocol       = "smb"
           resourceGroup  = each.value.resource_group
           storageAccount = each.value.storage_account
           secretName     = kubernetes_secret.azurefiles_admin_services.0.metadata.0.name
