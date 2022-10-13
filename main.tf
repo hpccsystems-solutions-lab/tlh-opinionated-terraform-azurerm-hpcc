@@ -26,6 +26,27 @@ module "certmanager" {
   depends_on = [kubernetes_namespace.default]
 }
 
+## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
+
+resource "null_resource" "service_delete_script" {
+  provisioner "local-exec" {
+    command = <<EOF
+  echo "--------------Install KUBECTL on TFE-----------------"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  kubectl version --client
+  echo "------------Start Deleting Services ------------------"
+  kubectl delete svc sasha-coalescer -n hpcc
+  echo "Deleted Sasha Coalescer Service"
+  kubectl delete svc eclservices -n hpcc
+  echo "Deleted ECL Services Service"
+  echo "------------------------------------------------" 
+  EOF
+    environment = {
+      KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
+    }
+  }
+}
 
 resource "helm_release" "hpcc" {
   depends_on = [
@@ -39,7 +60,8 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.dali_ldap_admin,
     kubernetes_secret.esp_ldap_admin,
     module.node_tuning,
-    module.certmanager
+    module.certmanager,
+    null_resource.service_delete_script
   ]
 
   timeout = var.helm_chart_timeout
