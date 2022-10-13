@@ -30,6 +30,11 @@ resource "azurerm_storage_account" "azurefiles_admin_services" {
     virtual_network_subnet_ids = values(var.admin_services_storage_account_settings.subnet_ids)
     bypass                     = ["AzureServices"]
   }
+  share_properties {
+    retention_policy {
+      days = var.admin_services_storage_account_settings.file_share_retention_days
+    }
+  }
 }
 
 resource "azurerm_storage_account" "blob_nfs_admin_services" {
@@ -59,6 +64,15 @@ resource "azurerm_storage_account" "blob_nfs_admin_services" {
     ip_rules                   = values(var.admin_services_storage_account_settings.authorized_ip_ranges)
     virtual_network_subnet_ids = values(var.admin_services_storage_account_settings.subnet_ids)
     bypass                     = ["AzureServices"]
+  }
+
+  blob_properties {
+    delete_retention_policy {
+      days = var.admin_services_storage_account_settings.blob_soft_delete_retention_days
+    }
+    container_delete_retention_policy {
+      days = var.admin_services_storage_account_settings.container_soft_delete_retention_days
+    }
   }
 }
 
