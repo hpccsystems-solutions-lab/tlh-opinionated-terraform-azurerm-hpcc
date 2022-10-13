@@ -104,9 +104,7 @@ resource "azurerm_storage_share" "azurefiles_admin_services" {
   name                 = each.value.container_name
   storage_account_name = azurerm_storage_account.azurefiles_admin_services.0.name
   quota                = trimsuffix(each.value.size, "G")
-  # enabled_protocol     = var.environment == "dev" ? "NFS" : "SMB"
-  enabled_protocol     = "SMB"
-
+  enabled_protocol     = var.environment == "dev" ? "NFS" : "SMB"
 }
 
 resource "azurerm_storage_container" "blob_nfs_admin_services" {

@@ -38,7 +38,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
         read_only     = false
         volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
         volume_attributes = {
-          protocol       = "smb"
+          protocol       = "nfs"
           resourceGroup  = each.value.resource_group
           storageAccount = each.value.storage_account
           secretName     = kubernetes_secret.azurefiles_admin_services.0.metadata.0.name
