@@ -22,6 +22,7 @@ locals {
   external_dns_zone_enabled = var.internal_domain != null
   domain                    = coalesce(var.internal_domain, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
 
+  # pv_protocol = var.environment == "dev" ? "nfs" : "smb"
   storage_config = {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
       local.external_data_storage ? var.data_storage_config.external.blob_nfs : null)
@@ -108,6 +109,7 @@ locals {
       resource_group  = var.resource_group_name
       size            = config.size
       storage_account = azurerm_storage_account.azurefiles_admin_services.0.name
+      protocol = null
     } if config.storage_type == "azurefiles"
   }
 

@@ -6,24 +6,6 @@ module "csi_driver" {
 
 resource "random_uuid" "volume_handle" {}
 
-resource "kubernetes_storage_class" "premium_zrs_file_share_storage_class" {
-  metadata {
-    name = "hpcc-premium-zrs-file-share-sc"
-  labels = {
-      storage-tier = "azurefiles"
-    }
-  }
-  storage_provisioner = "file.csi.azure.com"
-  reclaim_policy      = "Retain"
-  parameters = {
-    skuName        = "Premium_ZRS"
-    location       = var.location
-    resourceGroup  = var.resource_group_name
-    storageAccount = azurerm_storage_account.azurefiles_admin_services.0.name
-    storeAccountKey = azurerm_storage_account.azurefiles_admin_services.0.primary_access_key
-  }
-  mount_options = ["file_mode=0644", "dir_mode=0755", "mfsymlinks", "uid=10000", "gid=10001", "actimeo=30", "cache=strict"]
-}
 
 resource "kubernetes_persistent_volume" "azurefiles" {
   depends_on = [
@@ -58,7 +40,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
         read_only     = false
         volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
         volume_attributes = {
-          # protocol       = "smb"
+          protocol       = each.value.protocol
           resourceGroup  = each.value.resource_group
           storageAccount = each.value.storage_account
           secretName     = kubernetes_secret.azurefiles_admin_services.0.metadata.0.name
