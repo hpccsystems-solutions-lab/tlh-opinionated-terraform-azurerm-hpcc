@@ -6,9 +6,29 @@ module "csi_driver" {
 
 resource "random_uuid" "volume_handle" {}
 
+resource "kubernetes_storage_class" "premium_zrs_file_share_storage_class" {
+  metadata {
+    name = "hpcc-premium-zrs-file-share-sc"
+  labels = {
+      storage-tier = "azurefiles"
+    }
+  }
+  storage_provisioner = "file.csi.azure.com"
+  reclaim_policy      = "Retain"
+  parameters = {
+    skuName        = "Premium_ZRS"
+    location       = var.location
+    resourceGroup  = var.resource_group_name
+    storageAccount = azurerm_storage_account.azurefiles_admin_services.0.name
+    storeAccountKey = azurerm_storage_account.azurefiles_admin_services.0.primary_access_key
+  }
+  mount_options = ["file_mode=0644", "dir_mode=0755", "mfsymlinks", "uid=0", "gid=0", "actimeo=30", "cache=strict"]
+}
+
 resource "kubernetes_persistent_volume" "azurefiles" {
   depends_on = [
-    azurerm_storage_share.azurefiles_admin_services
+    azurerm_storage_share.azurefiles_admin_services,
+    kubernetes_storage_class.premium_zrs_file_share_storage_class
   ]
 
   for_each = local.azurefiles_services_storage
@@ -30,9 +50,6 @@ resource "kubernetes_persistent_volume" "azurefiles" {
 
     mount_options = ["dir_mode=0755", "mfsymlinks", "gid=0", "uid=0", "actimeo=30", "file_mode=0644", "cache=strict"]
 
-    
-
-
     persistent_volume_reclaim_policy = "Retain"
 
     persistent_volume_source {
@@ -50,7 +67,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
       }
     }
 
-    storage_class_name = "azurefile-csi-premium"
+    storage_class_name = "hpcc-premium-zrs-file-share-sc"
   }
 }
 
