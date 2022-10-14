@@ -411,7 +411,7 @@ locals {
         services = {
           coalescer = {
             service = {
-              servicePort = 443
+              servicePort = 8877
             }
             interval     = var.dali_settings.coalescer.interval
             at           = var.dali_settings.coalescer.at
@@ -517,7 +517,7 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service = {
-          servicePort = 443
+          servicePort = 8010
           visibility  = "cluster"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"

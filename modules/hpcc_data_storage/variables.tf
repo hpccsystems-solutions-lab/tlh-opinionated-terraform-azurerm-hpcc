@@ -32,12 +32,16 @@ variable "storage_account_settings" {
     delete_protection    = bool
     replication_type     = string
     subnet_ids           = map(string)
+    blob_soft_delete_retention_days = number
+    container_soft_delete_retention_days = number
   })
   default = {
     authorized_ip_ranges = {}
     delete_protection    = false
     replication_type     = "ZRS"
     subnet_ids           = {}
+    blob_soft_delete_retention_days = 7
+    container_soft_delete_retention_days = 7
   }
 }
 
