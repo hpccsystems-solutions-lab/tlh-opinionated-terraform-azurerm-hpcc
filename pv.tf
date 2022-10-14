@@ -22,7 +22,7 @@ resource "kubernetes_storage_class" "premium_zrs_file_share_storage_class" {
     storageAccount = azurerm_storage_account.azurefiles_admin_services.0.name
     storeAccountKey = azurerm_storage_account.azurefiles_admin_services.0.primary_access_key
   }
-  mount_options = ["file_mode=0777", "dir_mode=0777", "mfsymlinks", "uid=0", "gid=0", "actimeo=30", "cache=strict"]
+  mount_options = ["file_mode=0644", "dir_mode=0755", "mfsymlinks", "uid=10000", "gid=10001", "actimeo=30", "cache=strict"]
 }
 
 resource "kubernetes_persistent_volume" "azurefiles" {
@@ -48,7 +48,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
       storage = each.value.size
     }
 
-    mount_options = ["dir_mode=0777", "mfsymlinks", "gid=0", "uid=0", "actimeo=30", "file_mode=0777", "cache=strict"]
+    mount_options = ["file_mode=0644", "dir_mode=0755", "mfsymlinks", "uid=10000", "gid=10001", "actimeo=30", "cache=strict"]
 
     persistent_volume_reclaim_policy = "Retain"
 
