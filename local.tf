@@ -109,7 +109,7 @@ locals {
       resource_group  = var.resource_group_name
       size            = config.size
       storage_account = azurerm_storage_account.azurefiles_admin_services.0.name
-      protocol = local.azure_files_pv_protocol
+      protocol        = local.azure_files_pv_protocol
     } if config.storage_type == "azurefiles"
   }
 
