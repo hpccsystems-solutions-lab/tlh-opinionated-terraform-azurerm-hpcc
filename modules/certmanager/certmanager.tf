@@ -1,13 +1,27 @@
 ###local_issuer####
 ######
+resource "kubernetes_secret" "hpcc-local-secret" {
+  metadata {
+    name      = "hpcc-local-issuer-key-pair"
+    namespace = "hpcc"
+  }
 
+  data = {
+    "tls.crt" = file("${path.module}/local/tls.crt")
+    "tls.key" = file("${path.module}/local/tls.key")
+  }
+
+  type = "kubernetes.io/tls"
+}
 resource "kubernetes_manifest" "local_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
+    "${path.module}/local/issuer.yml",
     {
       "name" = "hpcc-local-issuer"
     }
   ))
+
+  depends_on = [kubernetes_secret.hpcc-local-secret]
 }
 
 resource "kubernetes_manifest" "local_cert_issuer" {
@@ -24,10 +38,22 @@ resource "kubernetes_manifest" "local_cert_issuer" {
 }
 
 ###############remote########################
+resource "kubernetes_secret" "hpcc-remote-secret" {
+  metadata {
+    name      = "hpcc-remote-issuer-key-pair"
+    namespace = "hpcc"
+  }
 
+  data = {
+    "tls.crt" = file("${path.module}/remote/tls.crt")
+    "tls.key" = file("${path.module}/remote/tls.key")
+  }
+
+  type = "kubernetes.io/tls"
+}
 resource "kubernetes_manifest" "remote_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
+    "${path.module}/remote/issuer.yml",
     {
       "name" = "hpcc-remote-issuer"
     }
@@ -47,10 +73,22 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
 }
 
 ###################signing#################
+resource "kubernetes_secret" "hpcc-signing-secret" {
+  metadata {
+    name      = "hpcc-local-signing-key-pair"
+    namespace = "hpcc"
+  }
 
+  data = {
+    "tls.crt" = file("${path.module}/signing/tls.crt")
+    "tls.key" = file("${path.module}/signing/tls.key")
+  }
+
+  type = "kubernetes.io/tls"
+}
 resource "kubernetes_manifest" "signing_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
+    "${path.module}/signing/issuer.yml",
     {
       "name" = "hpcc-signing-issuer"
     }
