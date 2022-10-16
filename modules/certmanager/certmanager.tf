@@ -3,7 +3,7 @@
 
 resource "kubernetes_manifest" "local_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/local/issuer.yml",
+    "${path.module}/issuer.yml",
     {
       "name" = "hpcc-local-issuer"
     }
@@ -27,7 +27,7 @@ resource "kubernetes_manifest" "local_cert_issuer" {
 
 resource "kubernetes_manifest" "remote_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/remote/issuer.yml",
+    "${path.module}/issuer.yml",
     {
       "name" = "hpcc-remote-issuer"
     }
@@ -50,7 +50,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
 
 resource "kubernetes_manifest" "signing_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/signing/issuer.yml",
+    "${path.module}/issuer.yml",
     {
       "name" = "hpcc-signing-issuer"
     }
