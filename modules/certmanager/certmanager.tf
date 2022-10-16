@@ -21,7 +21,7 @@ resource "kubernetes_manifest" "local_issuer" {
     }
   ))
 
-  depends_on = [kubernetes_secret.hpcc-local-secret]
+ # depends_on = [kubernetes_secret.hpcc-local-secret]
 }
 
 resource "kubernetes_manifest" "local_cert_issuer" {
@@ -58,7 +58,7 @@ resource "kubernetes_manifest" "remote_issuer" {
       "name" = "hpcc-remote-issuer"
     }
   ))
-  depends_on = [kubernetes_secret.hpcc-remote-secret]
+ # depends_on = [kubernetes_secret.hpcc-remote-secret]
 }
 
 resource "kubernetes_manifest" "remote_cert_issuer" {
@@ -94,7 +94,7 @@ resource "kubernetes_manifest" "signing_issuer" {
       "name" = "hpcc-signing-issuer"
     }
   ))
-  depends_on = [kubernetes_secret.hpcc-signing-secret]
+  #depends_on = [kubernetes_secret.hpcc-signing-secret]
 }
 
 resource "kubernetes_manifest" "signing_cert_issuer" {
