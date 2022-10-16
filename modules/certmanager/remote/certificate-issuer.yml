@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: hpcc-remote-issuer
+  namespace: hpcc
+spec:
+  secretName: hpcc-remote-issuer-key-pair
+  isCA: true
+  issuerRef:
+    name: hpcc-remote-issuer
+    kind: Issuer
+  dnsNames:
+  - us-smallscaletest-dev.azure.lnrsg.io

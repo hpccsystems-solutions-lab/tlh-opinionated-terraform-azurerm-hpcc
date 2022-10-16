@@ -1,11 +1,11 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: ${name}
+  name: hpcc-local-issuer
   namespace: hpcc
 spec:
-  secretName: ${secretName}
-  subject:
+  secretName: hpcc-local-issuer-key-pair
+   subject:
    organizations:
    - HPCC Systems
    countries:
@@ -18,7 +18,7 @@ spec:
    - Georgia
   isCA: true
   issuerRef:
-    name: ${name}
+    name: hpcc-local-issuer
     kind: Issuer
   dnsNames:
-  - ${dnsNames}
+  - us-smallscaletest-dev.azure.lnrsg.io

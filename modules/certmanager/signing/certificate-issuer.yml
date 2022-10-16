@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: hpcc-signing-issuer
+  namespace: hpcc
+spec:
+  secretName: hpcc-signing-issuer-key-pair
+  isCA: true
+  issuerRef:
+    name: hpcc-signing-issuer
+    kind: Issuer
+  dnsNames:
+  - us-smallscaletest-dev.azure.lnrsg.io}
