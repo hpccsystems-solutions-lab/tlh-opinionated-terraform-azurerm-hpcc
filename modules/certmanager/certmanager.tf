@@ -3,7 +3,7 @@
 
 resource "kubernetes_manifest" "local_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
+    "${path.module}/local/issuer.yml",
     {
       "name" = "hpcc-local-issuer"
     }
@@ -23,17 +23,17 @@ resource "kubernetes_manifest" "local_cert_issuer" {
   depends_on = [kubernetes_manifest.local_issuer]
 }
 
-resource "kubernetes_manifest" "local_ca_issuer" {
-  manifest = yamldecode(templatefile(
-    "${path.module}/local/ca-issuer.yml",
-    {
-      "name"       = "hpcc-local-issuer"
-      "secretName" = "hpcc-local-issuer-key-pair"
-    }
-  ))
+# resource "kubernetes_manifest" "local_ca_issuer" {
+#   manifest = yamldecode(templatefile(
+#     "${path.module}/local/ca-issuer.yml",
+#     {
+#       "name"       = "hpcc-local-issuer"
+#       "secretName" = "hpcc-local-issuer-key-pair"
+#     }
+#   ))
 
-  depends_on = [kubernetes_manifest.local_issuer]
-}
+#   depends_on = [kubernetes_manifest.local_issuer]
+# }
 
 # resource "null_resource" "local_issuer" {
 #   provisioner "local-exec" {

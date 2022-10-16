@@ -9,4 +9,5 @@ metadata:
     meta.helm.sh/release-name: "hpcc"
     meta.helm.sh/release-namespace: "hpcc"
 spec:
- selfSigned: {}
+  ca: 
+   secretName: hpcc-local-issuer-key-pair
