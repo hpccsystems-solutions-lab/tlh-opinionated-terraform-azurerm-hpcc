@@ -210,7 +210,7 @@ resource "null_resource" "signing_cert_issuer" {
   depends_on = [null_resource.signing_issuer]
 }
 
-resource "null_resource" "signing_issuer" {
+resource "null_resource" "signing_ca_issuer" {
   provisioner "local-exec" {
     command = <<EOF
   echo "-------- install local ca ------------------"
