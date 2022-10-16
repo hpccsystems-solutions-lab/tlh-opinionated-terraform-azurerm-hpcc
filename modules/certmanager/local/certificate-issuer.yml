@@ -5,7 +5,7 @@ metadata:
   namespace: hpcc
 spec:
   secretName: hpcc-local-issuer-key-pair
-   subject:
+  subject:
    organizations:
    - HPCC Systems
    countries:

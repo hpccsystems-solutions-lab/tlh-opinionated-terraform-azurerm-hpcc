@@ -5,6 +5,17 @@ metadata:
   namespace: hpcc
 spec:
   secretName: hpcc-signing-issuer-key-pair
+  subject:
+   organizations:
+   - HPCC Systems
+   countries:
+   - US
+   organizationalUnits:
+   - HPCC Example
+   localities:
+   - Alpharetta
+   provinces:
+   - Georgia
   isCA: true
   issuerRef:
     name: hpcc-signing-issuer

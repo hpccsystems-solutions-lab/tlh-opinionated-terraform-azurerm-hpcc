@@ -11,7 +11,7 @@ locals {
 
   cluster_name_short = trimprefix(local.cluster_name, "${local.account_code}-")
   azuread_clusterrole_map = {
-    cluster_admin_users = {}
+    cluster_admin_users  = {}
     cluster_view_users   = {}
     standard_view_users  = {}
     standard_view_groups = {}

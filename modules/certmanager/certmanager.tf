@@ -38,7 +38,7 @@ resource "null_resource" "local_issuer" {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
     }
   }
- # depends_on = [kubernetes_manifest.local_cert_issuer]
+  # depends_on = [kubernetes_manifest.local_cert_issuer]
 }
 
 resource "null_resource" "local_cert_issuer" {
@@ -100,19 +100,55 @@ resource "null_resource" "local_ca_issuer" {
 #   depends_on = [kubernetes_manifest.remote_issuer]
 # }
 
-# resource "null_resource" "remote_issuer" {
-#   provisioner "local-exec" {
-#     command = <<EOF
-#   echo "-------- install local ca ------------------"
-#   kubectl apply -f ${path.module}/remote/ca-issuer.yml 
-#   echo "------------------------------------------------" 
-#   EOF
-#     environment = {
-#       KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
-#     }
-#   }
-#   depends_on = [null_resource.local_issuer, kubernetes_manifest.remote_cert_issuer]
-# }
+resource "null_resource" "remote_issuer" {
+  provisioner "local-exec" {
+    command = <<EOF
+  echo "-------- install kubectl on tfe runner ---------"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  kubectl version --client
+  echo "-------- install local ca ------------------"
+  kubectl apply -f ${path.module}/remote/issuer.yml 
+  echo "------------------------------------------------" 
+  EOF
+    environment = {
+      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
+    }
+  }
+  # depends_on = [kubernetes_manifest.local_cert_issuer]
+}
+
+resource "null_resource" "remote_cert_issuer" {
+  provisioner "local-exec" {
+    command = <<EOF
+  echo "-------- install kubectl on tfe runner ---------"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  kubectl version --client
+  echo "-------- install local ca ------------------"
+  kubectl apply -f ${path.module}/remote/certificate-issuer.yml 
+  echo "------------------------------------------------" 
+  EOF
+    environment = {
+      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
+    }
+  }
+  depends_on = [null_resource.remote_issuer]
+}
+
+resource "null_resource" "remote_ca_issuer" {
+  provisioner "local-exec" {
+    command = <<EOF
+  echo "-------- install local ca ------------------"
+  kubectl apply -f ${path.module}/remote/ca-issuer.yml 
+  echo "------------------------------------------------" 
+  EOF
+    environment = {
+      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
+    }
+  }
+  depends_on = [null_resource.remote_cert_issuer]
+}
 
 ###################signing#################
 
@@ -138,19 +174,55 @@ resource "null_resource" "local_ca_issuer" {
 #   depends_on = [kubernetes_manifest.signing_issuer]
 # }
 
-# resource "null_resource" "signing_issuer" {
-#   provisioner "local-exec" {
-#     command = <<EOF
-#   echo "-------- install local ca ------------------"
-#   kubectl apply -f ${path.module}/signing/ca-issuer.yml 
-#   echo "------------------------------------------------" 
-#   EOF
-#     environment = {
-#       KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
-#     }
-#   }
-#   depends_on = [null_resource.local_issuer, kubernetes_manifest.signing_cert_issuer]
-# }
+resource "null_resource" "signing_issuer" {
+  provisioner "local-exec" {
+    command = <<EOF
+  echo "-------- install kubectl on tfe runner ---------"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  kubectl version --client
+  echo "-------- install local ca ------------------"
+  kubectl apply -f ${path.module}/signing/issuer.yml 
+  echo "------------------------------------------------" 
+  EOF
+    environment = {
+      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
+    }
+  }
+  # depends_on = [kubernetes_manifest.local_cert_issuer]
+}
+
+resource "null_resource" "signing_cert_issuer" {
+  provisioner "local-exec" {
+    command = <<EOF
+  echo "-------- install kubectl on tfe runner ---------"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  kubectl version --client
+  echo "-------- install local ca ------------------"
+  kubectl apply -f ${path.module}/signing/certificate-issuer.yml 
+  echo "------------------------------------------------" 
+  EOF
+    environment = {
+      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
+    }
+  }
+  depends_on = [null_resource.signing_issuer]
+}
+
+resource "null_resource" "signing_issuer" {
+  provisioner "local-exec" {
+    command = <<EOF
+  echo "-------- install local ca ------------------"
+  kubectl apply -f ${path.module}/signing/ca-issuer.yml 
+  echo "------------------------------------------------" 
+  EOF
+    environment = {
+      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
+    }
+  }
+  depends_on = [null_resource.signing_cert_issuer]
+}
 
 ##################public #####################
 

@@ -46,7 +46,7 @@ hpcc_helm_chart_version = "8.8.0-rc6"
 hpcc_container = {
   image_root = "prctnonprodcr.azurecr.io/hpccoperations",
   image_name = "platform-core-ln",
-  version = "8.6.38"
+  version    = "8.6.38"
 }
 
 

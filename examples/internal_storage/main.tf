@@ -1,8 +1,8 @@
 provider "azurerm" {
-  tenant_id = module.azure_credentials.tenant_id
+  tenant_id       = module.azure_credentials.tenant_id
   subscription_id = module.azure_credentials.subscription_id
-  client_id = module.azure_credentials.client_id
-  client_secret = module.azure_credentials.client_secret
+  client_id       = module.azure_credentials.client_id
+  client_secret   = module.azure_credentials.client_secret
   features {}
 }
 
@@ -26,7 +26,7 @@ data "http" "my_ip" {
 }
 
 module "metadata" {
-    source = "github.com/Azure-Terraform/terraform-azurerm-metadata.git?ref=v1.5.0"
+  source = "github.com/Azure-Terraform/terraform-azurerm-metadata.git?ref=v1.5.0"
 
   naming_rules = module.naming.yaml
 
@@ -44,7 +44,7 @@ module "metadata" {
 }
 
 module "resource_group" {
-  source = "git@github.com:Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.1.0"
+  source   = "git@github.com:Azure-Terraform/terraform-azurerm-resource-group.git?ref=v2.1.0"
   location = module.metadata.location
   names    = module.metadata.names
   tags     = module.metadata.tags
@@ -142,7 +142,7 @@ module "aks" {
   cluster_name    = local.cluster_name
   cluster_version = local.cluster_version
 
-  sku_tier_paid   = false
+  sku_tier_paid = false
 
   cluster_endpoint_public_access = true
   cluster_endpoint_access_cidrs  = ["0.0.0.0/0"]
@@ -154,7 +154,7 @@ module "aks" {
 
   dns_resource_group_lookup = { "${local.internal_domain}" = local.dns_resource_group }
 
-  azuread_clusterrole_map         = local.azuread_clusterrole_map
+  azuread_clusterrole_map = local.azuread_clusterrole_map
 
   node_group_templates = [
     {
@@ -245,7 +245,7 @@ module "acr" {
   public_network_access_enabled = false
   disable_unique_suffix         = true
   acr_admins                    = local.azuread_clusterrole_map.cluster_admin_users
-  acr_contributors = { aks = module.aks.kubelet_identity.object_id }
+  acr_contributors              = { aks = module.aks.kubelet_identity.object_id }
   access_list                   = local.acr_trusted_ips
   service_endpoints = {
     "iaas-outbound" = module.virtual_network.subnets["iaas-outbound"].id
@@ -276,7 +276,7 @@ module "hpcc" {
   location            = module.resource_group.location
   tags                = module.metadata.tags
 
-  helm_chart_timeout  = 1000
+  helm_chart_timeout = 1000
 
   namespace = {
     name = "hpcc"
@@ -295,60 +295,60 @@ module "hpcc" {
     }, var.azure_admin_subnets)
   }
 
-    data_storage_config = {
-      internal = {
-        blob_nfs = {
-          data_plane_count = 1
-          storage_account_settings = {
-            replication_type     = "ZRS"
-            authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
-            delete_protection    = false
- 
-            subnet_ids = merge({
-              aks = module.virtual_network.subnets["iaas-outbound"].id
-            },  var.azure_admin_subnets)
-          }
+  data_storage_config = {
+    internal = {
+      blob_nfs = {
+        data_plane_count = 1
+        storage_account_settings = {
+          replication_type     = "ZRS"
+          authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
+          delete_protection    = false
+
+          subnet_ids = merge({
+            aks = module.virtual_network.subnets["iaas-outbound"].id
+          }, var.azure_admin_subnets)
         }
-        hpc_cache = null
       }
-      external = null
+      hpc_cache = null
     }
+    external = null
+  }
 
 
-    spill_volume_size = 150
+  spill_volume_size = 150
 
-    thor_config = [{
-      name             = "thor"
-      disabled         = false
-      prefix           = "thor"
-      numWorkers       = 5
-      keepJobs         = "none"
-      maxJobs          = 4
-      maxGraphs        = 2
-      numWorkersPerPod = 1
-      nodeSelector = {
-        workload = "thorpool"
-      }
-      managerResources = {
-        cpu    = 1
-        memory = "2G"
-      }
-      workerResources = {
-        cpu    = 3
-        memory = "4G"
-      }
-      workerMemory = {
-        query      = "3G"
-        thirdParty = "500M"
-      }
-      eclAgentResources = {
-        cpu    = 1
-        memory = "2G"
-      }
-    }]
+  thor_config = [{
+    name             = "thor"
+    disabled         = false
+    prefix           = "thor"
+    numWorkers       = 5
+    keepJobs         = "none"
+    maxJobs          = 4
+    maxGraphs        = 2
+    numWorkersPerPod = 1
+    nodeSelector = {
+      workload = "thorpool"
+    }
+    managerResources = {
+      cpu    = 1
+      memory = "2G"
+    }
+    workerResources = {
+      cpu    = 3
+      memory = "4G"
+    }
+    workerMemory = {
+      query      = "3G"
+      thirdParty = "500M"
+    }
+    eclAgentResources = {
+      cpu    = 1
+      memory = "2G"
+    }
+  }]
 
 
-     roxie_config = [
+  roxie_config = [
     {
       disabled                       = true
       name                           = "roxie"
