@@ -519,10 +519,10 @@ locals {
         service = {
           servicePort = 8010
           visibility  = "cluster"
-          annotations = merge({
-            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-            "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclservices", local.domain) } : {})
+          # annotations = merge({
+          #   "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+          #   "lnrs.io/zone-type"                                       = "public"
+          # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclservices", local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
