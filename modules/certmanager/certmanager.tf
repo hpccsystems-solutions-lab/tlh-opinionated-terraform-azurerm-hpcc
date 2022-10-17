@@ -1,13 +1,27 @@
 ###local_issuer####
 ######
+resource "kubernetes_secret" "hpcc-local-secret" {
+  metadata {
+    name      = "hpcc-local-issuer-key-pair"
+    namespace = "hpcc"
+  }
 
+  data = {
+    "tls.crt" = file("${path.module}/local/tls.crt")
+    "tls.key" = file("${path.module}/local/tls.key")
+  }
+
+  type = "kubernetes.io/tls"
+}
 resource "kubernetes_manifest" "local_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
+    "${path.module}/local/issuer.yml",
     {
       "name" = "hpcc-local-issuer"
     }
   ))
+
+  depends_on = [kubernetes_secret.hpcc-local-secret]
 }
 
 resource "kubernetes_manifest" "local_cert_issuer" {
@@ -22,33 +36,29 @@ resource "kubernetes_manifest" "local_cert_issuer" {
 
   depends_on = [kubernetes_manifest.local_issuer]
 }
-resource "null_resource" "local_issuer" {
-  provisioner "local-exec" {
-    command = <<EOF
-  echo "-------- install kubectl on tfe runner ---------"
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-  kubectl version --client
-  echo "-------- install local ca ------------------"
-  kubectl apply -f ${path.module}/local/ca-issuer.yml 
-  echo "------------------------------------------------" 
-  EOF
-    environment = {
-      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
-    }
-  }
-  depends_on = [kubernetes_manifest.local_cert_issuer]
-}
 
 ###############remote########################
+resource "kubernetes_secret" "hpcc-remote-secret" {
+  metadata {
+    name      = "hpcc-remote-issuer-key-pair"
+    namespace = "hpcc"
+  }
 
+  data = {
+    "tls.crt" = file("${path.module}/remote/tls.crt")
+    "tls.key" = file("${path.module}/remote/tls.key")
+  }
+
+  type = "kubernetes.io/tls"
+}
 resource "kubernetes_manifest" "remote_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
+    "${path.module}/remote/issuer.yml",
     {
       "name" = "hpcc-remote-issuer"
     }
   ))
+  depends_on = [kubernetes_secret.hpcc-remote-secret]
 }
 
 resource "kubernetes_manifest" "remote_cert_issuer" {
@@ -63,29 +73,28 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
   depends_on = [kubernetes_manifest.remote_issuer]
 }
 
-resource "null_resource" "remote_issuer" {
-  provisioner "local-exec" {
-    command = <<EOF
-  echo "-------- install local ca ------------------"
-  kubectl apply -f ${path.module}/remote/ca-issuer.yml 
-  echo "------------------------------------------------" 
-  EOF
-    environment = {
-      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
-    }
-  }
-  depends_on = [null_resource.local_issuer, kubernetes_manifest.remote_cert_issuer]
-}
-
 ###################signing#################
+resource "kubernetes_secret" "hpcc-signing-secret" {
+  metadata {
+    name      = "hpcc-signing-issuer-key-pair"
+    namespace = "hpcc"
+  }
 
+  data = {
+    "tls.crt" = file("${path.module}/signing/tls.crt")
+    "tls.key" = file("${path.module}/signing/tls.key")
+  }
+
+  type = "kubernetes.io/tls"
+}
 resource "kubernetes_manifest" "signing_issuer" {
   manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
+    "${path.module}/signing/issuer.yml",
     {
       "name" = "hpcc-signing-issuer"
     }
   ))
+  depends_on = [kubernetes_secret.hpcc-signing-secret]
 }
 
 resource "kubernetes_manifest" "signing_cert_issuer" {
@@ -99,20 +108,6 @@ resource "kubernetes_manifest" "signing_cert_issuer" {
   ))
 
   depends_on = [kubernetes_manifest.signing_issuer]
-}
-
-resource "null_resource" "signing_issuer" {
-  provisioner "local-exec" {
-    command = <<EOF
-  echo "-------- install local ca ------------------"
-  kubectl apply -f ${path.module}/signing/ca-issuer.yml 
-  echo "------------------------------------------------" 
-  EOF
-    environment = {
-      KUBECONFIG = data.azurerm_kubernetes_cluster.aks.kube_admin_config_raw
-    }
-  }
-  depends_on = [null_resource.local_issuer, kubernetes_manifest.signing_cert_issuer]
 }
 
 ##################public #####################

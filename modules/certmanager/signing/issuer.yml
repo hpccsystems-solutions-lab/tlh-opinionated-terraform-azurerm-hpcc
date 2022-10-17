@@ -3,6 +3,11 @@ kind: Issuer
 metadata:
   name: hpcc-signing-issuer
   namespace: hpcc
+  labels: 
+   app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "hpcc"
+    meta.helm.sh/release-namespace: "hpcc"
 spec:
   ca: 
    secretName: hpcc-signing-issuer-key-pair

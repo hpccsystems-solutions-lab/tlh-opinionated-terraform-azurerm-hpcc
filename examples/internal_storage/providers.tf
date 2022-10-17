@@ -60,8 +60,8 @@ provider "kubernetes" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "kubelogin"
     args        = ["get-token", "--login", "spn", "--server-id", "6dae42f8-4368-4678-94ff-3960e28e3630", "--environment", "AzurePublicCloud", "--tenant-id", local.azure_auth_env.AZURE_TENANT_ID]
-    env         = {
-      AAD_SERVICE_PRINCIPAL_CLIENT_ID = module.azure_credentials.client_id
+    env = {
+      AAD_SERVICE_PRINCIPAL_CLIENT_ID     = module.azure_credentials.client_id
       AAD_SERVICE_PRINCIPAL_CLIENT_SECRET = module.azure_credentials.client_secret
     }
   }
@@ -75,8 +75,8 @@ provider "kubectl" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "kubelogin"
     args        = ["get-token", "--login", "spn", "--server-id", "6dae42f8-4368-4678-94ff-3960e28e3630", "--environment", "AzurePublicCloud", "--tenant-id", local.azure_auth_env.AZURE_TENANT_ID]
-    env         = {
-      AAD_SERVICE_PRINCIPAL_CLIENT_ID = module.azure_credentials.client_id
+    env = {
+      AAD_SERVICE_PRINCIPAL_CLIENT_ID     = module.azure_credentials.client_id
       AAD_SERVICE_PRINCIPAL_CLIENT_SECRET = module.azure_credentials.client_secret
     }
   }
@@ -89,8 +89,8 @@ provider "helm" {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "kubelogin"
       args        = ["get-token", "--login", "spn", "--server-id", "6dae42f8-4368-4678-94ff-3960e28e3630", "--environment", "AzurePublicCloud", "--tenant-id", local.azure_auth_env.AZURE_TENANT_ID]
-      env         = {
-        AAD_SERVICE_PRINCIPAL_CLIENT_ID = module.azure_credentials.client_id
+      env = {
+        AAD_SERVICE_PRINCIPAL_CLIENT_ID     = module.azure_credentials.client_id
         AAD_SERVICE_PRINCIPAL_CLIENT_SECRET = module.azure_credentials.client_secret
       }
     }
@@ -104,8 +104,8 @@ provider "shell" {
     AZURE_SUBSCRIPTION_ID = module.azure_credentials.subscription_id
   }
   sensitive_environment = {
-    AZURE_TENANT_ID = module.azure_credentials.tenant_id
-    AZURE_CLIENT_ID = module.azure_credentials.client_id
+    AZURE_TENANT_ID     = module.azure_credentials.tenant_id
+    AZURE_CLIENT_ID     = module.azure_credentials.client_id
     AZURE_CLIENT_SECRET = module.azure_credentials.client_secret
   }
 }

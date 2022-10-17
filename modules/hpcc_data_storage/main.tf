@@ -32,7 +32,7 @@ resource "azurerm_storage_account" "default" {
     container_delete_retention_policy {
       days = var.storage_account_settings.container_soft_delete_retention_days
     }
-}  
+  }
 }
 
 resource "azurerm_storage_container" "hpcc_data" {
