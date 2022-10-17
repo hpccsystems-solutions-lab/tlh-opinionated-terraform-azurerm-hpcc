@@ -9,7 +9,6 @@ resource "kubernetes_secret" "hpcc-local-secret" {
   data = {
     "tls.crt" = file("${path.module}/local/tls.crt")
     "tls.key" = file("${path.module}/local/tls.key")
-    #"ca.crt"  = file("${path.module}/local/ca.crt")
   }
 
   type = "kubernetes.io/tls"
@@ -48,7 +47,6 @@ resource "kubernetes_secret" "hpcc-remote-secret" {
   data = {
     "tls.crt" = file("${path.module}/remote/tls.crt")
     "tls.key" = file("${path.module}/remote/tls.key")
-    #"ca.crt"  = file("${path.module}/remote/ca.crt")
   }
 
   type = "kubernetes.io/tls"
@@ -85,7 +83,6 @@ resource "kubernetes_secret" "hpcc-signing-secret" {
   data = {
     "tls.crt" = file("${path.module}/signing/tls.crt")
     "tls.key" = file("${path.module}/signing/tls.key")
-    #"ca.crt"  = file("${path.module}/signing/ca.crt")
   }
 
   type = "kubernetes.io/tls"
