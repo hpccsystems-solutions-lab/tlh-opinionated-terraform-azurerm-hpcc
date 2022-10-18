@@ -382,7 +382,7 @@ locals {
         replicas    = var.spray_service_settings.replicas
         service = {
           servicePort = 443
-          visibility  = "local"
+          visibility  = "cluster"
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
