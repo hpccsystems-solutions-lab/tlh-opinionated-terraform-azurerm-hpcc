@@ -381,12 +381,12 @@ locals {
         application = "spray"
         replicas    = var.spray_service_settings.replicas
         service = {
-          servicePort = 443
-          visibility  = "local"
-          annotations = merge({
-            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-            "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
+          servicePort = 7300 ##443
+          visibility  = "cluster"
+          # annotations = merge({
+          #   "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+          #   "lnrs.io/zone-type"                                       = "public"
+          # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
       },
       {
