@@ -49,7 +49,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
       }
     }
 
-    storage_class_name = "hpcc-premium-zrs-file-share-sc"
+    storage_class_name = each.value.protocol == "nfs" ? "azurefile-csi-premium" : "hpcc-premium-zrs-file-share-sc"
   }
 }
 
