@@ -25,6 +25,14 @@ resource "azurerm_storage_account" "default" {
     virtual_network_subnet_ids = values(var.storage_account_settings.subnet_ids)
     bypass                     = ["AzureServices"]
   }
+  blob_properties {
+    delete_retention_policy {
+      days = var.storage_account_settings.blob_soft_delete_retention_days
+    }
+    container_delete_retention_policy {
+      days = var.storage_account_settings.container_soft_delete_retention_days
+    }
+  }
 }
 
 resource "azurerm_storage_container" "hpcc_data" {

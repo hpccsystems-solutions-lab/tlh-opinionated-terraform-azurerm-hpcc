@@ -17,7 +17,7 @@ resource "kubernetes_persistent_volume_claim" "azurefiles" {
         storage-tier = "azurefiles"
       }
     }
-    storage_class_name = "azurefile-csi-premium"
+    storage_class_name = each.value.protocol == "nfs" ? "azurefile-csi-premium" : "hpcc-premium-zrs-file-share-sc"
     resources {
       requests = {
         storage = kubernetes_persistent_volume.azurefiles[each.key].spec.0.capacity.storage

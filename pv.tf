@@ -6,9 +6,11 @@ module "csi_driver" {
 
 resource "random_uuid" "volume_handle" {}
 
+
 resource "kubernetes_persistent_volume" "azurefiles" {
   depends_on = [
-    azurerm_storage_share.azurefiles_admin_services
+    azurerm_storage_share.azurefiles_admin_services,
+    kubernetes_storage_class.premium_zrs_file_share_storage_class
   ]
 
   for_each = local.azurefiles_services_storage
@@ -28,7 +30,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
       storage = each.value.size
     }
 
-    mount_options = ["nconnect=8"]
+    mount_options = each.value.protocol == "nfs" ? ["nconnect=8"] : ["file_mode=0644", "dir_mode=0755", "mfsymlinks", "uid=10000", "gid=10001", "actimeo=30", "cache=strict"]
 
     persistent_volume_reclaim_policy = "Retain"
 
@@ -38,7 +40,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
         read_only     = false
         volume_handle = "${each.key}-${random_uuid.volume_handle.result}"
         volume_attributes = {
-          protocol       = "nfs"
+          protocol       = each.value.protocol
           resourceGroup  = each.value.resource_group
           storageAccount = each.value.storage_account
           secretName     = kubernetes_secret.azurefiles_admin_services.0.metadata.0.name
@@ -47,7 +49,7 @@ resource "kubernetes_persistent_volume" "azurefiles" {
       }
     }
 
-    storage_class_name = "azurefile-csi-premium"
+    storage_class_name = each.value.protocol == "nfs" ? "azurefile-csi-premium" : "hpcc-premium-zrs-file-share-sc"
   }
 }
 

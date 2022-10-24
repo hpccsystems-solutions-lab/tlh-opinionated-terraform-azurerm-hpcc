@@ -13,16 +13,22 @@ variable "admin_services_node_selector" {
 variable "admin_services_storage_account_settings" {
   description = "Settings for admin services storage account."
   type = object({
-    authorized_ip_ranges = map(string)
-    delete_protection    = bool
-    replication_type     = string
-    subnet_ids           = map(string)
+    authorized_ip_ranges                 = map(string)
+    delete_protection                    = bool
+    replication_type                     = string
+    subnet_ids                           = map(string)
+    blob_soft_delete_retention_days      = optional(number)
+    container_soft_delete_retention_days = optional(number)
+    file_share_retention_days            = optional(number)
   })
   default = {
-    authorized_ip_ranges = {}
-    delete_protection    = false
-    replication_type     = "ZRS"
-    subnet_ids           = {}
+    authorized_ip_ranges                 = {}
+    delete_protection                    = false
+    replication_type                     = "ZRS"
+    subnet_ids                           = {}
+    blob_soft_delete_retention_days      = 7
+    container_soft_delete_retention_days = 7
+    file_share_retention_days            = 7
   }
 }
 
@@ -92,10 +98,12 @@ variable "data_storage_config" {
       blob_nfs = object({
         data_plane_count = number
         storage_account_settings = object({
-          authorized_ip_ranges = map(string)
-          delete_protection    = bool
-          replication_type     = string
-          subnet_ids           = map(string)
+          authorized_ip_ranges                 = map(string)
+          delete_protection                    = bool
+          replication_type                     = string
+          subnet_ids                           = map(string)
+          blob_soft_delete_retention_days      = optional(number)
+          container_soft_delete_retention_days = optional(number)
         })
       })
       hpc_cache = object({
@@ -146,10 +154,12 @@ variable "data_storage_config" {
       blob_nfs = {
         data_plane_count = 1
         storage_account_settings = {
-          authorized_ip_ranges = {}
-          delete_protection    = false
-          replication_type     = "ZRS"
-          subnet_ids           = {}
+          authorized_ip_ranges                 = {}
+          delete_protection                    = false
+          replication_type                     = "ZRS"
+          subnet_ids                           = {}
+          blob_soft_delete_retention_days      = 7
+          container_soft_delete_retention_days = 7
         }
       }
       hpc_cache = null
