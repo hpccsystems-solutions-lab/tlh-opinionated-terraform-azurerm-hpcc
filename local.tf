@@ -322,8 +322,8 @@ locals {
       enabled = true
       issuers = {
         local = {
-          name = "hpcc-local-issuer"
-          kind = "Issuer"
+          name   = "hpcc-local-issuer"
+          kind   = "Issuer"
           domain = var.internal_domain
           spec = {
             ca = {
@@ -343,7 +343,7 @@ locals {
           enabled = true
           name    = "hpcc-remote-issuer"
           kind    = "Issuer"
-          domain = var.internal_domain
+          domain  = var.internal_domain
           spec = {
             ca = {
               secretName = "hpcc-remote-issuer-key-pair"
