@@ -181,201 +181,190 @@ locals {
     { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector } } if length(thor.nodeSelector) > 0
   ]
 
-  placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
-
-############################################
   placements_tolerations = [
-      {
-        pods = ["all"]
-        placement = {
-          # nodeSelector = {
-          #   workload = "servpool"
-          # }
-          tolerations = [
-            {
-              key      = "hpcc"
-              operator = "Equal"
-              value    = "servpool"
-              effect   = "NoSchedule"
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["thor"]
-        placement = {
-          # nodeSelector = {
-          #   workload = "thorpool"
-          # }
-          tolerations = [
-            {
-              key      = "hpcc"
-              operator = "Equal"
-              value    = "thorpool"
-              effect   = "NoSchedule"
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["spray-service"]
-        placement = {
-          # nodeSelector = {
-          #   workload = "spraypool"
-          # }
-          tolerations = [
-            {
-              key      = "hpcc"
-              operator = "Equal"
-              value    = "spraypool"
-              effect   = "NoSchedule"
-            }
-          ]
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.spray-service.maxskew
-              topologyKey       = "spray-service"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "spray-service"
-                }
-              }
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["eclwatch"]
-        placement = {
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.eclwatch.maxskew
-              topologyKey       = "eclwatch"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "eclwatch"
-                }
-              }
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["eclservices"]
-        placement = {
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.eclservices.maxskew
-              topologyKey       = "eclservices"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "eclservices"
-                }
-              }
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["eclqueries"]
-        placement = {
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.eclqueries.maxskew
-              topologyKey       = "eclqueries"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "eclqueries"
-                }
-              }
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["dfs"]
-        placement = {
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.dfs.maxskew
-              topologyKey       = "dfs"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "dfs"
-                }
-              }
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["direct-access"]
-        placement = {
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.direct-access.maxskew
-              topologyKey       = "direct-access"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "direct-access"
-                }
-              }
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["thorworker"]
-        placement = {
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.thorworker.maxskew
-              topologyKey       = "thorworker"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "thorworker"
-                }
-              }
-            }
-          ]
-        }
-      },
-
-      {
-        pods = ["roxie-agent"]
-        placement = {
-          topologySpreadConstraints = [
-            {
-              maxSkew           = var.placements.roxie-agent.maxskew
-              topologyKey       = "roxie-agent"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  server = "roxie-agent"
-                }
-              }
-            }
-          ]
-        }
+    {
+      pods = ["all"]
+      placement = {
+        tolerations = [
+          {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "servpool"
+            effect   = "NoSchedule"
+          }
+        ]
       }
+    },
 
-    ]
-  ###################################  
+    {
+      pods = ["thor"]
+      placement = {
+        tolerations = [
+          {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "thorpool"
+            effect   = "NoSchedule"
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["spray-service"]
+      placement = {
+        tolerations = [
+          {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "spraypool"
+            effect   = "NoSchedule"
+          }
+        ]
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.spray-service.maxskew
+            topologyKey       = "spray-service"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "spray-service"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["eclwatch"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.eclwatch.maxskew
+            topologyKey       = "eclwatch"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclwatch"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["eclservices"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.eclservices.maxskew
+            topologyKey       = "eclservices"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclservices"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["eclqueries"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.eclqueries.maxskew
+            topologyKey       = "eclqueries"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclqueries"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["dfs"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.dfs.maxskew
+            topologyKey       = "dfs"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "dfs"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["direct-access"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.direct-access.maxskew
+            topologyKey       = "direct-access"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "direct-access"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["thorworker"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.thorworker.maxskew
+            topologyKey       = "thorworker"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "thorworker"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["roxie-agent"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.roxie-agent.maxskew
+            topologyKey       = "roxie-agent"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "roxie-agent"
+              }
+            }
+          }
+        ]
+      }
+    }
+
+  ]
+
+  placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements, local.placements_tolerations)
 
   remote_storage_enabled = var.remote_storage_plane == null ? false : true
 
@@ -555,9 +544,9 @@ locals {
         }
       }
     }
- 
-    placements = concat(local.placements, local.placements_tolerations)
-    
+
+    placements = local.placements
+
     dafilesrv = [
       {
         name        = "direct-access"
