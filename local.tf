@@ -362,15 +362,13 @@ locals {
       }
     }
 
-    #placements = local.placements
-
-    placements = [
+    placements_tolerations = [
       {
         pods = ["all"]
         placement = {
-          nodeSelector = {
-            workload = "servpool"
-          }
+          # nodeSelector = {
+          #   workload = "servpool"
+          # }
           tolerations = [
             {
               key      = "hpcc"
@@ -385,9 +383,9 @@ locals {
       {
         pods = ["thor"]
         placement = {
-          nodeSelector = {
-            workload = "thorpool"
-          }
+          # nodeSelector = {
+          #   workload = "thorpool"
+          # }
           tolerations = [
             {
               key      = "hpcc"
@@ -402,9 +400,9 @@ locals {
       {
         pods = ["spray-service"]
         placement = {
-          nodeSelector = {
-            workload = "spraypool"
-          }
+          # nodeSelector = {
+          #   workload = "spraypool"
+          # }
           tolerations = [
             {
               key      = "hpcc"
@@ -555,6 +553,9 @@ locals {
       }
 
     ]
+
+    placements = concat(local.placements, local.placements_tolerations)
+
     ###########
     dafilesrv = [
       {
