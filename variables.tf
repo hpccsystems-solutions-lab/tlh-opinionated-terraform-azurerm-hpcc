@@ -683,13 +683,14 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
-    maxGraphs        = number
-    maxJobs          = number
-    name             = string
-    nodeSelector     = map(string)
-    numWorkers       = number
-    numWorkersPerPod = number
-    prefix           = string
+    maxGraphs           = number
+    maxJobs             = number
+    maxGraphStartupTime = number
+    name                = string
+    nodeSelector        = map(string)
+    numWorkers          = number
+    numWorkersPerPod    = number
+    prefix              = string
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -709,14 +710,15 @@ variable "thor_config" {
       cpu    = 1
       memory = "2G"
     }
-    keepJobs         = "none"
-    maxGraphs        = 2
-    maxJobs          = 4
-    name             = "thor"
-    nodeSelector     = {}
-    numWorkers       = 2
-    numWorkersPerPod = 1
-    prefix           = "thor"
+    keepJobs            = "none"
+    maxGraphs           = 2
+    maxJobs             = 4
+    maxGraphStartupTime = 172800
+    name                = "thor"
+    nodeSelector        = {}
+    numWorkers          = 2
+    numWorkersPerPod    = 1
+    prefix              = "thor"
     workerMemory = {
       query      = "3G"
       thirdParty = "500M"
