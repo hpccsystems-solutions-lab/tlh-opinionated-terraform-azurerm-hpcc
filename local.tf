@@ -183,186 +183,8 @@ locals {
 
   placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
 
-  remote_storage_enabled = var.remote_storage_plane == null ? false : true
-
-  remote_storage_plane = local.remote_storage_enabled ? flatten([
-    for subscription_key, subscription_val in var.remote_storage_plane : [
-      for sa_key, sa_val in subscription_val.target_storage_accounts : {
-        subscription_name      = subscription_key
-        dfs_service_name       = subscription_val.dfs_service_name
-        storage_account_name   = sa_val.name
-        storage_account_prefix = sa_val.prefix
-        storage_account_key    = sa_key
-        volume_name            = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
-        volume_claim_name      = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
-      }
-    ]
-  ]) : []
-
-  remote_storage_helm_values = local.remote_storage_enabled ? { for k, v in var.remote_storage_plane : k => {
-    dfs_service_name = v.dfs_service_name
-    numDevices       = length(v.target_storage_accounts)
-  } } : null
-
-  onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
-
-  onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
-    category = "lz"
-    name     = k
-    prefix   = v.prefix
-    hosts    = v.hosts
-  }] : null
-
-  helm_chart_values = {
-
-    global = {
-      env     = [for k, v in var.environment_variables : { name = k, value = v }]
-      busybox = local.acr_default.busybox
-      image = merge({
-        version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
-        root       = var.hpcc_container.image_root
-        name       = var.hpcc_container.image_name
-        pullPolicy = "IfNotPresent"
-      }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
-      visibilities = {
-        cluster = {
-          type = "ClusterIP"
-        }
-        local = {
-          annotations = {
-            "helm.sh/resource-policy"                                 = "keep"
-            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-          }
-          type = "LoadBalancer"
-          ingress = [
-            {}
-          ]
-        }
-        global = {
-          type = "LoadBalancer"
-          ingress = [
-            {}
-          ]
-        }
-      }
-    }
-
-    storage = merge({
-      planes = concat([for k, v in local.blob_nfs_services_storage :
-        {
-          category = v.category
-          name     = k
-          prefix   = "/var/lib/HPCCSystems/${v.path}"
-          pvc      = kubernetes_persistent_volume_claim.blob_nfs[k].metadata.0.name
-        }
-        ],
-        [for k, v in local.azurefiles_services_storage :
-          {
-            category = v.category
-            name     = k
-            prefix   = "/var/lib/HPCCSystems/${v.path}"
-            pvc      = kubernetes_persistent_volume_claim.azurefiles[k].metadata.0.name
-          }
-          ], local.blob_nfs_data_enabled ? [
-          merge({
-            category   = "data"
-            name       = "data"
-            numDevices = length(local.blob_nfs_data_storage)
-            prefix     = "/var/lib/HPCCSystems/hpcc-data"
-            pvc        = "pvc-blob-data"
-            }, local.hpc_cache_data_enabled ? {
-            aliases = [
-              {
-                mode      = ["random"]
-                name      = "data-cache"
-                numMounts = length(local.hpc_cache_data_storage)
-                prefix    = "/var/lib/HPCCSystems/hpcc-data-cache"
-                pvc       = "pvc-hpc-cache-data"
-              }
-            ]
-          } : {})] : [], (local.hpc_cache_data_enabled && !local.blob_nfs_data_enabled) ? [
-          {
-            category   = "data"
-            name       = "data"
-            numDevices = length(local.hpc_cache_data_storage)
-            prefix     = "/var/lib/HPCCSystems/hpcc-data"
-            pvc        = "pvc-hpc-cache-data"
-          }
-          ] : [], local.spill_space_enabled ? [
-          {
-            category         = "spill"
-            name             = "localspill"
-            prefix           = "/var/lib/HPCCSystems/spill"
-            pvc              = "pvc-spill"
-            forcePermissions = true
-          }
-        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
-        local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
-          {
-            category   = "remote"
-            prefix     = format("/var/lib/HPCCSystems/%s-data", k)
-            name       = format("%s-remote-hpcc-data", k)
-            pvc        = format("%s-remote-hpcc-data", k)
-            numDevices = v.numDevices
-          }
-        ] : []
-        ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
-          name    = format("%s-data", k)
-          service = v.dfs_service_name
-          planes = [
-            {
-              remote = "data"
-              local  = format("%s-remote-hpcc-data", k)
-            }
-          ]
-      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
-    )
-
-    certificates = {
-      enabled = true
-      issuers = {
-        local = {
-          name   = "hpcc-local-issuer"
-          kind   = "Issuer"
-          domain = var.internal_domain
-          spec = {
-            ca = {
-              secretName = "hpcc-local-issuer-key-pair"
-            }
-          }
-        }
-        public = {
-          name   = "hpcc-public-issuer"
-          kind   = "Issuer"
-          domain = var.internal_domain
-          spec = {
-            selfSigned = {}
-          }
-        }
-        remote = {
-          enabled = true
-          name    = "hpcc-remote-issuer"
-          kind    = "Issuer"
-          domain  = var.internal_domain
-          spec = {
-            ca = {
-              secretName = "hpcc-remote-issuer-key-pair"
-            }
-          }
-        }
-        signing = {
-          name = "hpcc-signing-issuer"
-          kind = "Issuer"
-          spec = {
-            ca = {
-              secretName = "hpcc-signing-issuer-key-pair"
-            }
-          }
-        }
-      }
-    }
-
-    placements_tolerations = [
+############################################
+  placements_tolerations = [
       {
         pods = ["all"]
         placement = {
@@ -553,10 +375,189 @@ locals {
       }
 
     ]
+  ###################################  
 
+  remote_storage_enabled = var.remote_storage_plane == null ? false : true
+
+  remote_storage_plane = local.remote_storage_enabled ? flatten([
+    for subscription_key, subscription_val in var.remote_storage_plane : [
+      for sa_key, sa_val in subscription_val.target_storage_accounts : {
+        subscription_name      = subscription_key
+        dfs_service_name       = subscription_val.dfs_service_name
+        storage_account_name   = sa_val.name
+        storage_account_prefix = sa_val.prefix
+        storage_account_key    = sa_key
+        volume_name            = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+        volume_claim_name      = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+      }
+    ]
+  ]) : []
+
+  remote_storage_helm_values = local.remote_storage_enabled ? { for k, v in var.remote_storage_plane : k => {
+    dfs_service_name = v.dfs_service_name
+    numDevices       = length(v.target_storage_accounts)
+  } } : null
+
+  onprem_lz_enabled = var.onprem_lz_settings == null ? false : true
+
+  onprem_lz_helm_values = local.onprem_lz_enabled ? [for k, v in var.onprem_lz_settings : {
+    category = "lz"
+    name     = k
+    prefix   = v.prefix
+    hosts    = v.hosts
+  }] : null
+
+  helm_chart_values = {
+
+    global = {
+      env     = [for k, v in var.environment_variables : { name = k, value = v }]
+      busybox = local.acr_default.busybox
+      image = merge({
+        version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
+        root       = var.hpcc_container.image_root
+        name       = var.hpcc_container.image_name
+        pullPolicy = "IfNotPresent"
+      }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
+      visibilities = {
+        cluster = {
+          type = "ClusterIP"
+        }
+        local = {
+          annotations = {
+            "helm.sh/resource-policy"                                 = "keep"
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+          }
+          type = "LoadBalancer"
+          ingress = [
+            {}
+          ]
+        }
+        global = {
+          type = "LoadBalancer"
+          ingress = [
+            {}
+          ]
+        }
+      }
+    }
+
+    storage = merge({
+      planes = concat([for k, v in local.blob_nfs_services_storage :
+        {
+          category = v.category
+          name     = k
+          prefix   = "/var/lib/HPCCSystems/${v.path}"
+          pvc      = kubernetes_persistent_volume_claim.blob_nfs[k].metadata.0.name
+        }
+        ],
+        [for k, v in local.azurefiles_services_storage :
+          {
+            category = v.category
+            name     = k
+            prefix   = "/var/lib/HPCCSystems/${v.path}"
+            pvc      = kubernetes_persistent_volume_claim.azurefiles[k].metadata.0.name
+          }
+          ], local.blob_nfs_data_enabled ? [
+          merge({
+            category   = "data"
+            name       = "data"
+            numDevices = length(local.blob_nfs_data_storage)
+            prefix     = "/var/lib/HPCCSystems/hpcc-data"
+            pvc        = "pvc-blob-data"
+            }, local.hpc_cache_data_enabled ? {
+            aliases = [
+              {
+                mode      = ["random"]
+                name      = "data-cache"
+                numMounts = length(local.hpc_cache_data_storage)
+                prefix    = "/var/lib/HPCCSystems/hpcc-data-cache"
+                pvc       = "pvc-hpc-cache-data"
+              }
+            ]
+          } : {})] : [], (local.hpc_cache_data_enabled && !local.blob_nfs_data_enabled) ? [
+          {
+            category   = "data"
+            name       = "data"
+            numDevices = length(local.hpc_cache_data_storage)
+            prefix     = "/var/lib/HPCCSystems/hpcc-data"
+            pvc        = "pvc-hpc-cache-data"
+          }
+          ] : [], local.spill_space_enabled ? [
+          {
+            category         = "spill"
+            name             = "localspill"
+            prefix           = "/var/lib/HPCCSystems/spill"
+            pvc              = "pvc-spill"
+            forcePermissions = true
+          }
+        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
+        local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
+          {
+            category   = "remote"
+            prefix     = format("/var/lib/HPCCSystems/%s-data", k)
+            name       = format("%s-remote-hpcc-data", k)
+            pvc        = format("%s-remote-hpcc-data", k)
+            numDevices = v.numDevices
+          }
+        ] : []
+        ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
+          name    = format("%s-data", k)
+          service = v.dfs_service_name
+          planes = [
+            {
+              remote = "data"
+              local  = format("%s-remote-hpcc-data", k)
+            }
+          ]
+      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}
+    )
+
+    certificates = {
+      enabled = true
+      issuers = {
+        local = {
+          name   = "hpcc-local-issuer"
+          kind   = "Issuer"
+          domain = var.internal_domain
+          spec = {
+            ca = {
+              secretName = "hpcc-local-issuer-key-pair"
+            }
+          }
+        }
+        public = {
+          name   = "hpcc-public-issuer"
+          kind   = "Issuer"
+          domain = var.internal_domain
+          spec = {
+            selfSigned = {}
+          }
+        }
+        remote = {
+          enabled = true
+          name    = "hpcc-remote-issuer"
+          kind    = "Issuer"
+          domain  = var.internal_domain
+          spec = {
+            ca = {
+              secretName = "hpcc-remote-issuer-key-pair"
+            }
+          }
+        }
+        signing = {
+          name = "hpcc-signing-issuer"
+          kind = "Issuer"
+          spec = {
+            ca = {
+              secretName = "hpcc-signing-issuer-key-pair"
+            }
+          }
+        }
+      }
+    }
+ 
     placements = concat(local.placements, local.placements_tolerations)
-
-    ###########
+    
     dafilesrv = [
       {
         name        = "direct-access"
