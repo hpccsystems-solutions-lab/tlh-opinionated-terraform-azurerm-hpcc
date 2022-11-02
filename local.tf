@@ -322,8 +322,9 @@ locals {
       enabled = true
       issuers = {
         local = {
-          name = "hpcc-local-issuer"
-          kind = "Issuer"
+          name   = "hpcc-local-issuer"
+          kind   = "Issuer"
+          domain = var.internal_domain
           spec = {
             ca = {
               secretName = "hpcc-local-issuer-key-pair"
@@ -342,6 +343,7 @@ locals {
           enabled = true
           name    = "hpcc-remote-issuer"
           kind    = "Issuer"
+          domain  = var.internal_domain
           spec = {
             ca = {
               secretName = "hpcc-remote-issuer-key-pair"
@@ -381,12 +383,12 @@ locals {
         application = "spray"
         replicas    = var.spray_service_settings.replicas
         service = {
-          servicePort = 443
-          visibility  = "local"
-          annotations = merge({
-            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-            "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "spray-service",  var.namespace.name, local.domain) } : {})
+          servicePort = 7300 ##443
+          visibility  = "cluster"
+          # annotations = merge({
+          #   "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+          #   "lnrs.io/zone-type"                                       = "public"
+          # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "spray-service", var.namespace.name, local.domain) } : {})
         }
       },
       {
