@@ -71,6 +71,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
       "name"       = "hpcc-remote-issuer"
       "secretName" = "hpcc-remote-issuer-key-pair"
       "dnsNames"   = var.internal_domain
+      "namespace"  = var.namespace
     }
   ))
   depends_on = [kubernetes_manifest.remote_issuer]
