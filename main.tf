@@ -22,6 +22,7 @@ module "certmanager" {
   internal_domain     = var.internal_domain
   resource_group_name = var.resource_group_name
   cluster_name        = var.cluster_name
+  namespace           = var.namespace.name
 
   depends_on = [kubernetes_namespace.default]
 }
