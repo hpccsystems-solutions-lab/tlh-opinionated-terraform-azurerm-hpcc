@@ -213,6 +213,9 @@ locals {
     {
       pods = ["spray-service"]
       placement = {
+        nodeSelector = {
+            workload = "spraypool"
+        }
         tolerations = [
           {
             key      = "hpcc"
