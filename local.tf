@@ -197,13 +197,13 @@ locals {
     },
 
     {
-      pods = ["thor"]
+      pods = ["thor10"]
       placement = {
         tolerations = [
           {
             key      = "hpcc"
             operator = "Equal"
-            value    = "thorpool"
+            value    = "thorsmall"
             effect   = "NoSchedule"
           }
         ]
