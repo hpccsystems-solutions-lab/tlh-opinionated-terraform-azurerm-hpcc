@@ -699,9 +699,12 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
-    tolerations = object({
-      value = string
-    })
+    tolerations = list(object({
+      key      = string
+      operator = string
+      value    = string
+      effect   = string
+    }))
   }))
   default = [{
     disabled = true
@@ -730,9 +733,15 @@ variable "thor_config" {
       cpu    = 3
       memory = "4G"
     }
-    tolerations = {
-      value = null
-    }
+    tolerations = [
+      {
+        key      = "hpcc"
+        operator = "Equal"
+        value    = "thor"
+        effect   = "NoSchedule"
+      }
+
+    ]
   }]
 }
 
