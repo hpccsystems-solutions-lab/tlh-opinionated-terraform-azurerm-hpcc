@@ -432,7 +432,7 @@ locals {
       }
 
       cost = {
-        currencyCode  = USD
+        currencyCode  = "USD"
         perCpu        = var.cost.perCpu
         storageAtRest = var.cost.storageAtRest
         storageReads  = var.cost.storageReads
