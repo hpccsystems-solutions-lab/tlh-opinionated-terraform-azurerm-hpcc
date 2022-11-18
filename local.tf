@@ -178,11 +178,13 @@ locals {
   ]
 
   thor_placements = [for thor in var.thor_config :
-    { pods      = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector },
-      placement = { tolerations = [{ value = thor.tolerations_value }] },
-      placement = { tolerations = [{ key = "hpcc" }] },
-      placement = { tolerations = [{ operator = "Equal" }] },
-      placement = { tolerations = [{ effect = "NoSchedule" }] }
+    { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector },
+      placement = { tolerations = [{
+        key      = "hpcc"
+        operator = "Equal"
+        value    = thor.tolerations_value
+        effect   = "NoSchedule"
+      }] }
     } if length(thor.nodeSelector) > 0
   ]
 
