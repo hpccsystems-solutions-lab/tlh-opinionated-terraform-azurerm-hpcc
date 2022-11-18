@@ -212,22 +212,22 @@ locals {
     #   }
     # },
 
-    {
-      pods = local.thor_pod_name
-      nodeSelector = {
-        workload = var.thor_nodeSelector
-      }
-      placement = {
-        tolerations = [
-          {
-            key      = "hpcc"
-            operator = "Equal"
-            value    = local.thor_tolerations_value
-            effect   = "NoSchedule"
-          }
-        ]
-      }
-    },
+    # {
+    #   pods = local.thor_pod_name
+    #   nodeSelector = {
+    #     workload = var.thor_nodeSelector
+    #   }
+    #   placement = {
+    #     tolerations = [
+    #       {
+    #         key      = "hpcc"
+    #         operator = "Equal"
+    #         value    = local.thor_tolerations_value
+    #         effect   = "NoSchedule"
+    #       }
+    #     ]
+    #   }
+    # },
     {
       pods = ["spray-service"]
       placement = {
