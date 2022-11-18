@@ -1043,7 +1043,7 @@ variable "cost" {
     perCpu        = number
     storageAtRest = number
     storageReads  = number
-    storageWrites = number 
+    storageWrites = number
   })
   default = {
     perCpu        = 3
