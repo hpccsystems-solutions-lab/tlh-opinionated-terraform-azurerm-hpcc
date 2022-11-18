@@ -820,10 +820,12 @@ variable "dfuserver_settings" {
 variable "spray_service_settings" {
   description = "spray services settings"
   type = object({
-    replicas = number
+    replicas     = number
+    nodeSelector = string
   })
   default = {
-    replicas = 3
+    replicas     = 3
+    nodeSelector = "servpool" #"spraypool"
   }
 }
 

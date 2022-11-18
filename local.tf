@@ -195,26 +195,12 @@ locals {
         ]
       }
     },
-
-    # {
-    #   pods = ["thor10"]
-    #   placement = {
-    #     tolerations = [
-    #       {
-    #         key      = "hpcc"
-    #         operator = "Equal"
-    #         value    = "thorsmall"
-    #         effect   = "NoSchedule"
-    #       }
-    #     ]
-    #   }
-    # },
     {
       pods = ["spray-service"]
       placement = {
-        # nodeSelector = {
-        #   workload = "spraypool"
-        # }
+        nodeSelector = {
+          workload = var.spray_service_settings.nodeSelector
+        }
         tolerations = [
           {
             key      = "hpcc"
