@@ -691,6 +691,7 @@ variable "thor_config" {
     numWorkers          = number
     numWorkersPerPod    = number
     prefix              = string
+    tolerations_value   = string
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -699,12 +700,6 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
-    tolerations = list(object({
-      key      = string
-      operator = string
-      value    = string
-      effect   = string
-    }))
   }))
   default = [{
     disabled = true
@@ -725,6 +720,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
+    tolerations_value   = "thorpool"
     workerMemory = {
       query      = "3G"
       thirdParty = "500M"
@@ -733,15 +729,6 @@ variable "thor_config" {
       cpu    = 3
       memory = "4G"
     }
-    tolerations = [
-      {
-        key      = "hpcc"
-        operator = "Equal"
-        value    = "thor"
-        effect   = "NoSchedule"
-      }
-
-    ]
   }]
 }
 
