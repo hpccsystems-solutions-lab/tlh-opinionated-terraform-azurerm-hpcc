@@ -430,6 +430,15 @@ locals {
           ]
         }
       }
+
+    cost = {
+      currencyCode = USD
+      perCpu = var.cost.perCpu
+      storageAtRest =var.cost.storageAtRest
+      storageReads = var.cost.storageReads
+      storageWrites = var.cost.storageWrites
+    }
+   
     }
 
     storage = merge({

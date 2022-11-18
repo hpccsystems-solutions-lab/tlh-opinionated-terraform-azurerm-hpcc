@@ -1036,3 +1036,19 @@ variable "placements" {
     }
   }
 }
+
+variable "cost" {
+  description = "cost settings"
+  type = object({
+    perCpu        = number
+    storageAtRest = number
+    storageReads  = number
+    storageWrites = number 
+  })
+  default = {
+    perCpu        = 3
+    storageAtRest = 0.126
+    storageReads  = 0.0135
+    storageWrites = 0.0038
+  }
+}
