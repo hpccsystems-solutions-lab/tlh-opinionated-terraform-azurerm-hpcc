@@ -177,9 +177,20 @@ locals {
     { pods = ["target:${roxie.name}"], placement = { nodeSelector = roxie.nodeSelector } } if length(roxie.nodeSelector) > 0
   ]
 
+  # thor_placements = [for thor in var.thor_config :
+  #   { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector },
+  #     placement = { tolerations = [{
+  #       key      = "hpcc"
+  #       operator = "Equal"
+  #       value    = thor.tolerations_value
+  #       effect   = "NoSchedule"
+  #     }] }
+  #   } if length(thor.nodeSelector) > 0
+  # ]
+
   thor_placements = [for thor in var.thor_config :
-    { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector },
-      placement = { tolerations = [{
+    { pods = ["target:${thor.name}"],
+      placement = { nodeSelector = thor.nodeSelector } && { tolerations = [{
         key      = "hpcc"
         operator = "Equal"
         value    = thor.tolerations_value
