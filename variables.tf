@@ -699,6 +699,9 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
+    tolerations = object({
+      value = string
+    })
   }))
   default = [{
     disabled = true
@@ -726,6 +729,9 @@ variable "thor_config" {
     workerResources = {
       cpu    = 3
       memory = "4G"
+    }
+    tolerations = {
+      value = null
     }
   }]
 }

@@ -178,7 +178,7 @@ locals {
   ]
 
   thor_placements = [for thor in var.thor_config :
-    { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector } } if length(thor.nodeSelector) > 0
+    { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector }, placement = { tolerations = { value = thor.tolerations.value } } } if length(thor.nodeSelector) > 0
   ]
 
   placements_tolerations = [
@@ -196,25 +196,24 @@ locals {
       }
     },
 
-    {
-      pods = ["thor10"]
-      placement = {
-        tolerations = [
-          {
-            key      = "hpcc"
-            operator = "Equal"
-            value    = "thorsmall"
-            effect   = "NoSchedule"
-          }
-        ]
-      }
-    },
-
+    # {
+    #   pods = ["thor10"]
+    #   placement = {
+    #     tolerations = [
+    #       {
+    #         key      = "hpcc"
+    #         operator = "Equal"
+    #         value    = "thorsmall"
+    #         effect   = "NoSchedule"
+    #       }
+    #     ]
+    #   }
+    # },
     {
       pods = ["spray-service"]
       placement = {
         nodeSelector = {
-            workload = "spraypool"
+          workload = "spraypool"
         }
         tolerations = [
           {
