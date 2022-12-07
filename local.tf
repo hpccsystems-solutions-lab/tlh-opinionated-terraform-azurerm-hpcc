@@ -206,6 +206,20 @@ locals {
     {
       pods = ["spray-service"]
       placement = {
+
+        affinity = {
+          nodeAffinity = {
+            requiredDuringSchedulingIgnoredDuringExecution = {
+              nodeSelectorTerms = {
+                matchExpressions = {
+                  key      = "workload"
+                  operator = "In"
+                  values   = ["spraypool"]
+                }
+              }
+            }
+          }
+        }
         nodeSelector = {
           workload = var.spray_service_settings.nodeSelector
         }
