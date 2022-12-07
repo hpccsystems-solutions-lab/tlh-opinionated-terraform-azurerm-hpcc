@@ -214,8 +214,7 @@ locals {
                 nodeSelectorTerms = {}
               }
             ]
-              
-            }
+
           }
         }
         nodeSelector = {
@@ -243,7 +242,6 @@ locals {
         ]
       }
     },
-
     {
       pods = ["eclwatch"]
       placement = {
