@@ -210,13 +210,15 @@ locals {
         affinity = {
           nodeAffinity = {
             requiredDuringSchedulingIgnoredDuringExecution = {
-              nodeSelectorTerms = {
-                matchExpressions = {
-                  key      = "workload"
-                  operator = "In"
-                  values   = ["spraypool"]
+              nodeSelectorTerms = [
+                {
+                  matchExpressions = {
+                    key      = "workload"
+                    operator = "In"
+                    values   = ["spraypool"]
+                  }
                 }
-              }
+              ]
             }
           }
         }
