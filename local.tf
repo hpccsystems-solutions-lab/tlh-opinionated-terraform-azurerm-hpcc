@@ -208,7 +208,9 @@ locals {
       placement = {
 
         affinity = {
-          nodeAffinity = {}
+          nodeAffinity = {
+            requiredDuringSchedulingIgnoredDuringExecution = {}
+          }
         }
         nodeSelector = {
           workload = var.spray_service_settings.nodeSelector
