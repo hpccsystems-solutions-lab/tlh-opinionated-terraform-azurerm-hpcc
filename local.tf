@@ -304,6 +304,7 @@ locals {
             name       = format("%s-remote-hpcc-data", k)
             pvc        = format("%s-remote-hpcc-data", k)
             numDevices = v.numDevices
+            secret     = var.secrets.remote_cert_secret
           }
         ] : []
         ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
@@ -487,7 +488,7 @@ locals {
         name          = "dfs"
         application   = "dfs"
         remoteClients = var.esp_remoteclients
-        auth          = local.auth_mode
+        auth          = "none"
         replicas      = 1
         service = {
           servicePort = 443
@@ -590,7 +591,7 @@ locals {
       codeVerify = {}
       ecl        = {}
       git        = {}
-      storage    = {}
+      storage    = var.secrets.remote_cert_secret
       system     = {}
     }
 

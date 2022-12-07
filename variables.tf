@@ -946,3 +946,13 @@ variable "esp_remoteclients" {
     }
   ]
 }
+
+variable "secrets" {
+  description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
+  type = object({
+    remote_cert_secret = map(string)
+  })
+  default = {
+    remote_cert_secret = {}
+  }
+}
