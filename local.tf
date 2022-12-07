@@ -211,7 +211,7 @@ locals {
           nodeAffinity = {
             requiredDuringSchedulingIgnoredDuringExecution = [
               {
-                nodeSelectorTerms = {}
+                nodeSelectorTerms = []
               }
             ]
 
