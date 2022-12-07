@@ -209,8 +209,12 @@ locals {
 
         affinity = {
           nodeAffinity = {
-            requiredDuringSchedulingIgnoredDuringExecution = {
-              nodeSelectorTerms = {}
+            requiredDuringSchedulingIgnoredDuringExecution = [
+              {
+                nodeSelectorTerms = {}
+              }
+            ]
+              
             }
           }
         }
