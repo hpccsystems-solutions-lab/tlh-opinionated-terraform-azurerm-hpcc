@@ -212,11 +212,13 @@ locals {
             requiredDuringSchedulingIgnoredDuringExecution = {
               nodeSelectorTerms = [
                 { 
-                matchExpressions = {
+                matchExpressions = [
+                 {
                   key      = "workload"
                   operator = "In"
                   values   = ["spraypool"]
-                  }
+                 }
+                 ]              
                 }
               ]
            }
