@@ -396,7 +396,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "directio", local.domain) } : {})
         }
-        # egress = "engineEgress"
+        egress = "engineEgress"
       },
       {
         name        = "spray-service"
@@ -410,7 +410,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
-        # egress = "engineEgress"
+        egress = "engineEgress"
       },
       {
         name        = "rowservice"
@@ -424,7 +424,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "rowservice", local.domain) } : {})
         }
-        # egress = "engineEgress"
+        egress = "engineEgress"
       }
     ]
 
@@ -450,7 +450,7 @@ locals {
           cpu    = var.dali_settings.resources.cpu
           memory = var.dali_settings.resources.memory
         }
-        #egress = "engineEgress"
+        egress = "engineEgress"
       }, local.dali_ldap_config)
     ]
 
@@ -462,7 +462,7 @@ locals {
           cpu    = var.dfuserver_settings.resources.cpu
           memory = var.dfuserver_settings.resources.memory
         }
-        #egress = "engineEgress"
+        egress = "engineEgress"
       }
     ]
 
@@ -487,7 +487,7 @@ locals {
         prefix            = "roxie_workunit"
         useChildProcesses = true
         type              = "roxie"
-        # egress            = "engineEgress"
+        egress            = "engineEgress"
         resources = {
           cpu    = 1
           memory = "4G"
@@ -505,7 +505,7 @@ locals {
           cpu    = var.eclccserver_settings.cpu
           memory = var.eclccserver_settings.memory
         }
-        #egress = "engineEgress"
+        egress = "engineEgress"
       }
     ]
 
@@ -524,7 +524,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "dfs", local.domain) } : {})
         }
-        #egress = "engineEgress"
+        egress = "engineEgress"
       }, local.esp_ldap_config),
       merge({
         name        = "eclwatch"
@@ -540,7 +540,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {})
         }
-        #egress = "engineEgress"
+        egress = "engineEgress"
       }, local.esp_ldap_config),
       merge({
         name        = "eclservices"
@@ -555,7 +555,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclservices", local.domain) } : {})
         }
-        #egress = "engineEgress"
+        egress = "engineEgress"
       }, local.esp_ldap_config),
       merge({
         name        = "eclqueries"
@@ -570,7 +570,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclqueries", local.domain) } : {})
         }
-        #egress = "engineEgress"
+        egress = "engineEgress"
       }, local.esp_ldap_config),
       merge({
         name        = "esdl-sandbox"
@@ -585,7 +585,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "esdl-sandbox", local.domain) } : {})
         }
-        # egress = "engineEgress"
+        egress = "engineEgress"
       }, local.esp_ldap_config),
       merge({
         name        = "sql2ecl"
@@ -600,7 +600,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "sql2ecl", local.domain) } : {})
         }
-        # egress = "engineEgress"
+        egress = "engineEgress"
       }, local.esp_ldap_config)
     ]
 
