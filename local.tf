@@ -396,7 +396,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "directio", local.domain) } : {})
         }
-       # egress = "engineEgress"
+        # egress = "engineEgress"
       },
       {
         name        = "spray-service"
@@ -410,7 +410,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
-       # egress = "engineEgress"
+        # egress = "engineEgress"
       },
       {
         name        = "rowservice"
@@ -424,7 +424,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "rowservice", local.domain) } : {})
         }
-       # egress = "engineEgress"
+        # egress = "engineEgress"
       }
     ]
 
@@ -487,7 +487,7 @@ locals {
         prefix            = "roxie_workunit"
         useChildProcesses = true
         type              = "roxie"
-       # egress            = "engineEgress"
+        # egress            = "engineEgress"
         resources = {
           cpu    = 1
           memory = "4G"
@@ -585,7 +585,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "esdl-sandbox", local.domain) } : {})
         }
-       # egress = "engineEgress"
+        # egress = "engineEgress"
       }, local.esp_ldap_config),
       merge({
         name        = "sql2ecl"
@@ -600,7 +600,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "sql2ecl", local.domain) } : {})
         }
-       # egress = "engineEgress"
+        # egress = "engineEgress"
       }, local.esp_ldap_config)
     ]
 
