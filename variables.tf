@@ -554,7 +554,7 @@ variable "roxie_config" {
       defaultStripLeadingWhitespace  = false
       diskReadBufferSize             = 65536
       doIbytiDelay                   = true
-      egress                         = "engineEgress"
+      # egress                         = "engineEgress"
       enableHeartBeat                = false
       enableKeyDiff                  = false
       enableSysLog                   = false
@@ -722,7 +722,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
-    egress              = "engineEgress"
+    # egress              = "engineEgress"
     workerMemory = {
       query      = "3G"
       thirdParty = "500M"

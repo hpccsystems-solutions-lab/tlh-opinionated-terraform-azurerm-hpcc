@@ -453,7 +453,7 @@ locals {
         prefix            = "hthor"
         useChildProcesses = false
         type              = "hthor"
-        egress            = "engineEgress"
+       # egress            = "engineEgress"
         resources = {
           cpu    = 1
           memory = "4G"
@@ -466,7 +466,7 @@ locals {
         prefix            = "roxie_workunit"
         useChildProcesses = true
         type              = "roxie"
-        egress            = "engineEgress"
+       # egress            = "engineEgress"
         resources = {
           cpu    = 1
           memory = "4G"
