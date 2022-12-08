@@ -222,7 +222,6 @@ locals {
                 }
               ]
             }
-
           }
         }
         nodeSelector = {
