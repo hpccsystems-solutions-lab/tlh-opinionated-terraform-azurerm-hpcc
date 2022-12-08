@@ -410,7 +410,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
-        egress = "engineEgress"
+       # egress = "engineEgress"
       },
       {
         name        = "rowservice"
