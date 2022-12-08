@@ -541,6 +541,15 @@ locals {
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {})
         }
         egress = "engineEgress"
+        corsAllowed = [
+          {
+            origin  = "https://viz.hpccsystems.com"
+            headers = ["*"]
+            methods = ["GET",
+              "POST",
+            "OPTIONS"]
+          }
+        ]
       }, local.esp_ldap_config),
       merge({
         name        = "eclservices"
