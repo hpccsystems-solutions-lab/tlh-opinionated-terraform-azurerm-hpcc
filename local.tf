@@ -225,7 +225,7 @@ locals {
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 
-      egress = {
+      egress = [{
         engineEgress = [
           {
             to = {
@@ -241,7 +241,7 @@ locals {
             ]
           }
         ]
-      }
+      }]
       visibilities = {
         cluster = {
           type = "ClusterIP"
