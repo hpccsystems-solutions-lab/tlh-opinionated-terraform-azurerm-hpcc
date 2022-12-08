@@ -236,7 +236,7 @@ locals {
             ports = [
               {
                 protocol = "TCP"
-                port     = "443"
+                port     = 443
               }
             ]
           }
@@ -410,7 +410,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
-       # egress = "engineEgress"
+        egress = "engineEgress"
       },
       {
         name        = "rowservice"
