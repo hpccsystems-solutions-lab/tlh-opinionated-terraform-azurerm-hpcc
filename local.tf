@@ -550,7 +550,7 @@ locals {
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {})
         }
         egress      = "engineEgress"
-        corsAllowed = var.corsallowed_enable == true ? local.corsAllowed : {}
+        corsAllowed = var.corsallowed_enable == true ? local.corsAllowed : []
       }, local.esp_ldap_config),
       merge({
         name        = "eclservices"
