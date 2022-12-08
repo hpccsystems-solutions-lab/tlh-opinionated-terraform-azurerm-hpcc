@@ -849,6 +849,7 @@ variable "sasha_config" {
       throttle        = number
       retryinterval   = number
       keepResultFiles = bool
+      egress          = string
     })
 
     dfuwu-archiver = object({
@@ -862,6 +863,7 @@ variable "sasha_config" {
       cutoff   = number
       at       = string
       throttle = number
+      egress   = string
     })
 
     dfurecovery-archiver = object({
@@ -870,6 +872,7 @@ variable "sasha_config" {
       limit    = number
       cutoff   = number
       at       = string
+      egress   = string
     })
 
     file-expiry = object({
@@ -879,6 +882,7 @@ variable "sasha_config" {
       persistExpiryDefault = number
       expiryDefault        = number
       user                 = string
+      egress               = string
     })
   })
   default = {
@@ -897,6 +901,7 @@ variable "sasha_config" {
       throttle        = 0
       retryinterval   = 6
       keepResultFiles = false
+      egress          = "engineEgress"
     }
 
     dfuwu-archiver = {
@@ -910,6 +915,7 @@ variable "sasha_config" {
       cutoff   = 14
       at       = "* * * * *"
       throttle = 0
+      egress   = "engineEgress"
     }
 
     dfurecovery-archiver = {
@@ -918,6 +924,7 @@ variable "sasha_config" {
       limit    = 20
       cutoff   = 4
       at       = "* * * * *"
+      egress   = "engineEgress"
     }
 
     file-expiry = {
@@ -927,6 +934,7 @@ variable "sasha_config" {
       persistExpiryDefault = 7
       expiryDefault        = 4
       user                 = "sasha"
+      egress               = "engineEgress"
     }
   }
 }
