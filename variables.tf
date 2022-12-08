@@ -406,7 +406,7 @@ variable "roxie_config" {
     defaultStripLeadingWhitespace  = bool
     diskReadBufferSize             = number
     doIbytiDelay                   = bool
-    egress                         = string
+    # egress                         = string
     enableHeartBeat                = bool
     enableKeyDiff                  = bool
     enableSysLog                   = bool
@@ -693,7 +693,7 @@ variable "thor_config" {
     numWorkers          = number
     numWorkersPerPod    = number
     prefix              = string
-    egress              = string
+    # egress              = string
     workerMemory = object({
       query      = string
       thirdParty = string
