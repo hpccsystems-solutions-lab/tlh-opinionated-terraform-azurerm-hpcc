@@ -968,3 +968,9 @@ variable "secrets" {
     remote_cert_secret = {}
   }
 }
+variable "corsallowed_enable" {
+  description = "Enable cors allowed on ECL watch"
+  type        = bool
+  default     = false
+}
+

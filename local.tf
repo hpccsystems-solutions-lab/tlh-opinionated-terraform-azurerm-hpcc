@@ -213,6 +213,15 @@ locals {
     hosts    = v.hosts
   }] : null
 
+  corsAllowed = [
+    {
+      origin  = "https://viz.hpccsystems.com"
+      headers = ["*"]
+      methods = ["GET",
+        "POST",
+      "OPTIONS"]
+    }
+  ]
   helm_chart_values = {
 
     global = {
@@ -540,16 +549,8 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {})
         }
-        egress = "engineEgress"
-        corsAllowed = [
-          {
-            origin  = "https://viz.hpccsystems.com"
-            headers = ["*"]
-            methods = ["GET",
-              "POST",
-            "OPTIONS"]
-          }
-        ]
+        egress      = "engineEgress"
+        corsAllowed = var.corsallowed_enable == true ? local.corsAllowed : {}
       }, local.esp_ldap_config),
       merge({
         name        = "eclservices"
