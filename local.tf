@@ -225,22 +225,7 @@ locals {
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 
-      egress = [
-        {
-          engineEgress = {
-            to = {
-              ipBlock = {
-                cidr = "10.9.8.7/32"
-              }
-            }
-            ports = {
-              protocol = "TCP"
-              port     = "443"
-            }
-          }
-        }
-      ]
-
+      egress = {}
       visibilities = {
         cluster = {
           type = "ClusterIP"
