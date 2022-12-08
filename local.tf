@@ -211,17 +211,17 @@ locals {
           nodeAffinity = {
             requiredDuringSchedulingIgnoredDuringExecution = {
               nodeSelectorTerms = [
-                { 
-                matchExpressions = [
-                 {
-                  key      = "workload"
-                  operator = "In"
-                  values   = ["spraypool"]
-                 }
-                 ]              
+                {
+                  matchExpressions = [
+                    {
+                      key      = "workload"
+                      operator = "In"
+                      values   = ["spraypool"]
+                    }
+                  ]
                 }
               ]
-           }
+            }
 
           }
         }
