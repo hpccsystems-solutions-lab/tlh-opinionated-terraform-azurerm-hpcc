@@ -378,7 +378,7 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "directio", var.namespace.name, var.aks_trimmed_name, local.domain) } : {})
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "directio", var.namespace.name, local.aks_trimmed_name, local.domain) } : {})
         }
       },
       {
@@ -404,7 +404,7 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "rowservice", var.namespace.name, var.aks_trimmed_name, local.domain) } : {})
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "rowservice", var.namespace.name, local.aks_trimmed_name, local.domain) } : {})
         }
       }
     ]
@@ -498,7 +498,7 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "dfs", var.namespace.name, var.aks_trimmed_name, local.domain) } : {})
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "dfs", var.namespace.name, local.aks_trimmed_name, local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -513,7 +513,7 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "eclwatch", var.namespace.name, var.aks_trimmed_name, local.domain) } : {})
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "eclwatch", var.namespace.name, local.aks_trimmed_name, local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -537,7 +537,7 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "eclqueries", var.namespace.name, var.aks_trimmed_name, local.domain) } : {})
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "eclqueries", var.namespace.name, local.aks_trimmed_name, local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -551,7 +551,7 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "esdl-sandbox", var.namespace.name, var.aks_trimmed_name, local.domain) } : {})
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "esdl-sandbox", var.namespace.name, local.aks_trimmed_name, local.domain) } : {})
         }
       }, local.esp_ldap_config),
       merge({
@@ -565,7 +565,7 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "sql2ecl", var.namespace.name, var.aks_trimmed_name, local.domain) } : {})
+          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s-%s.%s", "sql2ecl", var.namespace.name, local.aks_trimmed_name, local.domain) } : {})
         }
       }, local.esp_ldap_config)
     ]
