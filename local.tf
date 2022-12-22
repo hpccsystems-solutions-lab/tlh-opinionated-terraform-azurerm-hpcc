@@ -238,7 +238,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.spray-service.maxskew
-            topologyKey       = "spray-service"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
@@ -255,7 +255,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.eclwatch.maxskew
-            topologyKey       = "eclwatch"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
@@ -273,7 +273,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.eclservices.maxskew
-            topologyKey       = "eclservices"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
@@ -291,7 +291,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.eclqueries.maxskew
-            topologyKey       = "eclqueries"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
@@ -309,7 +309,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.dfs.maxskew
-            topologyKey       = "dfs"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
@@ -327,7 +327,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.direct-access.maxskew
-            topologyKey       = "direct-access"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
@@ -345,7 +345,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.thorworker.maxskew
-            topologyKey       = "thorworker"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
@@ -363,7 +363,7 @@ locals {
         topologySpreadConstraints = [
           {
             maxSkew           = var.placements.roxie-agent.maxskew
-            topologyKey       = "roxie-agent"
+            topologyKey       = "topology.kubernetes.io/zone"
             whenUnsatisfiable = "ScheduleAnyway"
             labelSelector = {
               matchLabels = {
