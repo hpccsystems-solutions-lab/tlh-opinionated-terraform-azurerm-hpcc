@@ -1071,14 +1071,14 @@ variable "corsallowed_enable" {
 variable "egress" {
   description = "egress settings"
   type = object({
-    cidr     = list(string)
+    cidr     = string ##list(string)
     protocol = string
-    port     = list(number)
+    port     = number ##list(number)
   })
   default = {
-    cidr     = ["10.9.8.7/32"]
+    cidr     = "10.9.8.7/32" ##["10.9.8.7/32"]
     protocol = "TCP"
-    port     = [443]
+    port     = 443 ##[443]
   }
   validation {
     condition     = contains(["TCP", "UDP"], var.egress.protocol)
