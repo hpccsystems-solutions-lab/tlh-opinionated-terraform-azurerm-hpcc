@@ -1076,7 +1076,7 @@ variable "egress" {
     port     = number
   })
   default = {
-    cidr     = "10.9.8.7/32,  0.0.0.0 0"
+    cidr     = "10.9.8.7/32"
     protocol = "TCP"
     port     = 443
   }
