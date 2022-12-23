@@ -1076,9 +1076,9 @@ variable "egress" {
     port     = number ##list(number)
   })
   default = {
-    cidr     = "10.9.8.7/32" ##["10.9.8.7/32"]
+    cidr     = "10.9.8.7/32,  0.0.0.0 0" ##["10.9.8.7/32"]
     protocol = "TCP"
-    port     = 443 ##[443]
+    port     = 443, 65535 ##[443]
   }
   validation {
     condition     = contains(["TCP", "UDP"], var.egress.protocol)
