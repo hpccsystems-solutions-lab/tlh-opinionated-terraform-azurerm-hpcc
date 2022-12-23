@@ -693,7 +693,7 @@ variable "thor_config" {
     numWorkers          = number
     numWorkersPerPod    = number
     prefix              = string
-    egress              = string
+    tolerations_value   = string
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -722,7 +722,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
-    egress              = "engineEgress"
+    tolerations_value   = "thorpool"
     workerMemory = {
       query      = "3G"
       thirdParty = "500M"
@@ -822,10 +822,12 @@ variable "dfuserver_settings" {
 variable "spray_service_settings" {
   description = "spray services settings"
   type = object({
-    replicas = number
+    replicas     = number
+    nodeSelector = string
   })
   default = {
-    replicas = 3
+    replicas     = 3
+    nodeSelector = "servpool" #"spraypool"
   }
 }
 
@@ -959,18 +961,93 @@ variable "esp_remoteclients" {
   ]
 }
 
-variable "secrets" {
-  description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
+variable "placements" {
+  description = "maxskew topologyspreadconstraints placements value for hppc"
   type = object({
-    remote_cert_secret = map(string)
+    spray-service = object({
+      maxskew = number
+    })
+
+    eclwatch = object({
+      maxskew = number
+    })
+
+    eclservices = object({
+      maxskew = number
+    })
+
+    eclqueries = object({
+      maxskew = number
+    })
+
+    dfs = object({
+      maxskew = number
+    })
+
+    direct-access = object({
+      maxskew = number
+    })
+
+    thorworker = object({
+      maxskew = number
+    })
+
+    roxie-agent = object({
+      maxskew = number
+    })
   })
+
   default = {
-    remote_cert_secret = {}
+    spray-service = {
+      maxskew = 1
+    }
+
+    eclwatch = {
+      maxskew = 1
+    }
+
+    eclservices = {
+      maxskew = 1
+    }
+
+    spray-service = {
+      maxskew = 1
+    }
+
+    eclqueries = {
+      maxskew = 1
+    }
+
+    dfs = {
+      maxskew = 1
+    }
+
+    direct-access = {
+      maxskew = 1
+    }
+
+    thorworker = {
+      maxskew = 1
+    }
+
+    roxie-agent = {
+      maxskew = 1
+    }
   }
 }
-variable "corsallowed_enable" {
-  description = "Enable cors allowed on ECL watch"
-  type        = bool
-  default     = false
-}
 
+variable "cost" {
+  description = "cost settings"
+  type = object({
+    perCpu        = number
+    storageAtRest = number
+    storageReads  = number
+    storageWrites = number
+  })
+  default = {
+    perCpu        = 3
+    storageAtRest = 0.126
+    storageReads  = 0.0135
+    storageWrites = 0.0038
+  }
+}

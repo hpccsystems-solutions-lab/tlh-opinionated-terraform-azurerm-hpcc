@@ -178,10 +178,206 @@ locals {
   ]
 
   thor_placements = [for thor in var.thor_config :
-    { pods = ["target:${thor.name}"], placement = { nodeSelector = thor.nodeSelector } } if length(thor.nodeSelector) > 0
+    { pods = ["target:${thor.name}"],
+      placement = merge({ nodeSelector = thor.nodeSelector },
+        { tolerations = [{
+          key      = "hpcc"
+          operator = "Equal"
+          value    = thor.tolerations_value
+          effect   = "NoSchedule"
+      }] })
+    } if length(thor.nodeSelector) > 0
   ]
 
-  placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements)
+  placements_tolerations = [
+    {
+      pods = ["all"]
+      placement = {
+        tolerations = [
+          {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "servpool"
+            effect   = "NoSchedule"
+          }
+        ]
+      }
+    },
+    {
+      pods = ["spray-service"]
+      placement = {
+
+        affinity = {
+          nodeAffinity = {
+            requiredDuringSchedulingIgnoredDuringExecution = {
+              nodeSelectorTerms = [
+                {
+                  matchExpressions = [
+                    {
+                      key      = "workload"
+                      operator = "In"
+                      values   = ["spraypool"]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+        nodeSelector = {
+          workload = var.spray_service_settings.nodeSelector
+        }
+        tolerations = [
+          {
+            key      = "hpcc"
+            operator = "Equal"
+            value    = "spraypool"
+            effect   = "NoSchedule"
+          }
+        ]
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.spray-service.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "spray-service"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      pods = ["eclwatch"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.eclwatch.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclwatch"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["eclservices"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.eclservices.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclservices"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["eclqueries"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.eclqueries.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "eclqueries"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["dfs"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.dfs.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "dfs"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["direct-access"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.direct-access.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "direct-access"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["thorworker"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.thorworker.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "thorworker"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      pods = ["roxie-agent"]
+      placement = {
+        topologySpreadConstraints = [
+          {
+            maxSkew           = var.placements.roxie-agent.maxskew
+            topologyKey       = "topology.kubernetes.io/zone"
+            whenUnsatisfiable = "ScheduleAnyway"
+            labelSelector = {
+              matchLabels = {
+                server = "roxie-agent"
+              }
+            }
+          }
+        ]
+      }
+    }
+
+  ]
+
+  placements = concat(local.admin_placements, local.roxie_placements, local.thor_placements, local.placements_tolerations)
 
   remote_storage_enabled = var.remote_storage_plane == null ? false : true
 
@@ -272,6 +468,15 @@ locals {
           ]
         }
       }
+
+      cost = {
+        currencyCode  = "USD"
+        perCpu        = var.cost.perCpu
+        storageAtRest = var.cost.storageAtRest
+        storageReads  = var.cost.storageReads
+        storageWrites = var.cost.storageWrites
+      }
+
     }
 
     storage = merge({
