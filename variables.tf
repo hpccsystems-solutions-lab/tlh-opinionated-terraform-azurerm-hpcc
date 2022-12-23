@@ -693,6 +693,7 @@ variable "thor_config" {
     numWorkers          = number
     numWorkersPerPod    = number
     prefix              = string
+    egress              = string
     tolerations_value   = string
     workerMemory = object({
       query      = string
@@ -722,6 +723,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
+    egress              = "engineEgress"
     tolerations_value   = "thorpool"
     workerMemory = {
       query      = "3G"
@@ -960,7 +962,6 @@ variable "esp_remoteclients" {
     }
   ]
 }
-
 variable "placements" {
   description = "maxskew topologyspreadconstraints placements value for hppc"
   type = object({
@@ -1049,5 +1050,52 @@ variable "cost" {
     storageAtRest = 0.126
     storageReads  = 0.0135
     storageWrites = 0.0038
+  }
+}
+
+variable "secrets" {
+  description = "Secret for egress remote cert."
+  type = object({
+    remote_cert_secret = map(string)
+  })
+  default = {
+    remote_cert_secret = {}
+  }
+}
+variable "corsallowed_enable" {
+  description = "Enable cors allowed on ECL watch"
+  type        = bool
+  default     = false
+}
+
+variable "egress" {
+  description = "egress settings"
+  type = object({
+    cidr     = list(string)
+    protocol = string
+    port     = list(number)
+  })
+  default = {
+    cidr     = ["10.9.8.7/32"]
+    protocol = "TCP"
+    port     = [443]
+  }
+  validation {
+    condition     = contains(["TCP", "UDP"], var.egress.protocol)
+    error_message = "protocal only supports TCP or UDP values"
+  }
+}
+
+variable "corsAllowed" {
+  description = "corsAllowed settings"
+  type = object({
+    origin  = string
+    headers = list(string)
+    methods = list(string)
+  })
+  default = {
+    origin  = "https://viz.hpccsystems.com"
+    headers = ["*"]
+    methods = ["GET", "POST", "OPTIONS"]
   }
 }

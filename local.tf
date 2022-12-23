@@ -411,11 +411,9 @@ locals {
 
   corsAllowed = [
     {
-      origin  = "https://viz.hpccsystems.com"
-      headers = ["*"]
-      methods = ["GET",
-        "POST",
-      "OPTIONS"]
+      origin  = var.corsAllowed.origin
+      headers = var.corsAllowed.headers
+      methods = var.corsAllowed.methods
     }
   ]
   helm_chart_values = {
@@ -435,13 +433,13 @@ locals {
           {
             to = [{
               ipBlock = {
-                cidr = "10.9.8.7/32"
+                cidr = var.egress.cidr
               }
             }]
             ports = [
               {
-                protocol = "TCP"
-                port     = 443
+                protocol = var.egress.protocol
+                port     = var.egress.port
               }
             ]
           }
