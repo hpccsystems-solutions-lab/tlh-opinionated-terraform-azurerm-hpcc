@@ -738,7 +738,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "dfs", local.domain) } : {})
         }
-        egress = var.egress.esp_name
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "eclwatch"
