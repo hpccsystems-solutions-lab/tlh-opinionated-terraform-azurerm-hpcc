@@ -1087,23 +1087,21 @@ variable "egress_engine" {
   description = "Input for egress engines."
   type        = map(any)
   default = {
-    egress = {
-      engineEgress = [
-        {
-          to = [{
-            ipBlock = {
-              cidr = "10.9.8.7/32"
-            }
-          }]
-          ports = [
-            {
-              protocol = "TCP"
-              port     = 443
-            }
-          ]
-        }
-      ]
-    }
+    engineEgress = [
+      {
+        to = [{
+          ipBlock = {
+            cidr = "10.9.8.7/32"
+          }
+        }]
+        ports = [
+          {
+            protocol = "TCP"
+            port     = 443
+          }
+        ]
+      }
+    ]
   }
 }
 
