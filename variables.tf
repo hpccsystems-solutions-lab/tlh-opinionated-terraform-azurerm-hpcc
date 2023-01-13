@@ -1109,14 +1109,14 @@ variable "egress_engine" {
 
 variable "egress" {
   description = "egress settings"
-  type = optional(object({
+  type = object({
     dafilesrv_engine   = optional(string)
     dali_engine        = optional(string)
     dfuserver_name     = optional(string)
     eclagent_engine    = optional(string)
     eclccserver_engine = optional(string)
     esp_engine         = optional(string)
-  }))
+  })
   default = {
     dafilesrv_engine   = "engineEgress"
     dali_engine        = "engineEgress"
