@@ -1081,8 +1081,6 @@ variable "corsAllowed" {
   }
 }
 
-#############egress###
-
 variable "egress_engine" {
   description = "Input for egress engines."
   type        = map(any)
@@ -1098,6 +1096,28 @@ variable "egress_engine" {
           {
             protocol = "TCP"
             port     = 443
+          }
+        ]
+      }
+    ],
+    thorEgress = [
+      {
+        to = [{
+          ipBlock = {
+            cidr = "10.9.8.7/32"
+          },
+          ipBlock = {
+            cidr = "10.0.1.0/24"
+          }
+        }]
+        ports = [
+          {
+            protocol = "TCP"
+            port     = 443
+          },
+          {
+            protocol = "TCP"
+            port     = 8899
           }
         ]
       }
@@ -1125,24 +1145,5 @@ variable "egress" {
   }
 }
 
-# variable "egress" {
-#   description = "egress settings"
-#   type = object({
-#     cidr     = string
-#     protocol = string
-#     port     = number
-#   })
-#   default = {
-#     cidr     = "10.9.8.7/32"
-#     protocol = "TCP"
-#     port     = 443
-#   }
-#   validation {
-#     condition     = contains(["TCP", "UDP"], var.egress.protocol)
-#     error_message = "protocal only supports TCP or UDP values"
-#   }
-# }
-
-##map(map(string))
 
  
