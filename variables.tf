@@ -1099,29 +1099,30 @@ variable "egress_engine" {
           }
         ]
       }
-    ],
-    thorEgress = [
-      {
-        to = [{
-          ipBlock = {
-            cidr = "10.9.8.7/32"
-          },
-          ipBlock = {
-            cidr = "10.0.1.0/24"
-          }
-        }]
-        ports = [
-          {
-            protocol = "TCP"
-            port     = 443
-          },
-          {
-            protocol = "TCP"
-            port     = 8899
-          }
-        ]
-      }
     ]
+    # ,
+    # thorEgress = [
+    #   {
+    #     to = [{
+    #       ipBlock = {
+    #         cidr = "10.9.8.7/32"
+    #       },
+    #       ipBlock = {
+    #         cidr = "10.0.1.0/24"
+    #       }
+    #     }]
+    #     ports = [
+    #       {
+    #         protocol = "TCP"
+    #         port     = 443
+    #       },
+    #       {
+    #         protocol = "TCP"
+    #         port     = 8899
+    #       }
+    #     ]
+    #   }
+    # ]
   }
 }
 
