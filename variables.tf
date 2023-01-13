@@ -1067,25 +1067,6 @@ variable "corsallowed_enable" {
   type        = bool
   default     = false
 }
-
-variable "egress" {
-  description = "egress settings"
-  type = object({
-    cidr     = string
-    protocol = string
-    port     = number
-  })
-  default = {
-    cidr     = "10.9.8.7/32"
-    protocol = "TCP"
-    port     = 443
-  }
-  validation {
-    condition     = contains(["TCP", "UDP"], var.egress.protocol)
-    error_message = "protocal only supports TCP or UDP values"
-  }
-}
-
 variable "corsAllowed" {
   description = "corsAllowed settings"
   type = object({
@@ -1099,3 +1080,71 @@ variable "corsAllowed" {
     methods = ["GET", "POST", "OPTIONS"]
   }
 }
+
+#############egress###
+
+variable "egress_engine" {
+  description = "Input for egress engines."
+  type = map(any)
+  default = {
+      egress = {
+        engineEgress = [
+          {
+            to = [{
+              ipBlock = {
+                cidr = "10.9.8.7/32"
+              }
+            }]
+            ports = [
+              {
+                protocol = "TCP"
+                port     = 443
+              }
+            ]
+          }
+        ]
+    }
+  }
+}
+
+variable "egress" {
+  description = "egress settings"
+  type = optional(object({
+    dafilesrv_engine     = optional(string)
+    dali_engine          = optional(string)
+    dfuserver_name       = optional(string)
+    eclagent_engine      = optional(string)
+    eclccserver_engine   = optional(string)
+    esp_engine           = optional(string)
+  }))
+  default = {
+    dafilesrv_engine     = "engineEgress"
+    dali_engine          = "engineEgress"
+    dfuserver_name       = "engineEgress"
+    eclagent_engine      = "engineEgress"
+    eclccserver_engine   = "engineEgress"
+    esp_engine           = "engineEgress"
+  }
+}
+
+# variable "egress" {
+#   description = "egress settings"
+#   type = object({
+#     cidr     = string
+#     protocol = string
+#     port     = number
+#   })
+#   default = {
+#     cidr     = "10.9.8.7/32"
+#     protocol = "TCP"
+#     port     = 443
+#   }
+#   validation {
+#     condition     = contains(["TCP", "UDP"], var.egress.protocol)
+#     error_message = "protocal only supports TCP or UDP values"
+#   }
+# }
+
+##map(map(string))
+
+ 
