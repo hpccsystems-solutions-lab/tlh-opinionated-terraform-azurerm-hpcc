@@ -1085,24 +1085,24 @@ variable "corsAllowed" {
 
 variable "egress_engine" {
   description = "Input for egress engines."
-  type = map(any)
+  type        = map(any)
   default = {
-      egress = {
-        engineEgress = [
-          {
-            to = [{
-              ipBlock = {
-                cidr = "10.9.8.7/32"
-              }
-            }]
-            ports = [
-              {
-                protocol = "TCP"
-                port     = 443
-              }
-            ]
-          }
-        ]
+    egress = {
+      engineEgress = [
+        {
+          to = [{
+            ipBlock = {
+              cidr = "10.9.8.7/32"
+            }
+          }]
+          ports = [
+            {
+              protocol = "TCP"
+              port     = 443
+            }
+          ]
+        }
+      ]
     }
   }
 }
@@ -1110,20 +1110,20 @@ variable "egress_engine" {
 variable "egress" {
   description = "egress settings"
   type = optional(object({
-    dafilesrv_engine     = optional(string)
-    dali_engine          = optional(string)
-    dfuserver_name       = optional(string)
-    eclagent_engine      = optional(string)
-    eclccserver_engine   = optional(string)
-    esp_engine           = optional(string)
+    dafilesrv_engine   = optional(string)
+    dali_engine        = optional(string)
+    dfuserver_name     = optional(string)
+    eclagent_engine    = optional(string)
+    eclccserver_engine = optional(string)
+    esp_engine         = optional(string)
   }))
   default = {
-    dafilesrv_engine     = "engineEgress"
-    dali_engine          = "engineEgress"
-    dfuserver_name       = "engineEgress"
-    eclagent_engine      = "engineEgress"
-    eclccserver_engine   = "engineEgress"
-    esp_engine           = "engineEgress"
+    dafilesrv_engine   = "engineEgress"
+    dali_engine        = "engineEgress"
+    dfuserver_name     = "engineEgress"
+    eclagent_engine    = "engineEgress"
+    eclccserver_engine = "engineEgress"
+    esp_engine         = "engineEgress"
   }
 }
 
