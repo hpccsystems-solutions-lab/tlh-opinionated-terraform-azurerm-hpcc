@@ -610,7 +610,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "directio", local.domain) } : {})
         }
-        egress = var.egress.dafilesrv_name
+        egress = var.egress.dafilesrv_engine
       },
       {
         name        = "spray-service"
@@ -624,7 +624,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "spray-service", local.domain) } : {})
         }
-        egress = var.egress.dafilesrv_name
+        egress = var.egress.dafilesrv_engine
       },
       {
         name        = "rowservice"
@@ -638,7 +638,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "rowservice", local.domain) } : {})
         }
-        egress = var.egress.dafilesrv_name
+        egress = var.egress.dafilesrv_engine
       }
     ]
 
@@ -664,7 +664,7 @@ locals {
           cpu    = var.dali_settings.resources.cpu
           memory = var.dali_settings.resources.memory
         }
-        egress = var.egress.dali_name
+        egress = var.egress.dali_engine
       }, local.dali_ldap_config)
     ]
 
@@ -688,7 +688,7 @@ locals {
         prefix            = "hthor"
         useChildProcesses = false
         type              = "hthor"
-        egress            = var.egress.eclagent_name
+        egress            = var.egress.eclagent_engine
         resources = {
           cpu    = 1
           memory = "4G"
@@ -701,7 +701,7 @@ locals {
         prefix            = "roxie_workunit"
         useChildProcesses = true
         type              = "roxie"
-        egress            = var.egress.eclagent_name
+        egress            = var.egress.eclagent_engine
         resources = {
           cpu    = 1
           memory = "4G"
@@ -719,7 +719,7 @@ locals {
           cpu    = var.eclccserver_settings.cpu
           memory = var.eclccserver_settings.memory
         }
-        egress = var.egress.eclccserver_name
+        egress = var.egress.eclccserver_engine
       }
     ]
 
@@ -754,7 +754,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclwatch", local.domain) } : {})
         }
-        egress      = var.egress.esp_name
+        egress      = var.egress.esp_engine
         corsAllowed = var.corsallowed_enable == true ? local.corsAllowed : []
       }, local.esp_ldap_config),
       merge({
@@ -770,7 +770,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclservices", local.domain) } : {})
         }
-        egress = var.egress.esp_name
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "eclqueries"
@@ -785,7 +785,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "eclqueries", local.domain) } : {})
         }
-        egress = var.egress.esp_name
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "esdl-sandbox"
@@ -800,7 +800,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", "esdl-sandbox", local.domain) } : {})
         }
-        egress = var.egress.esp_name
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "sql2ecl"
