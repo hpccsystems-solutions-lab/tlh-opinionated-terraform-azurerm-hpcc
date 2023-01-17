@@ -412,6 +412,13 @@ locals {
     hosts    = v.hosts
   }] : null
 
+  corsAllowed = [
+    {
+      origin  = var.corsAllowed.origin
+      headers = var.corsAllowed.headers
+      methods = var.corsAllowed.methods
+    }
+  ]
   helm_chart_values = {
 
     global = {
@@ -423,6 +430,26 @@ locals {
         name       = var.hpcc_container.image_name
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
+
+      # egress = {
+      #   engineEgress = [
+      #     {
+      #       to = [{
+      #         ipBlock = {
+      #           cidr = var.egress.cidr
+      #         }
+      #       }]
+      #       ports = [
+      #         {
+      #           protocol = var.egress.protocol
+      #           port     = var.egress.port
+      #         }
+      #       ]
+      #     }
+      #   ]
+      # }
+
+      egress = var.egress_engine
       visibilities = {
         cluster = {
           type = "ClusterIP"
@@ -512,6 +539,7 @@ locals {
             name       = format("%s-remote-hpcc-data", k)
             pvc        = format("%s-remote-hpcc-data", k)
             numDevices = v.numDevices
+            secret     = var.secrets.remote_cert_secret
           }
         ] : []
         ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
@@ -585,6 +613,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "directio", var.namespace.name, local.domain) } : {})
         }
+        egress = var.egress.dafilesrv_engine
       },
       {
         name        = "spray-service"
@@ -598,6 +627,7 @@ locals {
           #   "lnrs.io/zone-type"                                       = "public"
           # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "spray-service", var.namespace.name, local.domain) } : {})
         }
+        egress = var.egress.dafilesrv_engine
       },
       {
         name        = "rowservice"
@@ -611,6 +641,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "rowservice", var.namespace.name, local.domain) } : {})
         }
+        egress = var.egress.dafilesrv_engine
       }
     ]
 
@@ -636,6 +667,7 @@ locals {
           cpu    = var.dali_settings.resources.cpu
           memory = var.dali_settings.resources.memory
         }
+        egress = var.egress.dali_engine
       }, local.dali_ldap_config)
     ]
 
@@ -647,6 +679,7 @@ locals {
           cpu    = var.dfuserver_settings.resources.cpu
           memory = var.dfuserver_settings.resources.memory
         }
+        egress = var.egress.dfuserver_name
       }
     ]
 
@@ -658,6 +691,7 @@ locals {
         prefix            = "hthor"
         useChildProcesses = false
         type              = "hthor"
+        egress            = var.egress.eclagent_engine
         resources = {
           cpu    = 1
           memory = "4G"
@@ -670,6 +704,7 @@ locals {
         prefix            = "roxie_workunit"
         useChildProcesses = true
         type              = "roxie"
+        egress            = var.egress.eclagent_engine
         resources = {
           cpu    = 1
           memory = "4G"
@@ -687,6 +722,7 @@ locals {
           cpu    = var.eclccserver_settings.cpu
           memory = var.eclccserver_settings.memory
         }
+        egress = var.egress.eclccserver_engine
       }
     ]
 
@@ -695,7 +731,7 @@ locals {
         name          = "dfs"
         application   = "dfs"
         remoteClients = var.esp_remoteclients
-        auth          = local.auth_mode
+        auth          = "none"
         replicas      = 1
         service = {
           servicePort = 443
@@ -705,6 +741,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "dfs", var.namespace.name, local.domain) } : {})
         }
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "eclwatch"
@@ -720,6 +757,8 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclwatch", var.namespace.name, local.domain) } : {})
         }
+        egress      = var.egress.esp_engine
+        corsAllowed = var.corsallowed_enable == true ? local.corsAllowed : []
       }, local.esp_ldap_config),
       merge({
         name        = "eclservices"
@@ -730,6 +769,7 @@ locals {
           servicePort = 8010
           visibility  = "cluster"
         }
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "eclqueries"
@@ -744,6 +784,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclqueries", var.namespace.name, local.domain) } : {})
         }
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "esdl-sandbox"
@@ -758,6 +799,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "esdl-sandbox", var.namespace.name, local.domain) } : {})
         }
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = "sql2ecl"
@@ -772,6 +814,7 @@ locals {
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "sql2ecl", var.namespace.name, local.domain) } : {})
         }
+        egress = var.egress.esp_engine
       }, local.esp_ldap_config)
     ]
 
@@ -794,7 +837,7 @@ locals {
       codeVerify = {}
       ecl        = {}
       git        = {}
-      storage    = {}
+      storage    = var.secrets.remote_cert_secret
       system     = {}
     }
 

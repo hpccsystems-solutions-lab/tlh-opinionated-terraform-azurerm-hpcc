@@ -412,6 +412,7 @@ variable "roxie_config" {
     defaultStripLeadingWhitespace  = bool
     diskReadBufferSize             = number
     doIbytiDelay                   = bool
+    egress                         = string
     enableHeartBeat                = bool
     enableKeyDiff                  = bool
     enableSysLog                   = bool
@@ -559,6 +560,7 @@ variable "roxie_config" {
       defaultStripLeadingWhitespace  = false
       diskReadBufferSize             = 65536
       doIbytiDelay                   = true
+      egress                         = "engineEgress"
       enableHeartBeat                = false
       enableKeyDiff                  = false
       enableSysLog                   = false
@@ -697,6 +699,7 @@ variable "thor_config" {
     numWorkers          = number
     numWorkersPerPod    = number
     prefix              = string
+    egress              = string
     tolerations_value   = string
     workerMemory = object({
       query      = string
@@ -726,6 +729,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
+    egress              = "engineEgress"
     tolerations_value   = "thorpool"
     workerMemory = {
       query      = "3G"
@@ -855,6 +859,7 @@ variable "sasha_config" {
       throttle        = number
       retryinterval   = number
       keepResultFiles = bool
+      # egress          = string
     })
 
     dfuwu-archiver = object({
@@ -868,6 +873,7 @@ variable "sasha_config" {
       cutoff   = number
       at       = string
       throttle = number
+      # egress   = string
     })
 
     dfurecovery-archiver = object({
@@ -876,6 +882,7 @@ variable "sasha_config" {
       limit    = number
       cutoff   = number
       at       = string
+      # egress   = string
     })
 
     file-expiry = object({
@@ -885,6 +892,7 @@ variable "sasha_config" {
       persistExpiryDefault = number
       expiryDefault        = number
       user                 = string
+      # egress               = string
     })
   })
   default = {
@@ -903,6 +911,7 @@ variable "sasha_config" {
       throttle        = 0
       retryinterval   = 6
       keepResultFiles = false
+      # egress          = "engineEgress"
     }
 
     dfuwu-archiver = {
@@ -916,6 +925,7 @@ variable "sasha_config" {
       cutoff   = 14
       at       = "* * * * *"
       throttle = 0
+      # egress   = "engineEgress"
     }
 
     dfurecovery-archiver = {
@@ -924,6 +934,7 @@ variable "sasha_config" {
       limit    = 20
       cutoff   = 4
       at       = "* * * * *"
+      # egress   = "engineEgress"
     }
 
     file-expiry = {
@@ -933,6 +944,7 @@ variable "sasha_config" {
       persistExpiryDefault = 7
       expiryDefault        = 4
       user                 = "sasha"
+      # egress               = "engineEgress"
     }
   }
 }
@@ -956,7 +968,6 @@ variable "esp_remoteclients" {
     }
   ]
 }
-
 variable "placements" {
   description = "maxskew topologyspreadconstraints placements value for hppc"
   type = object({
@@ -1047,3 +1058,99 @@ variable "cost" {
     storageWrites = 0.0038
   }
 }
+
+variable "secrets" {
+  description = "Secret for egress remote cert."
+  type = object({
+    remote_cert_secret = map(string)
+  })
+  default = {
+    remote_cert_secret = {}
+  }
+}
+variable "corsallowed_enable" {
+  description = "Enable cors allowed on ECL watch"
+  type        = bool
+  default     = false
+}
+variable "corsAllowed" {
+  description = "corsAllowed settings"
+  type = object({
+    origin  = string
+    headers = list(string)
+    methods = list(string)
+  })
+  default = {
+    origin  = "https://viz.hpccsystems.com"
+    headers = ["*"]
+    methods = ["GET", "POST", "OPTIONS"]
+  }
+}
+
+variable "egress_engine" {
+  description = "Input for egress engines."
+  type        = map(any)
+  default = {
+    engineEgress = [
+      {
+        to = [{
+          ipBlock = {
+            cidr = "10.9.8.7/32"
+          }
+        }]
+        ports = [
+          {
+            protocol = "TCP"
+            port     = 443
+          }
+        ]
+      }
+    ]
+    # ,
+    # thorEgress = [
+    #   {
+    #     to = [{
+    #       ipBlock = {
+    #         cidr = "10.9.8.7/32"
+    #       },
+    #       ipBlock = {
+    #         cidr = "10.0.1.0/24"
+    #       }
+    #     }]
+    #     ports = [
+    #       {
+    #         protocol = "TCP"
+    #         port     = 443
+    #       },
+    #       {
+    #         protocol = "TCP"
+    #         port     = 8899
+    #       }
+    #     ]
+    #   }
+    # ]
+  }
+}
+
+variable "egress" {
+  description = "egress settings"
+  type = object({
+    dafilesrv_engine   = optional(string)
+    dali_engine        = optional(string)
+    dfuserver_name     = optional(string)
+    eclagent_engine    = optional(string)
+    eclccserver_engine = optional(string)
+    esp_engine         = optional(string)
+  })
+  default = {
+    dafilesrv_engine   = "engineEgress"
+    dali_engine        = "engineEgress"
+    dfuserver_name     = "engineEgress"
+    eclagent_engine    = "engineEgress"
+    eclccserver_engine = "engineEgress"
+    esp_engine         = "engineEgress"
+  }
+}
+
+
+ 
