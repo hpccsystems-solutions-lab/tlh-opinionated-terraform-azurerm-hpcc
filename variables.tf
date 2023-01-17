@@ -697,6 +697,7 @@ variable "thor_config" {
     numWorkers          = number
     numWorkersPerPod    = number
     prefix              = string
+    tolerations_value   = string
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -725,6 +726,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
+    tolerations_value   = "thorpool"
     workerMemory = {
       query      = "3G"
       thirdParty = "500M"
@@ -824,10 +826,12 @@ variable "dfuserver_settings" {
 variable "spray_service_settings" {
   description = "spray services settings"
   type = object({
-    replicas = number
+    replicas     = number
+    nodeSelector = string
   })
   default = {
-    replicas = 3
+    replicas     = 3
+    nodeSelector = "servpool" #"spraypool"
   }
 }
 
@@ -951,4 +955,95 @@ variable "esp_remoteclients" {
       name = "insuranceprod"
     }
   ]
+}
+
+variable "placements" {
+  description = "maxskew topologyspreadconstraints placements value for hppc"
+  type = object({
+    spray-service = object({
+      maxskew = number
+    })
+
+    eclwatch = object({
+      maxskew = number
+    })
+
+    eclservices = object({
+      maxskew = number
+    })
+
+    eclqueries = object({
+      maxskew = number
+    })
+
+    dfs = object({
+      maxskew = number
+    })
+
+    direct-access = object({
+      maxskew = number
+    })
+
+    thorworker = object({
+      maxskew = number
+    })
+
+    roxie-agent = object({
+      maxskew = number
+    })
+  })
+
+  default = {
+    spray-service = {
+      maxskew = 1
+    }
+
+    eclwatch = {
+      maxskew = 1
+    }
+
+    eclservices = {
+      maxskew = 1
+    }
+
+    spray-service = {
+      maxskew = 1
+    }
+
+    eclqueries = {
+      maxskew = 1
+    }
+
+    dfs = {
+      maxskew = 1
+    }
+
+    direct-access = {
+      maxskew = 1
+    }
+
+    thorworker = {
+      maxskew = 1
+    }
+
+    roxie-agent = {
+      maxskew = 1
+    }
+  }
+}
+
+variable "cost" {
+  description = "cost settings"
+  type = object({
+    perCpu        = number
+    storageAtRest = number
+    storageReads  = number
+    storageWrites = number
+  })
+  default = {
+    perCpu        = 3
+    storageAtRest = 0.126
+    storageReads  = 0.0135
+    storageWrites = 0.0038
+  }
 }
