@@ -3,7 +3,7 @@
 resource "kubernetes_secret" "hpcc-local-secret" {
   metadata {
     name      = "hpcc-local-issuer-key-pair"
-    namespace = "hpcc"
+    namespace = var.namespace
   }
 
   data = {
@@ -18,6 +18,7 @@ resource "kubernetes_manifest" "local_issuer" {
     "${path.module}/local/issuer.yml",
     {
       "name" = "hpcc-local-issuer"
+      "namespace" = var.namespace
     }
   ))
 
@@ -31,6 +32,7 @@ resource "kubernetes_manifest" "local_cert_issuer" {
       "name"       = "hpcc-local-issuer"
       "secretName" = "hpcc-local-issuer-key-pair"
       "dnsNames"   = var.internal_domain
+      "namespace"  = var.namespace
     }
   ))
 
@@ -41,7 +43,7 @@ resource "kubernetes_manifest" "local_cert_issuer" {
 resource "kubernetes_secret" "hpcc-remote-secret" {
   metadata {
     name      = "hpcc-remote-issuer-key-pair"
-    namespace = "hpcc"
+    namespace = var.namespace
   }
 
   data = {
@@ -56,6 +58,7 @@ resource "kubernetes_manifest" "remote_issuer" {
     "${path.module}/remote/issuer.yml",
     {
       "name" = "hpcc-remote-issuer"
+      "namespace" = var.namespace
     }
   ))
   depends_on = [kubernetes_secret.hpcc-remote-secret]
@@ -68,6 +71,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
       "name"       = "hpcc-remote-issuer"
       "secretName" = "hpcc-remote-issuer-key-pair"
       "dnsNames"   = var.internal_domain
+      "namespace"  = var.namespace
     }
   ))
   depends_on = [kubernetes_manifest.remote_issuer]
@@ -77,7 +81,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
 resource "kubernetes_secret" "hpcc-signing-secret" {
   metadata {
     name      = "hpcc-signing-issuer-key-pair"
-    namespace = "hpcc"
+    namespace = var.namespace
   }
 
   data = {
@@ -92,6 +96,7 @@ resource "kubernetes_manifest" "signing_issuer" {
     "${path.module}/signing/issuer.yml",
     {
       "name" = "hpcc-signing-issuer"
+      "namespace" = var.namespace
     }
   ))
   depends_on = [kubernetes_secret.hpcc-signing-secret]
@@ -104,6 +109,7 @@ resource "kubernetes_manifest" "signing_cert_issuer" {
       "name"       = "hpcc-signing-issuer"
       "secretName" = "hpcc-signing-issuer-key-pair"
       "dnsNames"   = var.internal_domain
+      "namespace"  = var.namespace
     }
   ))
 
@@ -117,6 +123,7 @@ resource "kubernetes_manifest" "public_issuer" {
     "${path.module}/issuer.yml",
     {
       "name" = "hpcc-public-issuer"
+      "namespace" = var.namespace
     }
   ))
 }
@@ -128,6 +135,7 @@ resource "kubernetes_manifest" "public_cert_issuer" {
       "name"       = "hpcc-public-issuer"
       "secretName" = "hpcc-public-issuer-key-pair"
       "dnsNames"   = var.internal_domain
+      "namespace"  = var.namespace
     }
   ))
   depends_on = [kubernetes_manifest.public_issuer]

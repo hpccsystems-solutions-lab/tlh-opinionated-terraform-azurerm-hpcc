@@ -17,4 +17,13 @@ resource "helm_release" "csi_driver" {
   namespace  = var.namespace.name
   repository = "https://raw.githubusercontent.com/kubernetes-sigs/blob-csi-driver/master/charts"
   version    = var.helm_chart_version
+
+  set {
+    name  = "controller.tolerations[0].key"
+    value = "hpcc"
+  }
+  set {
+    name  = "controller.tolerations[0].operator"
+    value = "Exists"
+  }
 }
