@@ -227,6 +227,12 @@ variable "helm_chart_version" {
   default     = "8.6.20"
 }
 
+variable "enable_premium_zrs_storage_class" {
+  description = "Storage class to use for ZRS file shares."
+  type        = bool
+  default     = true
+}
+
 variable "hpcc_container" {
   description = "HPCC container information (if version is set to null helm chart version is used)."
   type = object({

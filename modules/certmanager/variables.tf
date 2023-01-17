@@ -12,3 +12,8 @@ variable "cluster_name" {
   description = "The name of aks cluster."
   type        = string
 }
+
+variable "namespace" {
+  description = "The namespace of aks cluster."
+  type        = string
+}

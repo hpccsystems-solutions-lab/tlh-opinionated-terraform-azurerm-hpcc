@@ -52,7 +52,7 @@ resource "azurerm_storage_account" "blob_nfs_admin_services" {
   is_hns_enabled                  = true
   min_tls_version                 = "TLS1_2"
 
-  shared_access_key_enabled = false
+  shared_access_key_enabled = true
 
   nfsv3_enabled             = true
   enable_https_traffic_only = true

@@ -1,6 +1,8 @@
 # Storage Class for Premium ZRS Storage Account
 
 resource "kubernetes_storage_class" "premium_zrs_file_share_storage_class" {
+
+  count = var.enable_premium_zrs_storage_class ? 1 : 0
   metadata {
     name = "hpcc-premium-zrs-file-share-sc"
     labels = {
