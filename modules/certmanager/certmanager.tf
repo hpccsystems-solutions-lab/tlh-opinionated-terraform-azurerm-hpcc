@@ -43,7 +43,7 @@ resource "kubernetes_manifest" "local_cert_issuer" {
 
 resource "kubectl_manifest" "secretstores" {
 
- # provider = kubectl.stable
+  provider = kubectl.stable
 
   yaml_body         = <<-EOF
   apiVersion: cert-manager.io/v1
@@ -102,7 +102,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
 
 resource "kubectl_manifest" "remote_secret" {
 
- # provider = kubectl.stable
+  provider = kubectl.stable
 
   yaml_body         = <<-EOF
   apiVersion: cert-manager.io/v1
@@ -162,7 +162,7 @@ resource "kubernetes_manifest" "signing_cert_issuer" {
 
 resource "kubectl_manifest" "signing_secret" {
 
-  #provider = kubectl.stable
+  provider = kubectl.stable
 
   yaml_body         = <<-EOF
   apiVersion: cert-manager.io/v1
