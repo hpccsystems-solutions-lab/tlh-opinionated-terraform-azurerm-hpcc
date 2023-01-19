@@ -18,12 +18,12 @@ resource "kubernetes_manifest" "local_issuer" {
   manifest = yamldecode(templatefile(
     "${path.module}/local/issuer.yml",
     {
-      "name" = "hpcc-local-issuer"
+      "name"      = "hpcc-local-issuer"
       "namespace" = var.namespace
     }
   ))
 
- # depends_on = [kubernetes_secret.hpcc-local-secret]
+  # depends_on = [kubernetes_secret.hpcc-local-secret]
 }
 
 resource "kubernetes_manifest" "local_cert_issuer" {
