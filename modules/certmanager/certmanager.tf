@@ -79,7 +79,7 @@ resource "kubernetes_manifest" "remote_issuer" {
   manifest = yamldecode(templatefile(
     "${path.module}/remote/issuer.yml",
     {
-      "name" = "hpcc-remote-issuer"
+      "name"      = "hpcc-remote-issuer"
       "namespace" = var.namespace
     }
   ))
@@ -101,7 +101,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
 }
 
 resource "kubectl_manifest" "remote_secret" {
-  
+
   provider = kubectl.stable
 
   yaml_body         = <<-EOF
@@ -138,7 +138,7 @@ resource "kubernetes_manifest" "signing_issuer" {
   manifest = yamldecode(templatefile(
     "${path.module}/signing/issuer.yml",
     {
-      "name" = "hpcc-signing-issuer"
+      "name"      = "hpcc-signing-issuer"
       "namespace" = var.namespace
     }
   ))
@@ -185,7 +185,7 @@ resource "kubernetes_manifest" "public_issuer" {
   manifest = yamldecode(templatefile(
     "${path.module}/issuer.yml",
     {
-      "name" = "hpcc-public-issuer"
+      "name"      = "hpcc-public-issuer"
       "namespace" = var.namespace
     }
   ))
