@@ -14,7 +14,7 @@
 #   type = "kubernetes.io/tls"
 # }
 resource "kubernetes_manifest" "local_issuer" {
-  provider = kubectl.stable
+  #provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/local/issuer.yml",
     {
@@ -27,7 +27,7 @@ resource "kubernetes_manifest" "local_issuer" {
 }
 
 resource "kubernetes_manifest" "local_cert_issuer" {
-  provider = kubectl.stable
+ # provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/certificate-issuer.yml",
     {
@@ -43,7 +43,7 @@ resource "kubernetes_manifest" "local_cert_issuer" {
 
 resource "kubectl_manifest" "secretstores" {
 
-  provider = kubectl.stable
+ # provider = kubectl.stable
 
   yaml_body         = <<-EOF
   apiVersion: cert-manager.io/v1
@@ -75,7 +75,7 @@ resource "kubectl_manifest" "secretstores" {
 #   type = "kubernetes.io/tls"
 # }
 resource "kubernetes_manifest" "remote_issuer" {
-  provider = kubectl.stable
+  #provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/remote/issuer.yml",
     {
@@ -87,7 +87,7 @@ resource "kubernetes_manifest" "remote_issuer" {
 }
 
 resource "kubernetes_manifest" "remote_cert_issuer" {
-  provider = kubectl.stable
+ # provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/certificate-issuer.yml",
     {
@@ -102,7 +102,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
 
 resource "kubectl_manifest" "remote_secret" {
 
-  provider = kubectl.stable
+ # provider = kubectl.stable
 
   yaml_body         = <<-EOF
   apiVersion: cert-manager.io/v1
@@ -134,7 +134,7 @@ resource "kubectl_manifest" "remote_secret" {
 #   type = "kubernetes.io/tls"
 # }
 resource "kubernetes_manifest" "signing_issuer" {
-  provider = kubectl.stable
+  #provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/signing/issuer.yml",
     {
@@ -146,7 +146,7 @@ resource "kubernetes_manifest" "signing_issuer" {
 }
 
 resource "kubernetes_manifest" "signing_cert_issuer" {
-  provider = kubectl.stable
+ # provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/certificate-issuer.yml",
     {
@@ -162,7 +162,7 @@ resource "kubernetes_manifest" "signing_cert_issuer" {
 
 resource "kubectl_manifest" "signing_secret" {
 
-  provider = kubectl.stable
+  #provider = kubectl.stable
 
   yaml_body         = <<-EOF
   apiVersion: cert-manager.io/v1
