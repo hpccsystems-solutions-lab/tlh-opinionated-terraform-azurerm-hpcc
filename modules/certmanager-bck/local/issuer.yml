@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+  labels: 
+   app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "hpcc"
+    meta.helm.sh/release-namespace: ${namespace}
+spec:
+  ca: 
+   secretName: hpcc-local-issuer-key-pair

@@ -1,19 +1,20 @@
 ###local_issuer####
 ######
-resource "kubernetes_secret" "hpcc-local-secret" {
-  metadata {
-    name      = "hpcc-local-issuer-key-pair"
-    namespace = var.namespace
-  }
+# resource "kubernetes_secret" "hpcc-local-secret" {
+#   metadata {
+#     name      = "hpcc-local-issuer-key-pair"
+#     namespace = var.namespace
+#   }
 
-  data = {
-    "tls.crt" = file("${path.module}/local/tls.crt")
-    "tls.key" = file("${path.module}/local/tls.key")
-  }
+#   data = {
+#     "tls.crt" = file("${path.module}/local/tls.crt")
+#     "tls.key" = file("${path.module}/local/tls.key")
+#   }
 
-  type = "kubernetes.io/tls"
-}
+#   type = "kubernetes.io/tls"
+# }
 resource "kubernetes_manifest" "local_issuer" {
+  provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/local/issuer.yml",
     {
@@ -22,10 +23,11 @@ resource "kubernetes_manifest" "local_issuer" {
     }
   ))
 
-  depends_on = [kubernetes_secret.hpcc-local-secret]
+ # depends_on = [kubernetes_secret.hpcc-local-secret]
 }
 
 resource "kubernetes_manifest" "local_cert_issuer" {
+  provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/certificate-issuer.yml",
     {
@@ -39,104 +41,123 @@ resource "kubernetes_manifest" "local_cert_issuer" {
   depends_on = [kubernetes_manifest.local_issuer]
 }
 
-###############remote########################
-resource "kubernetes_secret" "hpcc-remote-secret" {
-  metadata {
-    name      = "hpcc-remote-issuer-key-pair"
-    namespace = var.namespace
-  }
+resource "kubectl_manifest" "secretstores" {
 
-  data = {
-    "tls.crt" = file("${path.module}/remote/tls.crt")
-    "tls.key" = file("${path.module}/remote/tls.key")
-  }
+  provider = kubectl.stable
 
-  type = "kubernetes.io/tls"
-}
-resource "kubernetes_manifest" "remote_issuer" {
-  manifest = yamldecode(templatefile(
-    "${path.module}/remote/issuer.yml",
-    {
-      "name" = "hpcc-remote-issuer"
-      "namespace" = var.namespace
-    }
-  ))
-  depends_on = [kubernetes_secret.hpcc-remote-secret]
+  yaml_body         = <<-EOF
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+    name: hpcc-local-issuer
+    namespace: ${namespace}
+  spec:
+    ca: 
+     secretName: "hpcc-local-issuer-key-pair"
+  EOF
+  server_side_apply = true
+
+  depends_on = [kubernetes_manifest.local_cert_issuer]
 }
 
-resource "kubernetes_manifest" "remote_cert_issuer" {
-  manifest = yamldecode(templatefile(
-    "${path.module}/certificate-issuer.yml",
-    {
-      "name"       = "hpcc-remote-issuer"
-      "secretName" = "hpcc-remote-issuer-key-pair"
-      "dnsNames"   = var.internal_domain
-      "namespace"  = var.namespace
-    }
-  ))
-  depends_on = [kubernetes_manifest.remote_issuer]
-}
+# ###############remote########################
+# resource "kubernetes_secret" "hpcc-remote-secret" {
+#   metadata {
+#     name      = "hpcc-remote-issuer-key-pair"
+#     namespace = var.namespace
+#   }
 
-###################signing#################
-resource "kubernetes_secret" "hpcc-signing-secret" {
-  metadata {
-    name      = "hpcc-signing-issuer-key-pair"
-    namespace = var.namespace
-  }
+#   data = {
+#     "tls.crt" = file("${path.module}/remote/tls.crt")
+#     "tls.key" = file("${path.module}/remote/tls.key")
+#   }
 
-  data = {
-    "tls.crt" = file("${path.module}/signing/tls.crt")
-    "tls.key" = file("${path.module}/signing/tls.key")
-  }
+#   type = "kubernetes.io/tls"
+# }
+# resource "kubernetes_manifest" "remote_issuer" {
+#   manifest = yamldecode(templatefile(
+#     "${path.module}/remote/issuer.yml",
+#     {
+#       "name" = "hpcc-remote-issuer"
+#       "namespace" = var.namespace
+#     }
+#   ))
+#   depends_on = [kubernetes_secret.hpcc-remote-secret]
+# }
 
-  type = "kubernetes.io/tls"
-}
-resource "kubernetes_manifest" "signing_issuer" {
-  manifest = yamldecode(templatefile(
-    "${path.module}/signing/issuer.yml",
-    {
-      "name" = "hpcc-signing-issuer"
-      "namespace" = var.namespace
-    }
-  ))
-  depends_on = [kubernetes_secret.hpcc-signing-secret]
-}
+# resource "kubernetes_manifest" "remote_cert_issuer" {
+#   manifest = yamldecode(templatefile(
+#     "${path.module}/certificate-issuer.yml",
+#     {
+#       "name"       = "hpcc-remote-issuer"
+#       "secretName" = "hpcc-remote-issuer-key-pair"
+#       "dnsNames"   = var.internal_domain
+#       "namespace"  = var.namespace
+#     }
+#   ))
+#   depends_on = [kubernetes_manifest.remote_issuer]
+# }
 
-resource "kubernetes_manifest" "signing_cert_issuer" {
-  manifest = yamldecode(templatefile(
-    "${path.module}/certificate-issuer.yml",
-    {
-      "name"       = "hpcc-signing-issuer"
-      "secretName" = "hpcc-signing-issuer-key-pair"
-      "dnsNames"   = var.internal_domain
-      "namespace"  = var.namespace
-    }
-  ))
+# ###################signing#################
+# resource "kubernetes_secret" "hpcc-signing-secret" {
+#   metadata {
+#     name      = "hpcc-signing-issuer-key-pair"
+#     namespace = var.namespace
+#   }
 
-  depends_on = [kubernetes_manifest.signing_issuer]
-}
+#   data = {
+#     "tls.crt" = file("${path.module}/signing/tls.crt")
+#     "tls.key" = file("${path.module}/signing/tls.key")
+#   }
 
-##################public #####################
+#   type = "kubernetes.io/tls"
+# }
+# resource "kubernetes_manifest" "signing_issuer" {
+#   manifest = yamldecode(templatefile(
+#     "${path.module}/signing/issuer.yml",
+#     {
+#       "name" = "hpcc-signing-issuer"
+#       "namespace" = var.namespace
+#     }
+#   ))
+#   depends_on = [kubernetes_secret.hpcc-signing-secret]
+# }
 
-resource "kubernetes_manifest" "public_issuer" {
-  manifest = yamldecode(templatefile(
-    "${path.module}/issuer.yml",
-    {
-      "name" = "hpcc-public-issuer"
-      "namespace" = var.namespace
-    }
-  ))
-}
+# resource "kubernetes_manifest" "signing_cert_issuer" {
+#   manifest = yamldecode(templatefile(
+#     "${path.module}/certificate-issuer.yml",
+#     {
+#       "name"       = "hpcc-signing-issuer"
+#       "secretName" = "hpcc-signing-issuer-key-pair"
+#       "dnsNames"   = var.internal_domain
+#       "namespace"  = var.namespace
+#     }
+#   ))
 
-resource "kubernetes_manifest" "public_cert_issuer" {
-  manifest = yamldecode(templatefile(
-    "${path.module}/certificate-issuer.yml",
-    {
-      "name"       = "hpcc-public-issuer"
-      "secretName" = "hpcc-public-issuer-key-pair"
-      "dnsNames"   = var.internal_domain
-      "namespace"  = var.namespace
-    }
-  ))
-  depends_on = [kubernetes_manifest.public_issuer]
-}
+#   depends_on = [kubernetes_manifest.signing_issuer]
+# }
+
+# ##################public #####################
+
+# resource "kubernetes_manifest" "public_issuer" {
+#   manifest = yamldecode(templatefile(
+#     "${path.module}/issuer.yml",
+#     {
+#       "name" = "hpcc-public-issuer"
+#       "namespace" = var.namespace
+#     }
+#   ))
+# }
+
+# resource "kubernetes_manifest" "public_cert_issuer" {
+#   manifest = yamldecode(templatefile(
+#     "${path.module}/certificate-issuer.yml",
+#     {
+#       "name"       = "hpcc-public-issuer"
+#       "secretName" = "hpcc-public-issuer-key-pair"
+#       "dnsNames"   = var.internal_domain
+#       "namespace"  = var.namespace
+#     }
+#   ))
+#   depends_on = [kubernetes_manifest.public_issuer]
+# }

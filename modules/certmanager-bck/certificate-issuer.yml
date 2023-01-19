@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  secretName: ${secretName}
+  subject:
+   organizations:
+   - HPCC Systems
+   countries:
+   - US
+   organizationalUnits:
+   - HPCC Example
+   localities:
+   - Alpharetta
+   provinces:
+   - Georgia
+  isCA: true
+  issuerRef:
+    name: ${name}
+    kind: Issuer
+  dnsNames:
+  - ${dnsNames}
