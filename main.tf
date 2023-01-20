@@ -82,7 +82,7 @@ resource "kubectl_manifest" "signing_secret" {
 
 resource "null_resource" "annotations_name" {
   provisioner "local-exec" {
-    command = <<EOF
+    command = <<EOT
   echo "--------------Install KUBECTL on TFE-----------------"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
@@ -95,7 +95,7 @@ resource "null_resource" "annotations_name" {
   kubectl annotate issuer hpcc-remote-issuer -n hpcc meta.helm.sh/release-name="hpcc"
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
-  EOF
+  EOT
   interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
@@ -109,7 +109,7 @@ resource "null_resource" "annotations_name" {
 
 resource "null_resource" "annotations_namespace" {
   provisioner "local-exec" {
-    command = <<EOF
+    command = <<EOT
   echo "--------------Install KUBECTL on TFE-----------------"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
@@ -122,7 +122,7 @@ resource "null_resource" "annotations_namespace" {
   kubectl annotate issuer hpcc-remote-issuer -n hpcc meta.helm.sh/release-namespace="hpcc"
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
-  EOF
+  EOT
   interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
@@ -136,7 +136,7 @@ resource "null_resource" "annotations_namespace" {
 
 resource "null_resource" "labels" {
   provisioner "local-exec" {
-    command = <<EOF
+    command = <<EOT
   echo "--------------Install KUBECTL on TFE-----------------"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
@@ -149,7 +149,7 @@ resource "null_resource" "labels" {
   kubectl label issuer hpcc-remote-issuer -n hpcc app.kubernetes.io/managed-by="Helm"
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
-  EOF
+  EOT
   interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
