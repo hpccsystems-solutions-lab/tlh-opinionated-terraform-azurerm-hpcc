@@ -21,9 +21,9 @@ locals {
 
   external_dns_zone_enabled = var.internal_domain != null
   domain                    = coalesce(var.internal_domain, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
-  account_code = split(".", local.domain)[0]
-  aks_trimmed_name = trimprefix(var.cluster_name, "${local.account_code}-")
-  
+  account_code              = split(".", local.domain)[0]
+  aks_trimmed_name          = trimprefix(var.cluster_name, "${local.account_code}-")
+
 
   azure_files_pv_protocol = var.environment == "dev" ? "nfs" : null
   storage_config = {
