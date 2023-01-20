@@ -82,7 +82,7 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.esp_ldap_admin,
     module.node_tuning,
     module.certmanager,
-    kubectl_manifest.remote_secret
+    kubectl_manifest.remote_secret,
     null_resource.service_delete_script
   ]
 
