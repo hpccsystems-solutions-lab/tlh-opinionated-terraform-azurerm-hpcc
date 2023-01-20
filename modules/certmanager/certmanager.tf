@@ -50,7 +50,7 @@ resource "kubernetes_manifest" "secretstores" {
   kind: Issuer
   metadata:
     name: hpcc-local-issuer
-    namespace: ${namespace}
+    namespace: ${var.namespace}
   spec:
     ca: 
      secretName: "hpcc-local-issuer-key-pair"
@@ -109,7 +109,7 @@ resource "kubernetes_manifest" "remote_secret" {
   kind: Issuer
   metadata:
     name: hpcc-remote-issuer
-    namespace: ${namespace}
+    namespace: ${var.namespace}
   spec:
     ca: 
      secretName: "hpcc-remote-issuer-key-pair"
@@ -169,7 +169,7 @@ resource "kubernetes_manifest" "signing_secret" {
   kind: Issuer
   metadata:
     name: hpcc-signing-issuer
-    namespace: ${namespace}
+    namespace: ${var.namespace}
   spec:
     ca: 
      secretName: "hpcc-signing-issuer-key-pair"
