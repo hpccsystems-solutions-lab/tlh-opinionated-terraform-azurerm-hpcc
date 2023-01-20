@@ -18,11 +18,11 @@ module "node_tuning" {
 }
 
 module "certmanager" {
-  source              = "./modules/certmanager"
-  internal_domain     = var.internal_domain
-  resource_group_name = var.resource_group_name
-  cluster_name        = var.cluster_name
-  namespace           = var.namespace.name
+  source          = "./modules/certmanager"
+  internal_domain = var.internal_domain
+  #resource_group_name = var.resource_group_name
+  # cluster_name        = var.cluster_name
+  namespace = var.namespace.name
 
   depends_on = [kubernetes_namespace.default]
 }
@@ -82,7 +82,7 @@ resource "kubectl_manifest" "signing_secret" {
 
 resource "null_resource" "annotations_name" {
   provisioner "local-exec" {
-    command = <<EOT
+    command     = <<EOT
   echo "--------------Install KUBECTL on TFE-----------------"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
@@ -96,20 +96,20 @@ resource "null_resource" "annotations_name" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOT
-  interpreter = ["bash", "-C"]
+    interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
   }
-   depends_on = [module.certmanager,
-     kubectl_manifest.local_secret,
-     kubectl_manifest.signing_secret,
-     kubectl_manifest.remote_secret]
+  depends_on = [module.certmanager,
+    kubectl_manifest.local_secret,
+    kubectl_manifest.signing_secret,
+  kubectl_manifest.remote_secret]
 }
 
 resource "null_resource" "annotations_namespace" {
   provisioner "local-exec" {
-    command = <<EOT
+    command     = <<EOT
   echo "--------------Install KUBECTL on TFE-----------------"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
@@ -123,20 +123,20 @@ resource "null_resource" "annotations_namespace" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOT
-  interpreter = ["bash", "-C"]
+    interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
   }
-   depends_on = [module.certmanager,
-     kubectl_manifest.local_secret,
-     kubectl_manifest.signing_secret,
-     kubectl_manifest.remote_secret]
+  depends_on = [module.certmanager,
+    kubectl_manifest.local_secret,
+    kubectl_manifest.signing_secret,
+  kubectl_manifest.remote_secret]
 }
 
 resource "null_resource" "labels" {
   provisioner "local-exec" {
-    command = <<EOT
+    command     = <<EOT
   echo "--------------Install KUBECTL on TFE-----------------"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
@@ -150,15 +150,15 @@ resource "null_resource" "labels" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOT
-  interpreter = ["bash", "-C"]
+    interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
   }
-   depends_on = [module.certmanager,
-     kubectl_manifest.local_secret,
-     kubectl_manifest.signing_secret,
-     kubectl_manifest.remote_secret]
+  depends_on = [module.certmanager,
+    kubectl_manifest.local_secret,
+    kubectl_manifest.signing_secret,
+  kubectl_manifest.remote_secret]
 }
 
 ## Adding Script to delete K8s Services due to release v0.9.2 of the module. 

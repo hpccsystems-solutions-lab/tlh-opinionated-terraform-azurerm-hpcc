@@ -17,17 +17,12 @@ resource "kubectl_manifest" "local_issuer" {
     selfSigned: {}
   EOF
   server_side_apply = true
+  ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
 
 }
-
-# resource "kubectl_manifest" "local_issuer" {
-
-#   yaml_body    = file("${path.module}/local/issuer.yml")
-
-# }
 resource "kubectl_manifest" "local_cert_issuer" {
 
-yaml_body         = <<-EOF
+  yaml_body         = <<-EOF
  apiVersion: cert-manager.io/v1
  kind: Certificate
  metadata:
@@ -93,13 +88,8 @@ resource "kubectl_manifest" "remote_issuer" {
     selfSigned: {}
   EOF
   server_side_apply = true
+  ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
 }
-
-# resource "kubectl_manifest" "remote_issuer" {
-
-#   yaml_body    = file("${path.module}/remote/issuer.yml")
-
-# }
 resource "kubectl_manifest" "remote_cert_issuer" {
 
   yaml_body         = <<-EOF
@@ -167,14 +157,9 @@ resource "kubectl_manifest" "signing_issuer" {
     selfSigned: {}
   EOF
   server_side_apply = true
+  ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
 
 }
-
-# resource "kubectl_manifest" "signing_issuer" {
-
-#   yaml_body    = file("${path.module}/signing/issuer.yml")
-
-# }
 
 resource "kubectl_manifest" "signing_cert_issuer" {
 
