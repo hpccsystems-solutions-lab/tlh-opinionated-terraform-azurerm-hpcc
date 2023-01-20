@@ -41,24 +41,24 @@ resource "kubernetes_manifest" "local_cert_issuer" {
   depends_on = [kubernetes_manifest.local_issuer]
 }
 
-resource "kubernetes_manifest" "secretstores" {
+# resource "kubernetes_manifest" "secretstores" {
 
-  # provider = kubectl
+#   # provider = kubectl
 
-  manifest = yamldecode(<<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-local-issuer
-    namespace: ${var.namespace}
-  spec:
-    ca: 
-     secretName: "hpcc-local-issuer-key-pair"
-  EOF
-  )
+#   manifest = yamldecode(<<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#     name: hpcc-local-issuer
+#     namespace: ${var.namespace}
+#   spec:
+#     ca: 
+#      secretName: "hpcc-local-issuer-key-pair"
+#   EOF
+#   )
 
-  depends_on = [kubernetes_manifest.local_cert_issuer]
-}
+#   depends_on = [kubernetes_manifest.local_cert_issuer]
+# }
 
 # ###############remote########################
 # resource "kubernetes_secret" "hpcc-remote-secret" {
@@ -100,24 +100,24 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
   depends_on = [kubernetes_manifest.remote_issuer]
 }
 
-resource "kubernetes_manifest" "remote_secret" {
+# resource "kubernetes_manifest" "remote_secret" {
 
-  # provider = kubectl
+#   # provider = kubectl
 
-  manifest = yamldecode(<<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-remote-issuer
-    namespace: ${var.namespace}
-  spec:
-    ca: 
-     secretName: "hpcc-remote-issuer-key-pair"
-  EOF
-  )
+#   manifest = yamldecode(<<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#     name: hpcc-remote-issuer
+#     namespace: ${var.namespace}
+#   spec:
+#     ca: 
+#      secretName: "hpcc-remote-issuer-key-pair"
+#   EOF
+#   )
 
-  depends_on = [kubernetes_manifest.remote_cert_issuer]
-}
+#   depends_on = [kubernetes_manifest.remote_cert_issuer]
+# }
 
 # ###################signing#################
 # resource "kubernetes_secret" "hpcc-signing-secret" {
@@ -160,24 +160,24 @@ resource "kubernetes_manifest" "signing_cert_issuer" {
   depends_on = [kubernetes_manifest.signing_issuer]
 }
 
-resource "kubernetes_manifest" "signing_secret" {
+# resource "kubernetes_manifest" "signing_secret" {
 
-  # provider = kubectl
+#   # provider = kubectl
 
-  manifest = yamldecode(<<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-signing-issuer
-    namespace: ${var.namespace}
-  spec:
-    ca: 
-     secretName: "hpcc-signing-issuer-key-pair"
-  EOF
-  )
+#   manifest = yamldecode(<<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#     name: hpcc-signing-issuer
+#     namespace: ${var.namespace}
+#   spec:
+#     ca: 
+#      secretName: "hpcc-signing-issuer-key-pair"
+#   EOF
+#   )
 
-  depends_on = [kubernetes_manifest.signing_cert_issuer]
-}
+#   depends_on = [kubernetes_manifest.signing_cert_issuer]
+#}
 
 # ##################public #####################
 

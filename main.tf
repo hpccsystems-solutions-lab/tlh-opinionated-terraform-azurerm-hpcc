@@ -27,6 +27,26 @@ module "certmanager" {
   depends_on = [kubernetes_namespace.default]
 }
 
+resource "kubectl_manifest" "remote_secret" {
+
+ # provider = kubectl
+
+  yaml_body         = <<-EOF
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+    name: hpcc-remote-issuer
+    namespace: ${var.namespace}
+  spec:
+    ca: 
+     secretName: "hpcc-remote-issuer-key-pair"
+  EOF
+  server_side_apply = true
+
+  depends_on = [kubernetes_manifest.certmanager]
+}
+
+
 ## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
 
 resource "null_resource" "service_delete_script" {
@@ -62,6 +82,7 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.esp_ldap_admin,
     module.node_tuning,
     module.certmanager,
+    kubectl_manifest.remote_secret
     null_resource.service_delete_script
   ]
 
