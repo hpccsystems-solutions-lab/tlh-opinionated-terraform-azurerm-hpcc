@@ -96,7 +96,7 @@ resource "null_resource" "annotations_name" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOF
-  interprter = ["bash", "-C"]
+  interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
@@ -123,7 +123,7 @@ resource "null_resource" "annotations_namespace" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOF
-  interprter = ["bash", "-C"]
+  interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
@@ -150,7 +150,7 @@ resource "null_resource" "labels" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOF
-  interprter = ["bash", "-C"]
+  interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
