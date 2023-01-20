@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: ${name}
-  namespace: ${namespace}
+  name: hpcc
+  namespace: hpcc
   labels: 
    app.kubernetes.io/managed-by: "Helm"
   annotations:
     meta.helm.sh/release-name: "hpcc"
-    meta.helm.sh/release-namespace: ${namespace}
+    meta.helm.sh/release-namespace: hpcc
 spec:
    selfSigned: {}
