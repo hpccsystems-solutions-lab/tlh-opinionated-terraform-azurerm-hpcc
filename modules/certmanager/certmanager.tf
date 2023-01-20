@@ -1,30 +1,30 @@
 ###local_issuer####
 ######
-# resource "kubectl_manifest" "local_issuer" {
-
-#   yaml_body         = <<-EOF
-#   apiVersion: cert-manager.io/v1
-#   kind: Issuer
-#   metadata:
-#    name: "hpcc-local-issuer"
-#    namespace: ${var.namespace}
-#    labels: 
-#     app.kubernetes.io/managed-by: "Helm"
-#    annotations:
-#     meta.helm.sh/release-name: "hpcc"
-#     meta.helm.sh/release-namespace: ${var.namespace}
-#   spec:
-#     selfSigned: {}
-#   EOF
-#   server_side_apply = true
-
-# }
-
 resource "kubectl_manifest" "local_issuer" {
 
-  yaml_body    = file("${path.module}/local/issuer.yml")
+  yaml_body         = <<-EOF
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+   name: "hpcc-local-issuer"
+   namespace: ${var.namespace}
+   labels: 
+    app.kubernetes.io/managed-by: "Helm"
+   annotations:
+    meta.helm.sh/release-name: "hpcc"
+    meta.helm.sh/release-namespace: ${var.namespace}
+  spec:
+    selfSigned: {}
+  EOF
+  server_side_apply = true
 
 }
+
+# resource "kubectl_manifest" "local_issuer" {
+
+#   yaml_body    = file("${path.module}/local/issuer.yml")
+
+# }
 resource "kubectl_manifest" "local_cert_issuer" {
 
 yaml_body         = <<-EOF
@@ -76,30 +76,30 @@ yaml_body         = <<-EOF
 # }
 
 # ###############remote########################
-# resource "kubectl_manifest" "remote_issuer" {
-
-#   yaml_body         = <<-EOF
-#   apiVersion: cert-manager.io/v1
-#   kind: Issuer
-#   metadata:
-#    name: "hpcc-remote-issuer"
-#    namespace: ${var.namespace}
-#    labels: 
-#     app.kubernetes.io/managed-by: "Helm"
-#    annotations:
-#     meta.helm.sh/release-name: "hpcc"
-#     meta.helm.sh/release-namespace: ${var.namespace}
-#   spec:
-#     selfSigned: {}
-#   EOF
-#   server_side_apply = true
-# }
-
 resource "kubectl_manifest" "remote_issuer" {
 
-  yaml_body    = file("${path.module}/remote/issuer.yml")
-
+  yaml_body         = <<-EOF
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+   name: "hpcc-remote-issuer"
+   namespace: ${var.namespace}
+   labels: 
+    app.kubernetes.io/managed-by: "Helm"
+   annotations:
+    meta.helm.sh/release-name: "hpcc"
+    meta.helm.sh/release-namespace: ${var.namespace}
+  spec:
+    selfSigned: {}
+  EOF
+  server_side_apply = true
 }
+
+# resource "kubectl_manifest" "remote_issuer" {
+
+#   yaml_body    = file("${path.module}/remote/issuer.yml")
+
+# }
 resource "kubectl_manifest" "remote_cert_issuer" {
 
   yaml_body         = <<-EOF
@@ -150,31 +150,31 @@ resource "kubectl_manifest" "remote_cert_issuer" {
 # }
 
 # ###################signing#################
-# resource "kubectl_manifest" "signing_issuer" {
-
-#   yaml_body         = <<-EOF
-#   apiVersion: cert-manager.io/v1
-#   kind: Issuer
-#   metadata:
-#    name: "hpcc-signing-issuer"
-#    namespace: ${var.namespace}
-#    labels: 
-#     app.kubernetes.io/managed-by: "Helm"
-#    annotations:
-#     meta.helm.sh/release-name: "hpcc"
-#     meta.helm.sh/release-namespace: ${var.namespace}
-#   spec:
-#     selfSigned: {}
-#   EOF
-#   server_side_apply = true
-
-# }
-
 resource "kubectl_manifest" "signing_issuer" {
 
-  yaml_body    = file("${path.module}/signing/issuer.yml")
+  yaml_body         = <<-EOF
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+   name: "hpcc-signing-issuer"
+   namespace: ${var.namespace}
+   labels: 
+    app.kubernetes.io/managed-by: "Helm"
+   annotations:
+    meta.helm.sh/release-name: "hpcc"
+    meta.helm.sh/release-namespace: ${var.namespace}
+  spec:
+    selfSigned: {}
+  EOF
+  server_side_apply = true
 
 }
+
+# resource "kubectl_manifest" "signing_issuer" {
+
+#   yaml_body    = file("${path.module}/signing/issuer.yml")
+
+# }
 
 resource "kubectl_manifest" "signing_cert_issuer" {
 
