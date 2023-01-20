@@ -34,9 +34,9 @@ resource "kubectl_manifest" "local_issuer" {
   metadata:
    name: "hpcc-local-issuer"
    namespace: ${var.namespace}
-  labels: 
-   app.kubernetes.io/managed-by: "Helm"
-  annotations:
+   labels: 
+    app.kubernetes.io/managed-by: "Helm"
+   annotations:
     meta.helm.sh/release-name: "hpcc"
     meta.helm.sh/release-namespace: ${var.namespace}
   spec:
@@ -65,7 +65,7 @@ resource "kubectl_manifest" "local_issuer" {
 
 resource "kubectl_manifest" "local_cert_issuer" {
 
-  yaml_body         = <<-EOF
+yaml_body         = <<-EOF
  apiVersion: cert-manager.io/v1
  kind: Certificate
  metadata:
@@ -149,9 +149,9 @@ resource "kubectl_manifest" "remote_issuer" {
   metadata:
    name: "hpcc-remote-issuer"
    namespace: ${var.namespace}
-  labels: 
-   app.kubernetes.io/managed-by: "Helm"
-  annotations:
+   labels: 
+    app.kubernetes.io/managed-by: "Helm"
+   annotations:
     meta.helm.sh/release-name: "hpcc"
     meta.helm.sh/release-namespace: ${var.namespace}
   spec:
@@ -262,9 +262,9 @@ resource "kubectl_manifest" "signing_issuer" {
   metadata:
    name: "hpcc-signing-issuer"
    namespace: ${var.namespace}
-  labels: 
-   app.kubernetes.io/managed-by: "Helm"
-  annotations:
+   labels: 
+    app.kubernetes.io/managed-by: "Helm"
+   annotations:
     meta.helm.sh/release-name: "hpcc"
     meta.helm.sh/release-namespace: ${var.namespace}
   spec:
