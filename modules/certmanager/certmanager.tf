@@ -52,22 +52,22 @@ yaml_body         = <<-EOF
   depends_on = [kubectl_manifest.local_issuer]
 }
 
-resource "kubectl_manifest" "local_secret" {
+# resource "kubectl_manifest" "local_secret" {
 
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-local-issuer
-    namespace: ${var.namespace}
-  spec:
-    ca: 
-     secretName: "hpcc-local-issuer-key-pair"
-  EOF
-  server_side_apply = true
+#   yaml_body         = <<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#     name: hpcc-local-issuer
+#     namespace: ${var.namespace}
+#   spec:
+#     ca: 
+#      secretName: "hpcc-local-issuer-key-pair"
+#   EOF
+#   server_side_apply = true
 
-  depends_on = [kubectl_manifest.local_cert_issuer]
-}
+#   depends_on = [kubectl_manifest.local_cert_issuer]
+# }
 
 # ###############remote########################
 resource "kubectl_manifest" "remote_issuer" {
@@ -121,21 +121,21 @@ resource "kubectl_manifest" "remote_cert_issuer" {
   depends_on = [kubectl_manifest.remote_issuer]
 }
 
-resource "kubectl_manifest" "remote_secret" {
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-remote-issuer
-    namespace: ${var.namespace}
-  spec:
-    ca: 
-     secretName: "hpcc-remote-issuer-key-pair"
-  EOF
-  server_side_apply = true
+# resource "kubectl_manifest" "remote_secret" {
+#   yaml_body         = <<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#     name: hpcc-remote-issuer
+#     namespace: ${var.namespace}
+#   spec:
+#     ca: 
+#      secretName: "hpcc-remote-issuer-key-pair"
+#   EOF
+#   server_side_apply = true
 
-  depends_on = [kubectl_manifest.remote_cert_issuer]
-}
+#   depends_on = [kubectl_manifest.remote_cert_issuer]
+# }
 
 # ###################signing#################
 resource "kubectl_manifest" "signing_issuer" {
@@ -191,22 +191,22 @@ resource "kubectl_manifest" "signing_cert_issuer" {
   depends_on = [kubectl_manifest.signing_issuer]
 }
 
-resource "kubectl_manifest" "signing_secret" {
+# resource "kubectl_manifest" "signing_secret" {
 
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-signing-issuer
-    namespace: ${var.namespace}
-  spec:
-    ca: 
-     secretName: "hpcc-signing-issuer-key-pair"
-  EOF
-  server_side_apply = true
+#   yaml_body         = <<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#     name: hpcc-signing-issuer
+#     namespace: ${var.namespace}
+#   spec:
+#     ca: 
+#      secretName: "hpcc-signing-issuer-key-pair"
+#   EOF
+#   server_side_apply = true
 
-  depends_on = [kubectl_manifest.signing_cert_issuer]
-}
+#   depends_on = [kubectl_manifest.signing_cert_issuer]
+# }
 
 # ##################public #####################
 
