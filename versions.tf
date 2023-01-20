@@ -14,7 +14,6 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">=2.5.0"
     }
-
     kubectl = {
       source  = "gavinbunney/kubectl"
       version = "~> 1.14"
@@ -22,6 +21,10 @@ terraform {
     random = {
       source  = "hashicorp/random"
       version = ">=2.3.0"
+    }
+    shell = {
+      source  = "scottwinkler/shell"
+      version = "~> 1.7"
     }
   }
   required_version = ">=1.1"
