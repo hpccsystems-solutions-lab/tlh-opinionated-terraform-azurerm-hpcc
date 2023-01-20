@@ -96,7 +96,7 @@ resource "null_resource" "annotations_name" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOT
-    interpreter = ["bash", "-C"]
+    #interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
@@ -104,7 +104,7 @@ resource "null_resource" "annotations_name" {
   depends_on = [module.certmanager,
     kubectl_manifest.local_secret,
     kubectl_manifest.signing_secret,
-  kubectl_manifest.remote_secret]
+    kubectl_manifest.remote_secret]
 }
 
 resource "null_resource" "annotations_namespace" {
@@ -123,7 +123,7 @@ resource "null_resource" "annotations_namespace" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOT
-    interpreter = ["bash", "-C"]
+   # interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
@@ -131,7 +131,7 @@ resource "null_resource" "annotations_namespace" {
   depends_on = [module.certmanager,
     kubectl_manifest.local_secret,
     kubectl_manifest.signing_secret,
-  kubectl_manifest.remote_secret]
+    kubectl_manifest.remote_secret]
 }
 
 resource "null_resource" "labels" {
@@ -150,7 +150,7 @@ resource "null_resource" "labels" {
   echo "Deleted ECL Services Service"
   echo "------------------------------------------------" 
   EOT
-    interpreter = ["bash", "-C"]
+   # interpreter = ["bash", "-C"]
     environment = {
       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
     }
@@ -158,7 +158,7 @@ resource "null_resource" "labels" {
   depends_on = [module.certmanager,
     kubectl_manifest.local_secret,
     kubectl_manifest.signing_secret,
-  kubectl_manifest.remote_secret]
+    kubectl_manifest.remote_secret]
 }
 
 ## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
