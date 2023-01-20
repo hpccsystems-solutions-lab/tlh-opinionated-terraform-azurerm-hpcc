@@ -43,7 +43,7 @@ resource "kubectl_manifest" "remote_secret" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubernetes_manifest.certmanager]
+  depends_on = [module.certmanager]
 }
 
 
