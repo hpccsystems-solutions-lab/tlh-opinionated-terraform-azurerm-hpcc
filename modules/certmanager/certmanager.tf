@@ -27,7 +27,7 @@ resource "kubernetes_manifest" "local_issuer" {
 }
 
 resource "kubernetes_manifest" "local_cert_issuer" {
- # provider = kubectl.stable
+  # provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/certificate-issuer.yml",
     {
@@ -43,9 +43,9 @@ resource "kubernetes_manifest" "local_cert_issuer" {
 
 resource "kubernetes_manifest" "secretstores" {
 
- # provider = kubectl
+  # provider = kubectl
 
- manifest = yamldecode(<<-EOF
+  manifest = yamldecode(<<-EOF
   apiVersion: cert-manager.io/v1
   kind: Issuer
   metadata:
@@ -55,7 +55,7 @@ resource "kubernetes_manifest" "secretstores" {
     ca: 
      secretName: "hpcc-local-issuer-key-pair"
   EOF
- )
+  )
 
   depends_on = [kubernetes_manifest.local_cert_issuer]
 }
@@ -87,7 +87,7 @@ resource "kubernetes_manifest" "remote_issuer" {
 }
 
 resource "kubernetes_manifest" "remote_cert_issuer" {
- # provider = kubectl.stable
+  # provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/certificate-issuer.yml",
     {
@@ -102,7 +102,7 @@ resource "kubernetes_manifest" "remote_cert_issuer" {
 
 resource "kubernetes_manifest" "remote_secret" {
 
- # provider = kubectl
+  # provider = kubectl
 
   manifest = yamldecode(<<-EOF
   apiVersion: cert-manager.io/v1
@@ -146,7 +146,7 @@ resource "kubernetes_manifest" "signing_issuer" {
 }
 
 resource "kubernetes_manifest" "signing_cert_issuer" {
- # provider = kubectl.stable
+  # provider = kubectl.stable
   manifest = yamldecode(templatefile(
     "${path.module}/certificate-issuer.yml",
     {
@@ -162,7 +162,7 @@ resource "kubernetes_manifest" "signing_cert_issuer" {
 
 resource "kubernetes_manifest" "signing_secret" {
 
- # provider = kubectl
+  # provider = kubectl
 
   manifest = yamldecode(<<-EOF
   apiVersion: cert-manager.io/v1
