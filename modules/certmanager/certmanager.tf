@@ -93,7 +93,7 @@ resource "kubectl_manifest" "local_cert_issuer" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubernetes_manifest.local_issuer]
+  depends_on = [kubectl_manifest.local_issuer]
 }
 
 # resource "kubernetes_manifest" "secretstores" {
@@ -206,7 +206,7 @@ resource "kubectl_manifest" "remote_cert_issuer" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubernetes_manifest.remote_issuer]
+  depends_on = [kubectl_manifest.remote_issuer]
 }
 
 # resource "kubernetes_manifest" "remote_secret" {
@@ -320,7 +320,7 @@ resource "kubectl_manifest" "signing_cert_issuer" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubernetes_manifest.signing_issuer]
+  depends_on = [kubectl_manifest.signing_issuer]
 }
 
 # resource "kubernetes_manifest" "signing_secret" {
