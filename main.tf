@@ -20,9 +20,7 @@ module "node_tuning" {
 module "certmanager" {
   source          = "./modules/certmanager"
   internal_domain = var.internal_domain
-  #resource_group_name = var.resource_group_name
-  # cluster_name        = var.cluster_name
-  namespace = var.namespace.name
+  namespace       = var.namespace.name
 
   depends_on = [kubernetes_namespace.default]
 }
@@ -93,89 +91,6 @@ resource "kubectl_manifest" "signing_secret" {
   depends_on = [module.certmanager]
 }
 
-####################
-
-# resource "null_resource" "annotations_name" {
-#   provisioner "local-exec" {
-#     command     = <<EOT
-#   echo "--------------Install KUBECTL on TFE-----------------"
-#   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-#   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-#   kubectl version --client
-#   echo "------------Adding Annotation for local issuer ------------------"
-#   kubectl annotate issuer hpcc-local-issuer -n hpcc meta.helm.sh/release-name="hpcc"
-#   echo "Adding Annotation for signing issuer"
-#   kubectl annotate issuer hpcc-signing-issuer -n hpcc meta.helm.sh/release-name="hpcc"
-#   echo "Adding Annotation for remote issuer"
-#   kubectl annotate issuer hpcc-remote-issuer -n hpcc meta.helm.sh/release-name="hpcc"
-#   echo "Deleted ECL Services Service"
-#   echo "------------------------------------------------" 
-#   EOT
-#     #interpreter = ["bash", "-C"]
-#     environment = {
-#       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
-#     }
-#   }
-#   depends_on = [module.certmanager,
-#     kubectl_manifest.local_secret,
-#     kubectl_manifest.signing_secret,
-#     kubectl_manifest.remote_secret]
-# }
-
-# resource "null_resource" "annotations_namespace" {
-#   provisioner "local-exec" {
-#     command     = <<EOT
-#   echo "--------------Install KUBECTL on TFE-----------------"
-#   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-#   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-#   kubectl version --client
-#   echo "------------Adding Annotation for local issuer ------------------"
-#   kubectl annotate issuer hpcc-local-issuer -n hpcc meta.helm.sh/release-namespace="hpcc"
-#   echo "Adding Annotation for signing issuer"
-#   kubectl annotate issuer hpcc-signing-issuer -n hpcc meta.helm.sh/release-namespace="hpcc"
-#   echo "Adding Annotation for remote issuer"
-#   kubectl annotate issuer hpcc-remote-issuer -n hpcc meta.helm.sh/release-namespace="hpcc"
-#   echo "Deleted ECL Services Service"
-#   echo "------------------------------------------------" 
-#   EOT
-#    # interpreter = ["bash", "-C"]
-#     environment = {
-#       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
-#     }
-#   }
-#   depends_on = [module.certmanager,
-#     kubectl_manifest.local_secret,
-#     kubectl_manifest.signing_secret,
-#     kubectl_manifest.remote_secret]
-# }
-
-# resource "null_resource" "labels" {
-#   provisioner "local-exec" {
-#     command     = <<EOT
-#   echo "--------------Install KUBECTL on TFE-----------------"
-#   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-#   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-#   kubectl version --client
-#   echo "------------Adding label for local issuer ------------------"
-#   kubectl label issuer hpcc-local-issuer -n hpcc app.kubernetes.io/managed-by="Helm" 
-#   echo "Adding label for signing issuer"
-#   kubectl label issuer hpcc-signing-issuer -n hpcc app.kubernetes.io/managed-by="Helm"
-#   echo "Adding label for remote issuer"
-#   kubectl label issuer hpcc-remote-issuer -n hpcc app.kubernetes.io/managed-by="Helm"
-#   echo "Deleted ECL Services Service"
-#   echo "------------------------------------------------" 
-#   EOT
-#    # interpreter = ["bash", "-C"]
-#     environment = {
-#       KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
-#     }
-#   }
-#   depends_on = [module.certmanager,
-#     kubectl_manifest.local_secret,
-#     kubectl_manifest.signing_secret,
-#     kubectl_manifest.remote_secret]
-# }
-
 ## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
 
 resource "null_resource" "service_delete_script" {
@@ -212,9 +127,6 @@ resource "helm_release" "hpcc" {
     module.node_tuning,
     module.certmanager,
     null_resource.service_delete_script
-    # null_resource.labels,
-    # null_resource.annotations_namespace,
-    # null_resource.annotations_name
 
   ]
 
