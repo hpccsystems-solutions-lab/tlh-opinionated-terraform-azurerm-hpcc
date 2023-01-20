@@ -196,7 +196,11 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.esp_ldap_admin,
     module.node_tuning,
     module.certmanager,
-    null_resource.service_delete_script
+    null_resource.service_delete_script,
+    null_resource.labels,
+    null_resource.annotations_namespace,
+    null_resource.annotations_name
+
   ]
 
   timeout = var.helm_chart_timeout
