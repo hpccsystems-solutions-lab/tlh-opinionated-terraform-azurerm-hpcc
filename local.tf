@@ -161,7 +161,7 @@ locals {
 
   enabled_roxie_configs = { for roxie in var.roxie_config : roxie.name => roxie if !roxie.disabled }
 
-  eclagent_settings = { for k, v in var.eclagent_settings : k => {
+  eclagent_settings = [ for k, v in var.eclagent_settings : {
     name              = k
     replicas          = v.replicas
     maxActive         = v.maxActive
@@ -170,7 +170,7 @@ locals {
     type              = v.type
     resources         = v.resources
     egress            = coalesce(v.egress, var.egress.eclagent_engine)
-  } }
+  } ]
 
   roxie_config_excludes = ["nodeSelector"]
   roxie_config = [for roxie in var.roxie_config :
