@@ -127,6 +127,16 @@ locals {
     } if config.storage_type == "blobnfs"
   }
 
+  eclccserver_settings = [for k, v in var.eclccserver_settings : {
+    name                  = k
+    replicas              = v.replicas
+    useChildProcesses     = v.useChildProcesses
+    childProcessTimeLimit = v.childProcessTimeLimit
+    maxActive             = v.maxActive
+    resources             = v.resources
+    egress                = coalesce(v.egress, var.egress.eclccserver_engine)
+  }]
+
   ldap_defaults = {
     serverType     = "ActiveDirectory"
     description    = "LDAP server process"
@@ -712,19 +722,19 @@ locals {
       }
     ]
 
-    eclccserver = [
-      {
-        name              = "myeclccserver"
-        replicas          = 1
-        maxActive         = 4
-        useChildProcesses = var.eclccserver_settings.use_child_process
-        resources = {
-          cpu    = var.eclccserver_settings.cpu
-          memory = var.eclccserver_settings.memory
-        }
-        egress = var.egress.eclccserver_engine
-      }
-    ]
+    eclccserver = [local.eclccserver_settings]
+    # {
+    #   name              = "myeclccserver"
+    #   replicas          = 1
+    #   maxActive         = 4
+    #   useChildProcesses = var.eclccserver_settings.use_child_process
+    #   resources = {
+    #     cpu    = var.eclccserver_settings.cpu
+    #     memory = var.eclccserver_settings.memory
+    #   }
+    #   egress = var.egress.eclccserver_engine
+    # }
+
 
     esp = [
       merge({
