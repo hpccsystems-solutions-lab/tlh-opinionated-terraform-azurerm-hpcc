@@ -1132,6 +1132,26 @@ variable "egress_engine" {
   }
 }
 
+variable "system_secrets" {
+  description = "Input for hpcc system secrets."
+  type = object({
+    
+    value = any
+  })
+}
+
+variable "vault_secrets" {
+  description = "Input for vault secrets."
+  type = map(object({
+    name = string
+    url = string
+    kind = string
+    vault_namespace = string
+    role_id = string
+    secret_id_name = string # Should match the secret name created in the system_secrets variable
+  }))
+}
+
 variable "egress" {
   description = "egress settings"
   type = object({
