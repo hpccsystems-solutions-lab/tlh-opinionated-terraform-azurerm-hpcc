@@ -161,6 +161,17 @@ locals {
 
   enabled_roxie_configs = { for roxie in var.roxie_config : roxie.name => roxie if !roxie.disabled }
 
+  eclagent_settings = { for k, v in var.eclagent_settings : k => {
+    name              = k
+    replicas          = v.replicas
+    maxActive         = v.maxActive
+    prefix            = v.prefix
+    use_child_process = v.use_child_process
+    type              = v.type
+    resources         = v.resources
+    egress            = coalesce(v.egress, var.egress.eclagent_engine)
+  } }
+
   roxie_config_excludes = ["nodeSelector"]
   roxie_config = [for roxie in var.roxie_config :
     { for k, v in roxie : k => v if !contains(local.roxie_config_excludes, k) }
@@ -683,34 +694,34 @@ locals {
       }
     ]
 
-    eclagent = [
-      {
-        name              = "hthor"
-        replicas          = 1
-        maxActive         = 4
-        prefix            = "hthor"
-        useChildProcesses = false
-        type              = "hthor"
-        egress            = var.egress.eclagent_engine
-        resources = {
-          cpu    = 1
-          memory = "4G"
-        }
-      },
-      {
-        name              = "roxie-workunit"
-        replicas          = 1
-        maxActive         = 20
-        prefix            = "roxie_workunit"
-        useChildProcesses = true
-        type              = "roxie"
-        egress            = var.egress.eclagent_engine
-        resources = {
-          cpu    = 1
-          memory = "4G"
-        }
-      }
-    ]
+    eclagent = [local.eclagent_settings]
+      # {
+      #   name              = "hthor"
+      #   replicas          = 1
+      #   maxActive         = 4
+      #   prefix            = "hthor"
+      #   useChildProcesses = false
+      #   type              = "hthor"
+      #   egress            = var.egress.eclagent_engine
+      #   resources = {
+      #     cpu    = 1
+      #     memory = "4G"
+      #   }
+      # },
+      # {
+      #   name              = "roxie-workunit"
+      #   replicas          = 1
+      #   maxActive         = 20
+      #   prefix            = "roxie_workunit"
+      #   useChildProcesses = true
+      #   type              = "roxie"
+      #   egress            = var.egress.eclagent_engine
+      #   resources = {
+      #     cpu    = 1
+      #     memory = "4G"
+      #   }
+      # }
+    
 
     eclccserver = [
       {
