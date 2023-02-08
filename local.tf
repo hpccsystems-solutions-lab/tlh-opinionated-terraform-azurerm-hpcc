@@ -566,7 +566,7 @@ locals {
     )
 
     certificates = {
-      enabled = true
+      enabled = false
       issuers = {
         local = {
           name   = "hpcc-local-issuer"
