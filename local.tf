@@ -694,7 +694,7 @@ locals {
       }
     ]
 
-    eclagent = [local.eclagent_settings]
+    eclagent = local.eclagent_settings
       # {
       #   name              = "hthor"
       #   replicas          = 1
