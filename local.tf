@@ -166,7 +166,7 @@ locals {
     replicas          = v.replicas
     maxActive         = v.maxActive
     prefix            = v.prefix
-    use_child_process = v.use_child_process
+    useChildProcesses = v.use_child_process
     type              = v.type
     resources         = v.resources
     egress            = coalesce(v.egress, var.egress.eclagent_engine)
