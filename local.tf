@@ -434,6 +434,7 @@ locals {
 
     global = {
       env     = [for k, v in var.environment_variables : { name = k, value = v }]
+      noResourceValidation = true
       busybox = local.acr_default.busybox
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
