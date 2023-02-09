@@ -781,7 +781,7 @@ variable "eclccserver_settings" {
     memory                = "4G"
     maxActive             = 4
     replicas              = 1
-    childProcessTimeLimit = 10
+    childProcessTimeLimit = 86400
     resources = {
       cpu    = "1"
       memory = "4G"

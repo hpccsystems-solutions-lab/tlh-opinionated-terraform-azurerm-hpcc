@@ -151,8 +151,8 @@ locals {
 
   vault_secrets = local.vault_enabled ? {
     git-approle-secret     = kubernetes_secret.git_approle_secret_id.0.metadata.0.name
-    ecl-approle-secret     = kubernetes_secret.ecl_approle_secret_id.0.metadata.0.name
-    ecluser-approle-secret = kubernetes_secret.ecluser_approle_secret_id.0.metadata.0.name
+    # ecl-approle-secret     = kubernetes_secret.ecl_approle_secret_id.0.metadata.0.name
+    # ecluser-approle-secret = kubernetes_secret.ecluser_approle_secret_id.0.metadata.0.name
   } : null
 
   # LDAP Secrets section 
