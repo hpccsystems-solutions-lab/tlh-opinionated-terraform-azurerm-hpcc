@@ -1,16 +1,61 @@
-resource "kubernetes_secret" "system_secrets" {
-  for_each = var.system_secrets
+resource "kubernetes_secret" "git_approle_secret_id" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
+  count = local.vault_enabled && var.system_secrets.git_approle_secret != null ? 1 : 0
 
   metadata {
-    name = each.value.name
+    name      = "my-git-approle-secret"
+    namespace = var.namespace.name
     labels = {
-      name = each.value.name
+      name = "my-git-approle-secret"
     }
   }
-
   data = {
-    value = each.value.value
+    secret_id = var.system_secrets.git_approle_secret
   }
+  type = "kubernetes.io/basic-auth"
+}
 
-  type = "kubernetes.io/generic"
+resource "kubernetes_secret" "ecl_approle_secret_id" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
+  count = local.vault_enabled && var.system_secrets.ecl_approle_secret != null ? 1 : 0
+
+
+  metadata {
+    name      = "my-ecl-approle-secret"
+    namespace = var.namespace.name
+    labels = {
+      name = "my-ecl-approle-secret"
+    }
+  }
+  data = {
+    secret_id = var.system_secrets.ecl_approle_secret
+  }
+  type = "kubernetes.io/basic-auth"
+}
+
+resource "kubernetes_secret" "ecluser_approle_secret_id" {
+  depends_on = [
+    kubernetes_namespace.default
+  ]
+
+  count = local.vault_enabled && var.system_secrets.ecluser_approle_secret != null ? 1 : 0
+
+
+  metadata {
+    name      = "my-ecluser-approle-secret"
+    namespace = var.namespace.name
+    labels = {
+      name = "my-ecluser-approle-secret"
+    }
+  }
+  data = {
+    secret_id = var.system_secrets.ecluser_approle_secret
+  }
+  type = "kubernetes.io/basic-auth"
 }

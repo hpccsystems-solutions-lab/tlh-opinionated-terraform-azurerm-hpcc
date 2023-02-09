@@ -145,14 +145,13 @@ locals {
     ldapSecurePort = 636
   }
 
-  
 
   vault_enabled = var.vault_config == null ? false : true
 
   vault_secrets = local.vault_enabled ? {
-    git-approle-secret = kubernetes_secret.git_approle_secret.0.metadata.0.name
-    ecl-approle-secret = kubernetes_secret.ecl_approle_secret.0.metadata.0.name
-    ecluser-approle-secret = kubernetes_secret.ecluser_approle_secret.0.metadata.0.name
+    git-approle-secret     = kubernetes_secret.git_approle_secret_id.0.metadata.0.name
+    ecl-approle-secret     = kubernetes_secret.ecl_approle_secret_id.0.metadata.0.name
+    ecluser-approle-secret = kubernetes_secret.ecluser_approle_secret_id.0.metadata.0.name
   } : null
 
   # LDAP Secrets section 
@@ -861,6 +860,33 @@ locals {
       storage    = var.secrets.remote_cert_secret
       system     = merge(local.vault_secrets, {})
     }
+
+    vault = local.vault_enabled ? {
+      git = [for k, v in var.vault_config.git : {
+        name          = v.name
+        url           = v.url
+        kind          = v.kind
+        namespace     = v.vault_namespace
+        appRoleId     = v.role_id
+        appRoleSecret = v.secret_id
+      }]
+      ecl = [for k, v in var.vault_config.ecl : {
+        name          = v.name
+        url           = v.url
+        kind          = v.kind
+        namespace     = v.vault_namespace
+        appRoleId     = v.role_id
+        appRoleSecret = v.secret_id
+      }]
+      ecluser = [for k, v in var.vault_config.ecluser : {
+        name          = v.name
+        url           = v.url
+        kind          = v.kind
+        namespace     = v.vault_namespace
+        appRoleId     = v.role_id
+        appRoleSecret = v.secret_id
+      }]
+    } : null
 
   }
 

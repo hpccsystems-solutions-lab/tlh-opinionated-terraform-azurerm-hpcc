@@ -1081,6 +1081,17 @@ variable "secrets" {
     remote_cert_secret = {}
   }
 }
+
+variable "system_secrets" {
+  description = "System Secrets"
+  type = object({
+    git_approle_secret     = string
+    ecl_approle_secret     = optional(string)
+    ecluser_approle_secret = optional(string)
+  })
+  default = null
+}
+
 variable "corsallowed_enable" {
   description = "Enable cors allowed on ECL watch"
   type        = bool
@@ -1145,24 +1156,36 @@ variable "egress_engine" {
   }
 }
 
-variable "system_secrets" {
-  description = "Input for hpcc system secrets."
-  type = object({    
-    git_approle_secret = string
 
-  })
-}
-
-variable "vault_" {
+variable "vault_config" {
   description = "Input for vault secrets."
-  type = map(object({
-    name = string
-    url = string
-    kind = string
-    vault_namespace = string
-    role_id = string
-    secret_id = string # Should match the secret name created in the system_secrets variable
-  }))
+  type = object({
+    git = object({
+      name            = string
+      url             = string
+      kind            = string
+      vault_namespace = string
+      role_id         = string
+      secret_id       = string # Should match the secret name created in the system_secrets variable
+    }),
+    ecl = object({
+      name            = string
+      url             = string
+      kind            = string
+      vault_namespace = string
+      role_id         = string
+      secret_id       = string # Should match the secret name created in the system_secrets variable
+    }),
+    ecluser = object({
+      name            = string
+      url             = string
+      kind            = string
+      vault_namespace = string
+      role_id         = string
+      secret_id       = string # Should match the secret name created in the system_secrets variable
+    })
+  })
+  default = null
 }
 
 
