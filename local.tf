@@ -169,7 +169,7 @@ locals {
     useChildProcesses = v.use_child_process
     type              = v.type
     resources         = v.resources
-    egress            = coalesce(v.egress, var.egress.eclagent_engine)
+    egress            = v.egress
   } ]
 
   roxie_config_excludes = ["nodeSelector"]
