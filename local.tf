@@ -863,30 +863,30 @@ locals {
     }
 
     vault = local.vault_enabled ? {
-      git = [for k, v in var.vault_config.git : {
+      git = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
         name          = v.name
         url           = v.url
         kind          = v.kind
         namespace     = v.vault_namespace
         appRoleId     = v.role_id
         appRoleSecret = v.secret_id
-      }]
-      ecl = [for k, v in var.vault_config.ecl : {
+      }] : null
+      ecl = var.vault_config.ecl != null ? [for k, v in var.vault_config.ecl : {
         name          = v.name
         url           = v.url
         kind          = v.kind
         namespace     = v.vault_namespace
         appRoleId     = v.role_id
         appRoleSecret = v.secret_id
-      }]
-      ecluser = [for k, v in var.vault_config.ecluser : {
+      }] : null
+      ecluser = var.vault_config.ecluser != null ? [for k, v in var.vault_config.ecluser : {
         name          = v.name
         url           = v.url
         kind          = v.kind
         namespace     = v.vault_namespace
         appRoleId     = v.role_id
         appRoleSecret = v.secret_id
-      }]
+      }] : null
     } : null
 
   }
