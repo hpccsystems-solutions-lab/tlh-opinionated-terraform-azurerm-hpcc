@@ -767,13 +767,15 @@ variable "eclccserver_settings" {
     replicas          = number
     maxActive         = number
     egress            = optional(string)
+    gitUsername       = optional(string)
+    childProcessTimeLimit = optional(number)
     resources = object({
       cpu    = string
       memory = string
     })
-    childProcessTimeLimit = number
   }))
   default = {
+    "myeclccserver" = {
     useChildProcesses     = false
     cpu                   = "1"
     memory                = "4G"
@@ -784,7 +786,7 @@ variable "eclccserver_settings" {
       cpu    = "1"
       memory = "4G"
     }
-  }
+  }}
 }
 
 variable "dali_settings" {

@@ -134,7 +134,8 @@ locals {
     childProcessTimeLimit = v.childProcessTimeLimit
     maxActive             = v.maxActive
     resources             = v.resources
-    egress                = coalesce(v.egress, var.egress.eclccserver_engine)
+    egress                = v.egress
+    gitUsername           = v.gitUsername
   }]
 
   ldap_defaults = {
