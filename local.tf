@@ -723,7 +723,7 @@ locals {
       }
     ]
 
-    eclccserver = [local.eclccserver_settings]
+    eclccserver = local.eclccserver_settings
     # {
     #   name              = "myeclccserver"
     #   replicas          = 1
