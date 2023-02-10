@@ -1178,7 +1178,7 @@ variable "vault_config" {
       role_id         = optional(string)
       secret_id       = optional(string) # Should match the secret name created in the system_secrets variable
     })),
-    ecluser = map(object({
+    eclUser = map(object({
       name            = optional(string)
       url             = optional(string)
       kind            = optional(string)

@@ -48,10 +48,10 @@ resource "kubernetes_secret" "ecluser_approle_secret_id" {
 
 
   metadata {
-    name      = "my-ecluser-approle-secret"
+    name      = "my-eclUser-approle-secret"
     namespace = var.namespace.name
     labels = {
-      name = "my-ecluser-approle-secret"
+      name = "my-eclUser-approle-secret"
     }
   }
   data = {
