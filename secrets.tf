@@ -39,12 +39,12 @@ resource "kubernetes_secret" "ecl_approle_secret_id" {
   type = "kubernetes.io/basic-auth"
 }
 
-resource "kubernetes_secret" "ecluser_approle_secret_id" {
+resource "kubernetes_secret" "eclUser_approle_secret_id" {
   depends_on = [
     kubernetes_namespace.default
   ]
 
-  count = local.vault_enabled && var.system_secrets.ecluser_approle_secret != null ? 1 : 0
+  count = local.vault_enabled && var.system_secrets.eclUser_approle_secret != null ? 1 : 0
 
 
   metadata {
@@ -55,7 +55,7 @@ resource "kubernetes_secret" "ecluser_approle_secret_id" {
     }
   }
   data = {
-    secret_id = var.system_secrets.ecluser_approle_secret
+    secret_id = var.system_secrets.eclUser_approle_secret
   }
   type = "kubernetes.io/basic-auth"
 }
