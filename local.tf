@@ -878,7 +878,7 @@ locals {
     }
 
     vaults = local.vault_enabled ? {
-      git     = local.vault_git_config
+      # git     = local.vault_git_config
       ecl     = local.vault_ecl_config
       eclUser = local.vault_eclUser_config
     } : null
