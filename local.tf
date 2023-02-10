@@ -150,11 +150,37 @@ locals {
   vault_enabled = var.vault_config == null ? false : true
 
   vault_secrets = local.vault_enabled ? {
-    git-approle-secret     = kubernetes_secret.git_approle_secret_id.0.metadata.0.name
+    git-approle-secret = kubernetes_secret.git_approle_secret_id.0.metadata.0.name
     # ecl-approle-secret     = kubernetes_secret.ecl_approle_secret_id.0.metadata.0.name
     # ecluser-approle-secret = kubernetes_secret.ecluser_approle_secret_id.0.metadata.0.name
   } : null
 
+  vault_git_config = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_id
+  }] : null
+
+  vault_ecl_config = var.vault_config.ecl != null ? [for k, v in var.vault_config.ecl : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_id
+  }] : null
+
+  vault_ecluser_config = var.vault_config.ecluser != null ? [for k, v in var.vault_config.ecluser : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_id
+  }] : null
   # LDAP Secrets section 
   ldap_enabled = var.ldap_config == null ? false : true
 
@@ -733,18 +759,7 @@ locals {
       }
     ]
 
-    eclccserver = [local.eclccserver_settings]
-    # {
-    #   name              = "myeclccserver"
-    #   replicas          = 1
-    #   maxActive         = 4
-    #   useChildProcesses = var.eclccserver_settings.use_child_process
-    #   resources = {
-    #     cpu    = var.eclccserver_settings.cpu
-    #     memory = var.eclccserver_settings.memory
-    #   }
-    #   egress = var.egress.eclccserver_engine
-    # }
+    eclccserver = local.eclccserver_settings
 
 
     esp = [
@@ -863,30 +878,9 @@ locals {
     }
 
     vault = local.vault_enabled ? {
-      git = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
-        name          = v.name
-        url           = v.url
-        kind          = v.kind
-        namespace     = v.vault_namespace
-        appRoleId     = v.role_id
-        appRoleSecret = v.secret_id
-      }] : null
-      ecl = var.vault_config.ecl != null ? [for k, v in var.vault_config.ecl : {
-        name          = v.name
-        url           = v.url
-        kind          = v.kind
-        namespace     = v.vault_namespace
-        appRoleId     = v.role_id
-        appRoleSecret = v.secret_id
-      }] : null
-      ecluser = var.vault_config.ecluser != null ? [for k, v in var.vault_config.ecluser : {
-        name          = v.name
-        url           = v.url
-        kind          = v.kind
-        namespace     = v.vault_namespace
-        appRoleId     = v.role_id
-        appRoleSecret = v.secret_id
-      }] : null
+      git     = local.vault_git_config
+      ecl     = local.vault_ecl_config
+      ecluser = local.vault_ecluser_config
     } : null
 
   }

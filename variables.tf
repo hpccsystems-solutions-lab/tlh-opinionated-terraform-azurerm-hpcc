@@ -763,11 +763,11 @@ variable "disable_rowservice" {
 variable "eclccserver_settings" {
   description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
   type = map(object({
-    useChildProcesses = bool
-    replicas          = number
-    maxActive         = number
-    egress            = optional(string)
-    gitUsername       = optional(string)
+    useChildProcesses     = bool
+    replicas              = number
+    maxActive             = number
+    egress                = optional(string)
+    gitUsername           = optional(string)
     childProcessTimeLimit = optional(number)
     resources = object({
       cpu    = string
@@ -776,17 +776,17 @@ variable "eclccserver_settings" {
   }))
   default = {
     "myeclccserver" = {
-    useChildProcesses     = false
-    cpu                   = "1"
-    memory                = "4G"
-    maxActive             = 4
-    replicas              = 1
-    childProcessTimeLimit = 86400
-    resources = {
-      cpu    = "1"
-      memory = "4G"
-    }
-  }}
+      useChildProcesses     = false
+      cpu                   = "1"
+      memory                = "4G"
+      maxActive             = 4
+      replicas              = 1
+      childProcessTimeLimit = 86400
+      resources = {
+        cpu    = "1"
+        memory = "4G"
+      }
+  } }
 }
 
 variable "dali_settings" {
@@ -1087,7 +1087,7 @@ variable "secrets" {
 variable "system_secrets" {
   description = "System Secrets"
   type = object({
-    git_approle_secret     = string
+    git_approle_secret     = optional(string)
     ecl_approle_secret     = optional(string)
     ecluser_approle_secret = optional(string)
   })
@@ -1162,30 +1162,30 @@ variable "egress_engine" {
 variable "vault_config" {
   description = "Input for vault secrets."
   type = object({
-    git = object({
-      name            = string
-      url             = string
-      kind            = string
-      vault_namespace = string
-      role_id         = string
-      secret_id       = string # Should match the secret name created in the system_secrets variable
-    }),
-    ecl = object({
-      name            = string
-      url             = string
-      kind            = string
-      vault_namespace = string
-      role_id         = string
-      secret_id       = string # Should match the secret name created in the system_secrets variable
-    }),
-    ecluser = object({
-      name            = string
-      url             = string
-      kind            = string
-      vault_namespace = string
-      role_id         = string
-      secret_id       = string # Should match the secret name created in the system_secrets variable
-    })
+    git = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_id       = optional(string) # Should match the secret name created in the system_secrets variable
+    })),
+    ecl = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_id       = optional(string) # Should match the secret name created in the system_secrets variable
+    })),
+    ecluser = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_id       = optional(string) # Should match the secret name created in the system_secrets variable
+    }))
   })
   default = null
 }
