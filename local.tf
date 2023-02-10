@@ -877,7 +877,7 @@ locals {
       system     = merge(local.vault_secrets, {})
     }
 
-    vault = local.vault_enabled ? {
+    vaults = local.vault_enabled ? {
       git     = local.vault_git_config
       ecl     = local.vault_ecl_config
       ecluser = local.vault_ecluser_config
