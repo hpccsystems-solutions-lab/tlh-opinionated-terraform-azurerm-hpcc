@@ -1089,7 +1089,7 @@ variable "system_secrets" {
   type = object({
     git_approle_secret     = optional(string)
     ecl_approle_secret     = optional(string)
-    ecluser_approle_secret = optional(string)
+    eclUser_approle_secret = optional(string)
   })
   default = null
 }
