@@ -55,7 +55,7 @@ resource "kubernetes_secret" "eclUser_approle_secret_id" {
     }
   }
   data = {
-    secret_id = var.system_secrets.eclUser_approle_secret
+    secret-id = var.system_secrets.eclUser_approle_secret
   }
   
   type = "Opaque"
