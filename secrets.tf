@@ -58,5 +58,5 @@ resource "kubernetes_secret" "eclUser_approle_secret_id" {
     secret_id = var.system_secrets.eclUser_approle_secret
   }
   
-  type = "kubernetes.io/basic-auth"
+  type = "Opaque"
 }
