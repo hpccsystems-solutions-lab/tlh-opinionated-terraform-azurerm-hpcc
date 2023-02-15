@@ -161,7 +161,7 @@ locals {
 
   enabled_roxie_configs = { for roxie in var.roxie_config : roxie.name => roxie if !roxie.disabled }
 
-  eclagent_settings = [ for k, v in var.eclagent_settings : {
+  eclagent_settings = [for k, v in var.eclagent_settings : {
     name              = k
     replicas          = v.replicas
     maxActive         = v.maxActive
@@ -170,7 +170,7 @@ locals {
     type              = v.type
     resources         = v.resources
     egress            = v.egress
-  } ]
+  }]
 
   roxie_config_excludes = ["nodeSelector"]
   roxie_config = [for roxie in var.roxie_config :
@@ -433,9 +433,9 @@ locals {
   helm_chart_values = {
 
     global = {
-      env     = [for k, v in var.environment_variables : { name = k, value = v }]
+      env                  = [for k, v in var.environment_variables : { name = k, value = v }]
       noResourceValidation = true
-      busybox = local.acr_default.busybox
+      busybox              = local.acr_default.busybox
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
         root       = var.hpcc_container.image_root
@@ -697,7 +697,7 @@ locals {
 
     eclagent = local.eclagent_settings
 
-  
+
     eclccserver = [
       {
         name              = "myeclccserver"
