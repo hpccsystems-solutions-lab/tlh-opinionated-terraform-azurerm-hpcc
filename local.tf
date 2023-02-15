@@ -567,7 +567,7 @@ locals {
     )
 
     certificates = {
-      enabled = false
+      enabled = true
       issuers = {
         local = {
           name   = "hpcc-local-issuer"
@@ -696,34 +696,8 @@ locals {
     ]
 
     eclagent = local.eclagent_settings
-      # {
-      #   name              = "hthor"
-      #   replicas          = 1
-      #   maxActive         = 4
-      #   prefix            = "hthor"
-      #   useChildProcesses = false
-      #   type              = "hthor"
-      #   egress            = var.egress.eclagent_engine
-      #   resources = {
-      #     cpu    = 1
-      #     memory = "4G"
-      #   }
-      # },
-      # {
-      #   name              = "roxie-workunit"
-      #   replicas          = 1
-      #   maxActive         = 20
-      #   prefix            = "roxie_workunit"
-      #   useChildProcesses = true
-      #   type              = "roxie"
-      #   egress            = var.egress.eclagent_engine
-      #   resources = {
-      #     cpu    = 1
-      #     memory = "4G"
-      #   }
-      # }
-    
 
+  
     eclccserver = [
       {
         name              = "myeclccserver"
