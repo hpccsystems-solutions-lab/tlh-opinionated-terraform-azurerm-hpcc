@@ -1091,7 +1091,7 @@ variable "log_access_config" {
     AAD_SECRET_ID    = string # Service Principal Secret ID
     AAD_TENANT_ID    = string # Your Tenant ID
     LAW_WORKSPACE_ID = string # Workspace or Customer ID of your LAW
-    LAW_ID           = string # Log Analytics Workspace ID
+    OBJECT_ID           = string # Log Analytics Workspace ID
     LAW_SCOPE        = string # Log Analytics Workspace Scope for Access, typically your subscription ID
   })
   default = null

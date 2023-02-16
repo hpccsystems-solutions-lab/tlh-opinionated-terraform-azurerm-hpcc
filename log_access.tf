@@ -28,5 +28,5 @@ resource "kubernetes_secret" "azure_log_analytics_workspace" {
 resource "azurerm_role_assignment" "azure_log_analytics_workspace" {
   scope                = var.log_access_config.LAW_SCOPE
   role_definition_name = "Log Analytics Contributor"
-  principal_id         = var.log_access_config.LAW_ID
+  principal_id         = var.log_access_config.OBJECT_ID
 }
