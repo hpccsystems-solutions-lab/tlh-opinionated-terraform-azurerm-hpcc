@@ -146,7 +146,15 @@ locals {
     ldapSecurePort = 636
   }
 
+  # Log Access Secret Section 
 
+  log_access_enabled = var.log_access_config == null ? false : true
+
+  log_access_secrets = local.log_access_enabled ? {
+    azure-logaccess : kubernetes_secret.azure_log_analytics_workspace.0.metadata.0.name
+  } : null
+
+  # Vault Secrets Section
   vault_enabled = var.vault_config == null ? false : true
 
   vault_secrets = local.vault_enabled ? {
@@ -154,6 +162,7 @@ locals {
     # ecl-approle-secret     = kubernetes_secret.ecl_approle_secret_id.0.metadata.0.name
     ecluser-approle-secret = kubernetes_secret.eclUser_approle_secret_id.0.metadata.0.name
   } : null
+
 
   vault_git_config = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
     name          = v.name
@@ -181,6 +190,7 @@ locals {
     appRoleId     = v.role_id
     appRoleSecret = v.secret_id
   }] : null
+
   # LDAP Secrets section 
   ldap_enabled = var.ldap_config == null ? false : true
 
@@ -478,25 +488,45 @@ locals {
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 
-      # egress = {
-      #   engineEgress = [
-      #     {
-      #       to = [{
-      #         ipBlock = {
-      #           cidr = var.egress.cidr
-      #         }
-      #       }]
-      #       ports = [
-      #         {
-      #           protocol = var.egress.protocol
-      #           port     = var.egress.port
-      #         }
-      #       ]
-      #     }
-      #   ]
-      # }
+      # Log Analytics Integration Values
+      logAccess = {
+        name = "Azure LogAnalytics LogAccess"
+        type = "AzureLogAnalyticsCurl"
+        logMaps = [{
+          type            = "global"
+          storeName       = "ContainerLog"
+          searchColumn    = "LogEntry"
+          timeStampColumn = "hpcc_log_timestamp"
+          }, {
+          type         = "workunits"
+          storeName    = "ContainerLog"
+          searchColumn = "hpcc_log_jobid"
+          }, {
+          type            = "components"
+          storeName       = "ContainerInventory"
+          searchColumn    = "Name"
+          keyColumn       = "ContainerID"
+          timeStampColumn = "TimeGenerated"
+          }, {
+          type         = "audience"
+          searchColumn = "hpcc_log_audience"
+          }, {
+          type         = "class"
+          searchColumn = "hpcc_log_class"
+          }, {
+          type         = "instance"
+          storeName    = "ContainerInventory"
+          searchColumn = "Name"
+          }, {
+          type         = "host"
+          searchColumn = "Computer"
+        }]
+      }
 
+
+      # Egress Values 
       egress = var.egress_engine
+
       visibilities = {
         cluster = {
           type = "ClusterIP"
@@ -875,6 +905,7 @@ locals {
       git        = {}
       storage    = var.secrets.remote_cert_secret
       system     = merge(local.vault_secrets, {})
+      esp        = merge(local.log_access_secrets, {})
     }
 
     vaults = local.vault_enabled ? {

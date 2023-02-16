@@ -1084,6 +1084,19 @@ variable "secrets" {
   }
 }
 
+variable "log_access_config" {
+  description = "Required Variable for enabling Log Access"
+  type = object({
+    AAD_CLIENT_ID    = string # Service Principal Client ID
+    AAD_SECRET_ID    = string # Service Principal Secret ID
+    AAD_TENANT_ID    = string # Your Tenant ID
+    LAW_WORKSPACE_ID = string # Workspace or Customer ID of your LAW
+    LAW_ID           = string # Log Analytics Workspace ID
+    LAW_SCOPE        = string # Log Analytics Workspace Scope for Access, typically your subscription ID
+  })
+  default = null
+}
+
 variable "system_secrets" {
   description = "System Secrets"
   type = object({
