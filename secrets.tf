@@ -3,17 +3,17 @@ resource "kubernetes_secret" "git_approle_secret_id" {
     kubernetes_namespace.default
   ]
 
-  count = local.vault_enabled && var.system_secrets.git_approle_secret != null ? 1 : 0
+  for_each = local.vault_enabled && var.vault_secrets.git_approle_secret != null ? var.vault_secrets.git_approle_secret : {}
 
   metadata {
-    name      = "my-git-approle-secret"
+    name      = each.value.secret_name
     namespace = var.namespace.name
     labels = {
-      name = "my-git-approle-secret"
+      name = each.value.secret_name
     }
   }
   data = {
-    secret_id = var.system_secrets.git_approle_secret
+    secret_id = each.value.secret_value
   }
   type = "kubernetes.io/basic-auth"
 }
@@ -23,18 +23,17 @@ resource "kubernetes_secret" "ecl_approle_secret_id" {
     kubernetes_namespace.default
   ]
 
-  count = local.vault_enabled && var.system_secrets.ecl_approle_secret != null ? 1 : 0
-
+  for_each = local.vault_enabled && var.vault_secrets.ecl_approle_secret != null ? var.vault_secrets.ecl_approle_secret : {}
 
   metadata {
-    name      = "my-ecl-approle-secret"
+    name      = each.value.secret_name
     namespace = var.namespace.name
     labels = {
-      name = "my-ecl-approle-secret"
+      name = each.value.secret_name
     }
   }
   data = {
-    secret_id = var.system_secrets.ecl_approle_secret
+    secret_id = each.value.secret_value
   }
   type = "kubernetes.io/basic-auth"
 }
@@ -44,19 +43,20 @@ resource "kubernetes_secret" "eclUser_approle_secret_id" {
     kubernetes_namespace.default
   ]
 
-  count = local.vault_enabled && var.system_secrets.eclUser_approle_secret != null ? 1 : 0
+  for_each = local.vault_enabled && var.vault_secrets.eclUser_approle_secret != null ? var.vault_secrets.eclUser_approle_secret : {}
 
 
   metadata {
-    name      = "my-ecluser-approle-secret"
+    name      = each.value.secret_name
     namespace = var.namespace.name
     labels = {
-      name = "my-ecluser-approle-secret"
+      name = each.value.secret_name
     }
   }
   data = {
-    secret-id = var.system_secrets.eclUser_approle_secret
+    secret-id = each.value.secret_value
   }
-  
+
   type = "Opaque"
 }
+

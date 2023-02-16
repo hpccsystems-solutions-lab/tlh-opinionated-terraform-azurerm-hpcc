@@ -147,12 +147,14 @@ locals {
   }
 
 
-  vault_enabled = var.vault_config == null ? false : true
+  vault_enabled = var.vault_config == null && var.vault_config != null ? false : true
 
-  vault_secrets = local.vault_enabled ? {
+  all_vault_secrets = local.vault_enabled ? values(merge(var.vault_secrets.ecluser_approle_secret, var.vault_secrets.ecl_approle_secret, var.vault_secrets.git_approle_secret)) : {}
+
+  vault_secrets = local.vault_enabled ? { for k in local.all_vault_secrets : k.secret_name => k.secret_name
     # git-approle-secret = kubernetes_secret.git_approle_secret_id.0.metadata.0.name
     # ecl-approle-secret     = kubernetes_secret.ecl_approle_secret_id.0.metadata.0.name
-    ecluser-approle-secret = kubernetes_secret.eclUser_approle_secret_id.0.metadata.0.name
+    # ecluser-approle-secret = kubernetes_secret.eclUser_approle_secret_id.0.metadata.0.name
   } : null
 
   vault_git_config = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
@@ -161,7 +163,7 @@ locals {
     kind          = v.kind
     namespace     = v.vault_namespace
     appRoleId     = v.role_id
-    appRoleSecret = v.secret_id
+    appRoleSecret = v.secret_name
   }] : null
 
   vault_ecl_config = var.vault_config.ecl != null ? [for k, v in var.vault_config.ecl : {
@@ -170,7 +172,7 @@ locals {
     kind          = v.kind
     namespace     = v.vault_namespace
     appRoleId     = v.role_id
-    appRoleSecret = v.secret_id
+    appRoleSecret = v.secret_name
   }] : null
 
   vault_eclUser_config = var.vault_config.eclUser != null ? [for k, v in var.vault_config.eclUser : {
@@ -179,7 +181,16 @@ locals {
     kind          = v.kind
     namespace     = v.vault_namespace
     appRoleId     = v.role_id
-    appRoleSecret = v.secret_id
+    appRoleSecret = v.secret_name
+  }] : null
+
+  vault_esp_config = var.vault_config.esp != null ? [for k, v in var.vault_config.esp : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_name
   }] : null
   # LDAP Secrets section 
   ldap_enabled = var.ldap_config == null ? false : true
@@ -881,6 +892,7 @@ locals {
       # git     = local.vault_git_config
       ecl     = local.vault_ecl_config
       eclUser = local.vault_eclUser_config
+      esp     = local.vault_esp_config
     } : null
 
   }

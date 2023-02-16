@@ -1084,14 +1084,27 @@ variable "secrets" {
   }
 }
 
-variable "system_secrets" {
+variable "vault_secrets" {
   description = "System Secrets"
   type = object({
-    git_approle_secret     = optional(string)
-    ecl_approle_secret     = optional(string)
-    eclUser_approle_secret = optional(string)
+    git_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
+    ecl_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
+    eclUser_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
   })
-  default = null
+  default = {
+    git_approle_secret     = null
+    ecl_approle_secret     = null
+    eclUser_approle_secret = null
+  }
 }
 
 variable "corsallowed_enable" {
@@ -1168,7 +1181,7 @@ variable "vault_config" {
       kind            = optional(string)
       vault_namespace = optional(string)
       role_id         = optional(string)
-      secret_id       = optional(string) # Should match the secret name created in the system_secrets variable
+      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
     })),
     ecl = map(object({
       name            = optional(string)
@@ -1176,7 +1189,7 @@ variable "vault_config" {
       kind            = optional(string)
       vault_namespace = optional(string)
       role_id         = optional(string)
-      secret_id       = optional(string) # Should match the secret name created in the system_secrets variable
+      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
     })),
     eclUser = map(object({
       name            = optional(string)
@@ -1184,7 +1197,15 @@ variable "vault_config" {
       kind            = optional(string)
       vault_namespace = optional(string)
       role_id         = optional(string)
-      secret_id       = optional(string) # Should match the secret name created in the system_secrets variable
+      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
+    }))
+    esp = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
     }))
   })
   default = null
