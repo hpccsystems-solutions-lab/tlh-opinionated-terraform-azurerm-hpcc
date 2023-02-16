@@ -18,7 +18,7 @@ resource "kubernetes_secret" "azure_log_analytics_workspace" {
   data = {
     "aad-client-id"     = var.log_access_config.AAD_CLIENT_ID
     "aad-tenant-id"     = var.log_access_config.AAD_TENANT_ID
-    "aad-client-secret" = var.log_access_config.AAD_CLIENT_SECRET
+    "aad-client-secret" = var.log_access_config.AAD_SECRET_ID
     "ala-workspace-id"  = var.log_access_config.LAW_WORKSPACE_ID
   }
 
