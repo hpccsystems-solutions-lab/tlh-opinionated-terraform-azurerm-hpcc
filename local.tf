@@ -157,10 +157,10 @@ locals {
   # Vault Secrets Section
   vault_enabled = var.vault_config == null && var.vault_config != null ? false : true
 
-  all_vault_secrets = local.vault_enabled ? values(merge(var.vault_secrets.ecluser_approle_secret, var.vault_secrets.ecl_approle_secret, var.vault_secrets.git_approle_secret)) : []
+  all_vault_secrets = local.vault_enabled ? values(merge(var.vault_secrets.ecluser_approle_secret, var.vault_secrets.ecl_approle_secret, var.vault_secrets.git_approle_secret, var.vault_secret.esp_approle_secret)) : []
 
   vault_secrets = local.vault_enabled ? { for k in local.all_vault_secrets : k.secret_name => k.secret_name
-  
+
   } : null
 
 
@@ -509,7 +509,6 @@ locals {
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 
-<<<<<<< HEAD
       # Log Analytics Integration Values
       logAccess = {
         name = "Azure LogAnalytics LogAccess"
@@ -544,9 +543,7 @@ locals {
           searchColumn = "Computer"
         }]
       }
-=======
 
->>>>>>> milind/feature_vault_secrets
 
 
       # Egress Values 

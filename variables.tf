@@ -1093,7 +1093,7 @@ variable "log_access_config" {
     AAD_SECRET_ID    = string # Service Principal Secret ID
     AAD_TENANT_ID    = string # Your Tenant ID
     LAW_WORKSPACE_ID = string # Workspace or Customer ID of your LAW
-    OBJECT_ID           = string # Log Analytics Workspace ID
+    OBJECT_ID        = string # Log Analytics Workspace ID
     LAW_SCOPE        = string # Log Analytics Workspace Scope for Access, typically your subscription ID
   })
   default = null
@@ -1115,11 +1115,16 @@ variable "vault_secrets" {
       secret_name  = optional(string)
       secret_value = optional(string)
     }))
+    esp_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
   })
   default = {
     git_approle_secret     = null
     ecl_approle_secret     = null
     ecluser_approle_secret = null
+    esp_approle_secret     = null
   }
 }
 
