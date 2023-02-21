@@ -773,6 +773,8 @@ variable "eclccserver_settings" {
       cpu    = string
       memory = string
     })
+    childProcessTimeLimit = optional(number)
+    gitUsername           = optional(string)
   }))
   default = {
     "myeclccserver" = {
@@ -1232,5 +1234,44 @@ variable "egress" {
   }
 }
 
-
- 
+variable "eclagent_settings" {
+  description = "eclagent settings"
+  type = map(object({
+    replicas          = number
+    maxActive         = number
+    prefix            = string
+    use_child_process = bool
+    type              = string
+    resources = object({
+      cpu    = string
+      memory = string
+    })
+    egress = optional(string)
+  }))
+  default = {
+    hthor = {
+      replicas          = 1
+      maxActive         = 4
+      prefix            = "hthor"
+      use_child_process = false
+      type              = "hthor"
+      resources = {
+        cpu    = "1"
+        memory = "4G"
+      }
+      egress = "engineEgress"
+    },
+    "roxie-workunit" = {
+      replicas          = 1
+      maxActive         = 20
+      prefix            = "roxie-workunit"
+      use_child_process = true
+      type              = "roxie"
+      resources = {
+        cpu    = "1"
+        memory = "4G"
+      }
+      egress = "engineEgress"
+    }
+  }
+}
