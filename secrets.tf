@@ -13,7 +13,7 @@ resource "kubernetes_secret" "git_approle_secret_id" {
     }
   }
   data = {
-    secret_id = each.value.secret_value
+    secret-id = each.value.secret_value
   }
   type = "Opaque"
 }
@@ -33,7 +33,7 @@ resource "kubernetes_secret" "ecl_approle_secret_id" {
     }
   }
   data = {
-    secret_id = each.value.secret_value
+    secret-id = each.value.secret_value
   }
   type = "Opaque"
 }
