@@ -161,6 +161,17 @@ locals {
 
   enabled_roxie_configs = { for roxie in var.roxie_config : roxie.name => roxie if !roxie.disabled }
 
+  eclagent_settings = [for k, v in var.eclagent_settings : {
+    name              = k
+    replicas          = v.replicas
+    maxActive         = v.maxActive
+    prefix            = v.prefix
+    useChildProcesses = v.use_child_process
+    type              = v.type
+    resources         = v.resources
+    egress            = v.egress
+  }]
+
   roxie_config_excludes = ["nodeSelector"]
   roxie_config = [for roxie in var.roxie_config :
     { for k, v in roxie : k => v if !contains(local.roxie_config_excludes, k) }
@@ -422,8 +433,9 @@ locals {
   helm_chart_values = {
 
     global = {
-      env     = [for k, v in var.environment_variables : { name = k, value = v }]
-      busybox = local.acr_default.busybox
+      env                  = [for k, v in var.environment_variables : { name = k, value = v }]
+      noResourceValidation = true
+      busybox              = local.acr_default.busybox
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
         root       = var.hpcc_container.image_root
@@ -683,34 +695,8 @@ locals {
       }
     ]
 
-    eclagent = [
-      {
-        name              = "hthor"
-        replicas          = 1
-        maxActive         = 4
-        prefix            = "hthor"
-        useChildProcesses = false
-        type              = "hthor"
-        egress            = var.egress.eclagent_engine
-        resources = {
-          cpu    = 1
-          memory = "4G"
-        }
-      },
-      {
-        name              = "roxie-workunit"
-        replicas          = 1
-        maxActive         = 20
-        prefix            = "roxie_workunit"
-        useChildProcesses = true
-        type              = "roxie"
-        egress            = var.egress.eclagent_engine
-        resources = {
-          cpu    = 1
-          memory = "4G"
-        }
-      }
-    ]
+    eclagent = local.eclagent_settings
+
 
     eclccserver = [
       {
