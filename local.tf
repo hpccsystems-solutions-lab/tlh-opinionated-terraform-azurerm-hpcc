@@ -454,23 +454,7 @@ locals {
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 
-      # egress = {
-      #   engineEgress = [
-      #     {
-      #       to = [{
-      #         ipBlock = {
-      #           cidr = var.egress.cidr
-      #         }
-      #       }]
-      #       ports = [
-      #         {
-      #           protocol = var.egress.protocol
-      #           port     = var.egress.port
-      #         }
-      #       ]
-      #     }
-      #   ]
-      # }
+
 
       egress = var.egress_engine
       visibilities = {
@@ -645,10 +629,6 @@ locals {
         service = {
           servicePort = 7300 ##443
           visibility  = "cluster"
-          # annotations = merge({
-          #   "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-          #   "lnrs.io/zone-type"                                       = "public"
-          # }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "spray-service", var.namespace.name, local.domain) } : {})
         }
         egress = var.egress.dafilesrv_engine
       },
@@ -710,18 +690,6 @@ locals {
 
 
     eclccserver = local.eclccserver_settings
-    # {
-    #   name              = "myeclccserver"
-    #   replicas          = 1
-    #   maxActive         = 4
-    #   useChildProcesses = var.eclccserver_settings.use_child_process
-    #   resources = {
-    #     cpu    = var.eclccserver_settings.cpu
-    #     memory = var.eclccserver_settings.memory
-    #   }
-    #   egress = var.egress.eclccserver_engine
-    # }
-
 
     esp = [
       merge({
