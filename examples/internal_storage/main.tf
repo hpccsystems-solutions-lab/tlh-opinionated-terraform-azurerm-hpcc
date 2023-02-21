@@ -35,11 +35,11 @@ module "metadata" {
   location            = "eastus2"
   sre_team            = "SupercomputerOps@lexisnexisrisk.com"
   environment         = "sandbox"
-  product_name        = "prct"
+  product_name        = "<product-name>"
   business_unit       = "infra"
   product_group       = "hpccops"
   subscription_id     = data.azurerm_subscription.current.subscription_id
-  subscription_type   = "dev"
+  subscription_type   = "<lifecycle>"
   resource_group_type = "app"
 }
 
@@ -55,8 +55,8 @@ module "resource_group" {
 ##vnet##
 #############
 module "virtual_network" {
-
-  source = "github.com/Azure-Terraform/terraform-azurerm-virtual-network.git?ref=v6.0.0"
+  source  = "tfe.lnrisk.io/Infrastructure/virtual-network/azurerm"
+  version = "6.0.0"
 
   naming_rules        = module.naming.yaml
   resource_group_name = module.resource_group.name
@@ -64,10 +64,18 @@ module "virtual_network" {
   names               = module.metadata.names
   tags                = module.metadata.tags
 
-  address_space = [var.cidr_block_prctroxieaks]
+  enforce_subnet_names = false
+
+  address_space = [var.cidr_block]
+  dns_servers   = [local.firewall_ip]
+
+  route_tables = {
+    default = local.route_table
+  }
+
   subnets = {
     iaas-outbound = {
-      cidrs                                          = [var.cidr_block_prctroxieacr]
+      cidrs                                          = [var.cidr_block_acr]
       allow_internet_outbound                        = true
       allow_lb_inbound                               = true
       allow_vnet_inbound                             = true
@@ -75,52 +83,31 @@ module "virtual_network" {
       configure_nsg_rules                            = true
       create_network_security_group                  = true
       enforce_private_link_endpoint_network_policies = false
+      route_table_association                        = "default"
       service_endpoints                              = ["Microsoft.Storage", "Microsoft.ContainerRegistry"]
     }
   }
+
   aks_subnets = {
-    roxie = {
-      private = {
-        cidrs                                          = [var.cidr_block_prctroxieaks_roxie]
-        service_endpoints                              = ["Microsoft.Storage", "Microsoft.ContainerRegistry"]
-        enforce_private_link_endpoint_network_policies = true
-        enforce_private_link_service_network_policies  = true
-      }
-      public = {
-        cidrs                                          = [var.cidr_block_prctroxieaks_storage]
+    hpcc = {
+      subnet_info = {
+        cidrs                                          = [var.cidr_block_app]
         service_endpoints                              = ["Microsoft.Storage", "Microsoft.ContainerRegistry"]
         enforce_private_link_endpoint_network_policies = true
         enforce_private_link_service_network_policies  = true
       }
 
-      route_table = {
-        disable_bgp_route_propagation = true
-        routes = {
-          internet = {
-            address_prefix = "0.0.0.0/0"
-            next_hop_type  = "Internet"
-          }
-          internal-1 = {
-            address_prefix         = "10.0.0.0/8"
-            next_hop_type          = "VirtualAppliance"
-            next_hop_in_ip_address = var.firewall_ip
-          }
-          internal-2 = {
-            address_prefix         = "172.16.0.0/12"
-            next_hop_type          = "VirtualAppliance"
-            next_hop_in_ip_address = var.firewall_ip
-          }
-          internal-3 = {
-            address_prefix         = "192.168.0.0/16"
-            next_hop_type          = "VirtualAppliance"
-            next_hop_in_ip_address = var.firewall_ip
-          }
-          local-vnet = {
-            address_prefix = var.cidr_block_prctroxieaks
-            next_hop_type  = "VnetLocal"
-          }
-        }
-      }
+      route_table = local.route_table
+    }
+  }
+
+  peers = {
+    expressroute = {
+      id                           = var.expressroute_id
+      allow_virtual_network_access = true
+      allow_forwarded_traffic      = true
+      allow_gateway_transit        = false
+      use_remote_gateways          = true
     }
   }
 }
@@ -130,50 +117,30 @@ module "virtual_network" {
 # #aks##
 # #############
 module "aks" {
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.13"
-
-  depends_on = [
-    module.virtual_network
-  ]
-
+  source              = "git@github.com:LexisNexis-RBA/terraform-azurerm-aks.git?ref=v1.0.0-beta.26"
   location            = module.metadata.location
   resource_group_name = module.resource_group.name
-
-  cluster_name    = local.cluster_name
-  cluster_version = local.cluster_version
-
-  sku_tier_paid = false
-
-  cluster_endpoint_public_access = true
-  cluster_endpoint_access_cidrs  = ["0.0.0.0/0"]
-
+  tags                = module.metadata.tags
+  experimental = {
+    oms_agent                      = true
+    oms_log_analytics_workspace_id = azurerm_log_analytics_workspace.log.id
+    workspace_log_categories       = "limited"
+    node_group_os_config           = true
+  }
+  cluster_name                        = local.cluster_name
+  cluster_version                     = local.cluster_version
+  network_plugin                      = "kubenet"
+  sku_tier_paid                       = true
+  cluster_endpoint_public_access      = true
+  cluster_endpoint_access_cidrs       = ["0.0.0.0/0"]
   virtual_network_resource_group_name = module.resource_group.name
   virtual_network_name                = module.virtual_network.vnet.name
-  subnet_name                         = module.virtual_network.aks.demo.subnet.name
-  route_table_name                    = module.virtual_network.aks.demo.route_table.name
-
-  dns_resource_group_lookup = { "${local.internal_domain}" = local.dns_resource_group }
-
-  azuread_clusterrole_map = local.azuread_clusterrole_map
-
-  node_group_templates = [
-    {
-      name                = "workers"
-      node_os             = "ubuntu"
-      node_type           = "gp"
-      node_type_version   = "v1"
-      node_size           = "large"
-      single_group        = false
-      min_capacity        = 0
-      max_capacity        = 18
-      placement_group_key = null
-      labels = {
-        "lnrs.io/tier" = "standard"
-      }
-      taints = []
-      tags   = {}
-    }
-  ]
+  subnet_name                         = module.virtual_network.aks.hpcc.subnet.name
+  route_table_name                    = module.virtual_network.aks.hpcc.route_table.name
+  dns_resource_group_lookup           = { "${local.internal_domain}" = local.dns_resource_group }
+  admin_group_object_ids              = [var.aad_group_id]
+  rbac_bindings                       = var.rbac_bindings
+  node_groups                         = local.node_groups
 
   core_services_config = {
     alertmanager = {
@@ -185,24 +152,22 @@ module "aks" {
 
     coredns = {
       forward_zones = {
-        "risk.regn.net"     = var.firewall_ip
-        "ins.risk.regn.net" = var.firewall_ip
-        "prg.risk.regn.net" = var.firewall_ip
-        "hc.risk.regn.net"  = var.firewall_ip
-        "rs.lexisnexis.net" = var.firewall_ip
-        "noam.lnrm.net"     = var.firewall_ip
-        "eu.lnrm.net"       = var.firewall_ip
-        "seisint.com"       = var.firewall_ip
-        "sds"               = var.firewall_ip
-        "internal.sds"      = var.firewall_ip
+        "risk.regn.net"     = local.firewall_ip
+        "ins.risk.regn.net" = local.firewall_ip
+        "prg.risk.regn.net" = local.firewall_ip
+        "hc.risk.regn.net"  = local.firewall_ip
+        "rs.lexisnexis.net" = local.firewall_ip
+        "noam.lnrm.net"     = local.firewall_ip
+        "eu.lnrm.net"       = local.firewall_ip
+        "seisint.com"       = local.firewall_ip
+        "sds"               = local.firewall_ip
+        "internal.sds"      = local.firewall_ip
       }
     }
-
     external_dns = {
       zones               = local.internal_domain
       resource_group_name = local.dns_resource_group
     }
-
     cert_manager = {
       letsencrypt_environment = "staging"
       letsencrypt_email       = null
@@ -210,13 +175,17 @@ module "aks" {
         "${local.internal_domain}" = local.dns_resource_group
       }
     }
-
+    grafana = {
+      admin_password = local.grafana_admin_password
+    }
     ingress_internal_core = {
       domain           = local.internal_domain
       subdomain_suffix = local.cluster_name_short
       public_dns       = true
     }
-
+    ingress_core_internal = {
+      domain = local.internal_domain
+    }
   }
 }
 
@@ -257,26 +226,15 @@ module "acr" {
 ##hpcc##
 #################
 module "hpcc" {
-  depends_on = [
-    module.aks
-  ]
-
-  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git?ref=v0.8.1"
-
-  environment = "dev"
-  productname = "prctrox"
-
-  helm_chart_version           = var.hpcc_helm_chart_version
-  hpcc_container               = var.hpcc_container
-  hpcc_container_registry_auth = var.hpcc_container_registry_auth
-
-  node_tuning_container_registry_auth = var.hpcc_container_registry_auth
+  source = "git@github.com:LexisNexis-RBA/terraform-azurerm-hpcc.git?ref=main"
 
   resource_group_name = module.resource_group.name
   location            = module.resource_group.location
   tags                = module.metadata.tags
-
-  helm_chart_timeout = 1000
+  environment         = var.environment
+  productname         = var.productname
+  cluster_name        = local.cluster_name
+  internal_domain     = local.internal_domain
 
   namespace = {
     name = "hpcc"
@@ -285,27 +243,44 @@ module "hpcc" {
     }
   }
 
+  hpcc_container               = var.jfrog_registry
+  hpcc_container_registry_auth = var.jfrog_auth
+  helm_chart_version           = var.jfrog_registry.version
+
+
+  install_blob_csi_driver = true
+  enable_node_tuning      = false
+  node_tuning_containers  = var.node_tuning_containers
+
+
+
+  environment_variables = {
+    SMTPserver         = "appmail-bct.risk.regn.net"
+    emailSenderAddress = "eclsystem@lexisnexisrisk.com"
+    subscription       = local.account_code
+  }
+
+  admin_services_node_selector = { all = { workload = "servpool" } }
+
   admin_services_storage_account_settings = {
     replication_type     = "ZRS"
-    authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
+    authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.response_body })
     delete_protection    = false
-
     subnet_ids = merge({
-      aks = module.virtual_network.subnets["iaas-outbound"].id
+      "aks-hpcc" = module.virtual_network.aks.hpcc.subnet.id
     }, var.azure_admin_subnets)
   }
 
   data_storage_config = {
     internal = {
       blob_nfs = {
-        data_plane_count = 1
+        data_plane_count = var.hpcc_data_plane_count
         storage_account_settings = {
           replication_type     = "ZRS"
-          authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.body })
+          authorized_ip_ranges = merge(var.storage_account_authorized_ip_ranges, { my_ip = data.http.my_ip.response_body })
           delete_protection    = false
-
           subnet_ids = merge({
-            aks = module.virtual_network.subnets["iaas-outbound"].id
+            "aks-hpcc" = module.virtual_network.aks.hpcc.subnet.id
           }, var.azure_admin_subnets)
         }
       }
@@ -314,189 +289,268 @@ module "hpcc" {
     external = null
   }
 
+  admin_services_storage = {
+    dali = {
+      size = 200
+      type = "azurefiles"
+    }
+    debug = {
+      size = 100
+      type = "blobnfs"
+    }
+    dll = {
+      size = 1000
+      type = "blobnfs"
+    }
+    lz = {
+      size = 1000
+      type = "blobnfs"
+    }
+    sasha = {
+      size = 10000
+      type = "blobnfs"
+    }
+  }
 
-  spill_volume_size = 150
+  ldap_config = {}
 
-  thor_config = [{
-    name             = "thor"
-    disabled         = false
-    prefix           = "thor"
-    numWorkers       = 5
-    keepJobs         = "none"
-    maxJobs          = 4
-    maxGraphs        = 2
-    numWorkersPerPod = 1
-    nodeSelector = {
-      workload = "thorpool"
-    }
-    managerResources = {
-      cpu    = 1
-      memory = "2G"
-    }
-    workerResources = {
-      cpu    = 3
-      memory = "4G"
-    }
-    workerMemory = {
-      query      = "3G"
-      thirdParty = "500M"
-    }
-    eclAgentResources = {
-      cpu    = 1
-      memory = "2G"
-    }
-  }]
+  # Example Ldap Config
 
 
-  roxie_config = [
-    {
-      disabled                       = true
-      name                           = "roxie"
-      nodeSelector                   = {}
-      numChannels                    = 2
-      prefix                         = "roxie"
-      replicas                       = 2
-      serverReplicas                 = 0
-      acePoolSize                    = 6
-      actResetLogPeriod              = 0
-      affinity                       = 0
-      allFilesDynamic                = false
-      blindLogging                   = false
-      blobCacheMem                   = 0
-      callbackRetries                = 3
-      callbackTimeout                = 500
-      checkCompleted                 = true
-      checkFileDate                  = false
-      checkPrimaries                 = true
-      clusterWidth                   = 1
-      copyResources                  = true
-      coresPerQuery                  = 0
-      crcResources                   = false
-      dafilesrvLookupTimeout         = 10000
-      debugPermitted                 = true
-      defaultConcatPreload           = 0
-      defaultFetchPreload            = 0
-      defaultFullKeyedJoinPreload    = 0
-      defaultHighPriorityTimeLimit   = 0
-      defaultHighPriorityTimeWarning = 30000
-      defaultKeyedJoinPreload        = 0
-      defaultLowPriorityTimeLimit    = 0
-      defaultLowPriorityTimeWarning  = 90000
-      defaultMemoryLimit             = 1073741824
-      defaultParallelJoinPreload     = 0
-      defaultPrefetchProjectPreload  = 10
-      defaultSLAPriorityTimeLimit    = 0
-      defaultSLAPriorityTimeWarning  = 30000
-      defaultStripLeadingWhitespace  = false
-      diskReadBufferSize             = 65536
-      doIbytiDelay                   = true
-      enableHeartBeat                = false
-      enableKeyDiff                  = false
-      enableSysLog                   = false
-      fastLaneQueue                  = true
-      fieldTranslationEnabled        = "payload"
-      flushJHtreeCacheOnOOM          = true
-      forceStdLog                    = false
-      highTimeout                    = 2000
-      ignoreMissingFiles             = false
-      indexReadChunkSize             = 60000
-      initIbytiDelay                 = 10
-      jumboFrames                    = false
-      lazyOpen                       = true
-      leafCacheMem                   = 500
-      linuxYield                     = false
-      localFilesExpire               = 1
-      localSlave                     = false
-      logFullQueries                 = false
-      logQueueDrop                   = 32
-      logQueueLen                    = 512
-      lowTimeout                     = 10000
-      maxBlockSize                   = 1000000000
-      maxHttpConnectionRequests      = 1
-      maxLocalFilesOpen              = 4000
-      maxLockAttempts                = 5
-      maxRemoteFilesOpen             = 100
-      memTraceLevel                  = 1
-      memTraceSizeLimit              = 0
-      memoryStatsInterval            = 60
-      minFreeDiskSpace               = 6442450944
-      minIbytiDelay                  = 2
-      minLocalFilesOpen              = 2000
-      minRemoteFilesOpen             = 50
-      miscDebugTraceLevel            = 0
-      monitorDaliFileServer          = false
-      nodeCacheMem                   = 1000
-      nodeCachePreload               = false
-      parallelAggregate              = 0
-      parallelLoadQueries            = 1
-      perChannelFlowLimit            = 50
-      pingInterval                   = 0
-      preabortIndexReadsThreshold    = 100
-      preabortKeyedJoinsThreshold    = 100
-      preloadOnceData                = true
-      prestartSlaveThreads           = false
-      remoteFilesExpire              = 3600
-      roxieMulticastEnabled          = false
-      serverSideCacheSize            = 0
-      serverThreads                  = 100
-      simpleLocalKeyedJoins          = true
-      sinkMode                       = "sequential"
-      slaTimeout                     = 2000
-      slaveConfig                    = "simple"
-      slaveThreads                   = 30
-      soapTraceLevel                 = 1
-      socketCheckInterval            = 5000
-      statsExpiryTime                = 3600
-      systemMonitorInterval          = 60000
-      totalMemoryLimit               = "5368709120"
-      traceLevel                     = 1
-      traceRemoteFiles               = false
-      trapTooManyActiveQueries       = true
-      udpAdjustThreadPriorities      = true
-      udpFlowAckTimeout              = 10
-      udpFlowSocketsSize             = 33554432
-      udpInlineCollation             = true
-      udpInlineCollationPacketLimit  = 50
-      udpLocalWriteSocketSize        = 16777216
-      udpMaxPermitDeadTimeouts       = 100
-      udpMaxRetryTimedoutReqs        = 10
-      udpMaxSlotsPerClient           = 100
-      udpMulticastBufferSize         = 33554432
-      udpOutQsPriority               = 5
-      udpQueueSize                   = 1000
-      udpRecvFlowTimeout             = 2000
-      udpRequestToSendAckTimeout     = 500
-      udpResendTimeout               = 100
-      udpRequestToSendTimeout        = 2000
-      udpResendEnabled               = true
-      udpRetryBusySenders            = 0
-      udpSendCompletedInData         = false
-      udpSendQueueSize               = 500
-      udpSnifferEnabled              = false
-      udpTraceLevel                  = 0
-      useAeron                       = false
-      useDynamicServers              = false
-      useHardLink                    = false
-      useLogQueue                    = true
-      useMemoryMappedIndexes         = false
-      useRemoteResources             = false
-      useTreeCopy                    = false
-      services = [
-        {
-          name        = "roxie"
-          servicePort = 9876
-          listenQueue = 200
-          numThreads  = 30
-          visibility  = "local"
-        }
-      ]
-      topoServer = {
-        replicas = 1
-      }
-      channelResources = {
+  # ldap_config = {
+  #   dali = {
+  #     adminGroupName      = var.ldap_adminGroupName
+  #     filesBasedn         = var.ldap_filesBasedn
+  #     groupsBasedn        = var.ldap_groupsBasedn
+  #     hpcc_admin_password = var.ldap_pass
+  #     hpcc_admin_username = var.ldap_user
+  #     ldap_admin_password = var.ldap_pass
+  #     ldap_admin_username = var.ldap_user
+  #     ldapAdminVaultId    = ""
+  #     resourcesBasedn     = var.ldap_resourcesBasedn
+  #     sudoersBasedn       = var.ldap_sudoersBasedn
+  #     systemBasedn        = var.ldap_systemBasedn
+  #     usersBasedn         = var.ldap_usersBasedn
+  #     workunitsBasedn     = var.ldap_workunitsBasedn
+  #   }
+  #   esp = {
+  #     adminGroupName      = var.ldap_adminGroupName
+  #     filesBasedn         = var.ldap_filesBasedn
+  #     groupsBasedn        = var.ldap_groupsBasedn
+  #     ldap_admin_password = var.ldap_pass
+  #     ldap_admin_username = var.ldap_user
+  #     ldapAdminVaultId    = ""
+  #     resourcesBasedn     = var.ldap_resourcesBasedn
+  #     sudoersBasedn       = var.ldap_sudoersBasedn
+  #     systemBasedn        = var.ldap_systemBasedn
+  #     usersBasedn         = var.ldap_usersBasedn
+  #     workunitsBasedn     = var.ldap_workunitsBasedn
+  #   }
+  #   ldap_server = var.ldap_server
+  # }
+
+  dali_settings = {
+    coalescer = {
+      interval     = 12
+      at           = "* * * * *"
+      minDeltaSize = 50000
+      resources = {
         cpu    = "1"
         memory = "4G"
       }
     }
+    resources = {
+      cpu    = "4"
+      memory = "24G"
+    }
+  }
+
+  sasha_config = {
+    disabled = false
+    wu-archiver = {
+      disabled = false
+      service = {
+        servicePort = 8877
+      }
+      plane           = "sasha"
+      interval        = 6
+      limit           = 1000
+      cutoff          = 8
+      backup          = 0
+      at              = "* * * * *"
+      throttle        = 0
+      retryinterval   = 7
+      keepResultFiles = false
+    }
+
+    dfuwu-archiver = {
+      disabled = false
+      service = {
+        servicePort = 8877
+      }
+      plane    = "sasha"
+      interval = 24
+      limit    = 1000
+      cutoff   = 14
+      at       = "* * * * *"
+      throttle = 0
+    }
+
+    dfurecovery-archiver = {
+      disabled = false
+      interval = 12
+      limit    = 20
+      cutoff   = 4
+      at       = "* * * * *"
+    }
+
+    file-expiry = {
+      disabled             = false
+      interval             = 1
+      at                   = "* * * * *"
+      persistExpiryDefault = 7
+      expiryDefault        = 4
+      user                 = "sasha"
+    }
+  }
+
+  dfuserver_settings = {
+    maxJobs = 6
+    resources = {
+      cpu    = "1"
+      memory = "2G"
+    }
+  }
+
+  spray_service_settings = {
+    replicas     = 6
+    nodeSelector = "spraypool"
+  }
+
+  # Add your Firewall rules here, to which you need outbound connectivity.
+  egress_engine = {
+    engineEgress = [
+      {
+        to = [{
+          ipBlock = {
+            cidr = "10.9.8.7/32"
+          }
+        }]
+        ports = [
+          {
+            protocol = "TCP"
+            port     = 443
+          }
+        ]
+      }
+    ]
+  }
+
+
+  eclagent_settings = {
+    hthor = {
+      replicas          = 1
+      maxActive         = 4
+      prefix            = "hthor"
+      use_child_process = false
+      type              = "hthor"
+      resources = {
+        cpu    = "1"
+        memory = "4G"
+      }
+      egress = "engineEgress"
+    },
+    "roxie-workunit" = {
+      replicas          = 1
+      maxActive         = 20
+      prefix            = "roxie-workunit"
+      use_child_process = true
+      type              = "roxie"
+      resources = {
+        cpu    = "1"
+        memory = "4G"
+      }
+      egress = "engineEgress"
+    }
+  }
+
+  spill_volume_size = 600 # maps to local ssd space specific to DDSv4 series, number in Gi
+
+  thor_config = [
+    {
+      name                = "thor-nonphidelivery" #configmap throws errors if you include underbars, or if the name is longer than 27 characters (because it tries making a secret that needs to be 63 char or less
+      disabled            = false
+      prefix              = "thor-nonphidelivery"
+      numWorkers          = 200
+      maxJobs             = 12
+      maxGraphs           = 6
+      maxGraphStartupTime = 172800
+      keepJobs            = "none"
+      numWorkersPerPod    = 1
+      nodeSelector        = { workload = "thorpool" }
+      tolerations_value   = "thorpool"
+      egress              = "engineEgress"
+      managerResources = {
+        cpu    = 2
+        memory = "8G"
+      }
+      workerResources = {
+        cpu    = 4
+        memory = "16G"
+      }
+      workerMemory = {
+        query      = "12G"
+        thirdParty = "500M"
+      }
+      eclAgentResources = {
+        cpu    = 2
+        memory = "8G"
+      }
+    },
+    {
+      name                = "thor-nonphideliveryuat"
+      disabled            = false
+      prefix              = "thor-nonphideliveryuat"
+      numWorkers          = 200
+      maxJobs             = 6
+      maxGraphs           = 3
+      maxGraphStartupTime = 172800
+      keepJobs            = "none"
+      numWorkersPerPod    = 1
+      nodeSelector        = { workload = "thorpool" }
+      tolerations_value   = "thorpool"
+      egress              = "engineEgress"
+      managerResources = {
+        cpu    = 2
+        memory = "8G"
+      }
+      workerResources = {
+        cpu    = 4
+        memory = "16G"
+      }
+      workerMemory = {
+        query      = "12G"
+        thirdParty = "500M"
+      }
+      eclAgentResources = {
+        cpu    = 2
+        memory = "8G"
+      }
+    }
   ]
+
+  eclccserver_settings = {
+    "myeclccserver" = {
+      useChildProcesses = false
+      replicas          = 1
+      maxActive         = 4
+      resources = {
+        cpu    = "12"
+        memory = "48G"
+      }
+      egress                = "engineEgress"
+      gitUsername           = "svc-hpcc-pubrec-git"
+      childProcessTimeLimit = "86400"
+    }
+  }
 }

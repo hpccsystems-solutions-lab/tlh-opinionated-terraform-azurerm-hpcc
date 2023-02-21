@@ -1,53 +1,87 @@
-# VARIABLES 
-
 variable "environment" {
   type = string
 }
 
-variable "azure_admin_subnets" {
-  default = null
+variable "productname" {
+  description = "Product Name from Naming module"
+  type        = string
 }
 
-variable "aad_group_id" {
-  default = null
-  # description = "Group id of the Vault Service Principal."
-  # This variable is populate by the Terraform Enterprise workspace"
+variable "ldap_user" {
+  sensitive = true
+}
 
+variable "ldap_pass" {
+  sensitive = true
+}
+
+variable "ldap_server" {
+  type = string
+}
+
+variable "ldap_adminGroupName" {
+  type = string
+}
+
+variable "ldap_filesBasedn" {
+  type = string
+}
+
+variable "ldap_groupsBasedn" {
+  type = string
+}
+
+variable "ldap_resourcesBasedn" {
+  type = string
+}
+
+variable "ldap_sudoersBasedn" {
+  type = string
+}
+
+variable "ldap_systemBasedn" {
+  type = string
+}
+
+variable "ldap_usersBasedn" {
+  type = string
+}
+
+variable "ldap_workunitsBasedn" {
+  type = string
+}
+
+variable "azure_admin_subnets" {
 }
 
 variable "sku_tier" {
   type    = string
   default = "Free"
 }
+
 variable "firewall_ip" {
   type    = string
-  default = "10.239.0.68"
+  default = "10.241.2.68"
 }
 
 variable "expressroute_id" {
   type    = string
-  default = "/subscriptions/f77593b8-c144-4ed2-9038-fa8d1dabc54a/resourceGroups/app-expressroute-prod-useast2/providers/Microsoft.Network/virtualNetworks/app-expressroute-prod-useast2-vnet"
+  default = "/subscriptions/977f34c1-5bba-493d-bba9-815edf8f5fc4/resourceGroups/shared-expressroute-prod-eastus-businesssvc-nonprod/providers/Microsoft.Network/virtualNetworks/networks-production-eastus-vnet"
 }
 
-variable "boolroxie_prod_vnet_id" {
-  description = "VNET ID for prod"
-  default     = "/subscriptions/02a6ed56-3583-4d5e-a4f5-120c5597ad0b/resourceGroups/app-boolroxie-dev-eastus2/providers/Microsoft.Network/virtualNetworks/hpccops-dev-eastus2-vnet"
-  type        = string
-}
-
-variable "cidr_block_prctroxieaks" {
+variable "cidr_block" {
   type = string
 }
 
-variable "cidr_block_prctroxieacr" {
+variable "cidr_block_acr" {
   type = string
 }
 
-variable "cidr_block_prctroxieaks_roxie" {
+variable "cidr_block_app" {
   type = string
 }
 
-variable "cidr_block_prctroxieaks_storage" {
+variable "cidr_block_storage" {
   type = string
 }
 
@@ -177,37 +211,3 @@ variable "container_registry_auth" {
   sensitive = true
 }
 
-variable "hpc_cache_enabled" {
-  description = "Creates the hpc-cache for the cluster."
-  type        = bool
-  default     = false
-}
-
-variable "hpc_cache_dns_name" {
-  type = object({
-    zone_name                = string
-    zone_resource_group_name = string
-  })
-}
-
-
-variable "azuread_clusterrole_map" {
-  description = "Map of Azure AD User and Group Ids to configure in Kubernetes clusterrolebindings"
-
-  type = object(
-    {
-      cluster_admin_users  = map(string)
-      cluster_view_users   = map(string)
-      standard_view_users  = map(string)
-      standard_view_groups = map(string)
-    }
-  )
-
-  default = {
-    cluster_admin_users = {
-    }
-    cluster_view_users   = {}
-    standard_view_users  = {}
-    standard_view_groups = {}
-  }
-}
