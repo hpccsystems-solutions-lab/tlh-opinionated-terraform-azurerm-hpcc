@@ -136,6 +136,8 @@ locals {
     resources             = v.resources
     egress                = v.egress
     gitUsername           = v.gitUsername
+    defaultRepo           = v.defaultRepo
+    defaultRepoVersion    = v.defaultRepoVersion
   }]
 
   ldap_defaults = {

@@ -768,6 +768,8 @@ variable "eclccserver_settings" {
     maxActive             = number
     egress                = optional(string)
     gitUsername           = optional(string)
+    defaultRepo           = optional(string)
+    defaultRepoVersion    = optional(string)
     childProcessTimeLimit = optional(number)
     resources = object({
       cpu    = string
