@@ -15,7 +15,7 @@ resource "kubernetes_secret" "git_approle_secret_id" {
   data = {
     secret_id = each.value.secret_value
   }
-  type = "kubernetes.io/basic-auth"
+  type = "Opaque"
 }
 
 resource "kubernetes_secret" "ecl_approle_secret_id" {
@@ -35,7 +35,7 @@ resource "kubernetes_secret" "ecl_approle_secret_id" {
   data = {
     secret_id = each.value.secret_value
   }
-  type = "kubernetes.io/basic-auth"
+  type = "Opaque"
 }
 
 resource "kubernetes_secret" "ecluser_approle_secret_id" {
