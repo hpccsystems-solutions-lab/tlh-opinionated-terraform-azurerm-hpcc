@@ -38,12 +38,12 @@ resource "kubernetes_secret" "ecl_approle_secret_id" {
   type = "kubernetes.io/basic-auth"
 }
 
-resource "kubernetes_secret" "eclUser_approle_secret_id" {
+resource "kubernetes_secret" "ecluser_approle_secret_id" {
   depends_on = [
     kubernetes_namespace.default
   ]
 
-  for_each = local.vault_enabled && var.vault_secrets.eclUser_approle_secret != null ? var.vault_secrets.eclUser_approle_secret : {}
+  for_each = local.vault_enabled && var.vault_secrets.ecluser_approle_secret != null ? var.vault_secrets.ecluser_approle_secret : {}
 
 
   metadata {

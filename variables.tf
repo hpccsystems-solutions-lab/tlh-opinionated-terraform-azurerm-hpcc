@@ -1097,7 +1097,7 @@ variable "vault_secrets" {
       secret_name  = optional(string)
       secret_value = optional(string)
     }))
-    eclUser_approle_secret = map(object({
+    ecluser_approle_secret = map(object({
       secret_name  = optional(string)
       secret_value = optional(string)
     }))
@@ -1105,7 +1105,7 @@ variable "vault_secrets" {
   default = {
     git_approle_secret     = null
     ecl_approle_secret     = null
-    eclUser_approle_secret = null
+    ecluser_approle_secret = null
   }
 }
 
@@ -1193,7 +1193,7 @@ variable "vault_config" {
       role_id         = optional(string)
       secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
     })),
-    eclUser = map(object({
+    ecluser = map(object({
       name            = optional(string)
       url             = optional(string)
       kind            = optional(string)

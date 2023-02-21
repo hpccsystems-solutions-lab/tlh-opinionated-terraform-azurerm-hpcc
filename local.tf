@@ -154,7 +154,7 @@ locals {
   vault_secrets = local.vault_enabled ? { for k in local.all_vault_secrets : k.secret_name => k.secret_name
     # git-approle-secret = kubernetes_secret.git_approle_secret_id.0.metadata.0.name
     # ecl-approle-secret     = kubernetes_secret.ecl_approle_secret_id.0.metadata.0.name
-    # ecluser-approle-secret = kubernetes_secret.eclUser_approle_secret_id.0.metadata.0.name
+    # ecluser-approle-secret = kubernetes_secret.ecluser_approle_secret_id.0.metadata.0.name
   } : null
 
   vault_git_config = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
@@ -175,7 +175,7 @@ locals {
     appRoleSecret = v.secret_name
   }] : null
 
-  vault_eclUser_config = var.vault_config.eclUser != null ? [for k, v in var.vault_config.eclUser : {
+  vault_ecluser_config = var.vault_config.ecluser != null ? [for k, v in var.vault_config.ecluser : {
     name          = v.name
     url           = v.url
     kind          = v.kind
@@ -854,9 +854,9 @@ locals {
     }
 
     vaults = local.vault_enabled ? {
-      # git     = local.vault_git_config
+      git     = local.vault_git_config
       ecl     = local.vault_ecl_config
-      eclUser = local.vault_eclUser_config
+      ecluser = local.vault_ecluser_config
       esp     = local.vault_esp_config
     } : null
 
