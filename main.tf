@@ -124,7 +124,7 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.dali_hpcc_admin,
     kubernetes_secret.dali_ldap_admin,
     kubernetes_secret.esp_ldap_admin,
-    kubernetes_secret.azure_log_analytics_workspace,
+    # kubernetes_secret.azure_log_analytics_workspace,
     kubernetes_secret.git_approle_secret_id,
     kubernetes_secret.ecl_approle_secret_id,
     kubernetes_secret.ecluser_approle_secret_id,
