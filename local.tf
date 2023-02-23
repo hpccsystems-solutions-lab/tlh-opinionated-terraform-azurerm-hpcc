@@ -148,13 +148,7 @@ locals {
     ldapSecurePort = 636
   }
 
-  # Log Access Secret Section 
 
-  log_access_enabled = var.log_access_config == null ? false : true
-
-  # log_access_secrets = local.log_access_enabled ? {
-  #   azure-logaccess : kubernetes_secret.azure_log_analytics_workspace.0.metadata.0.name
-  # } : null
 
   # Vault Secrets Section
   vault_enabled = var.vault_config == null && var.vault_config != null ? false : true

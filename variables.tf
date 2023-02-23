@@ -780,12 +780,9 @@ variable "eclccserver_settings" {
   }))
   default = {
     "myeclccserver" = {
-      useChildProcesses     = false
-      cpu                   = "1"
-      memory                = "4G"
-      maxActive             = 4
-      replicas              = 1
-      childProcessTimeLimit = 86400
+      useChildProcesses = false
+      maxActive         = 4
+      replicas          = 1
       resources = {
         cpu    = "1"
         memory = "4G"
@@ -1088,19 +1085,6 @@ variable "secrets" {
   }
 }
 
-variable "log_access_config" {
-  description = "Required Variable for enabling Log Access"
-  type = object({
-    AAD_CLIENT_ID    = string # Service Principal Client ID
-    AAD_SECRET_ID    = string # Service Principal Secret ID
-    AAD_TENANT_ID    = string # Your Tenant ID
-    LAW_WORKSPACE_ID = string # Workspace or Customer ID of your LAW
-    OBJECT_ID        = string # Log Analytics Workspace ID
-    LAW_SCOPE        = string # Log Analytics Workspace Scope for Access, typically your subscription ID
-  })
-  default = null
-}
-
 
 variable "vault_secrets" {
   description = "System Secrets"
@@ -1128,6 +1112,7 @@ variable "vault_secrets" {
     ecluser_approle_secret = null
     esp_approle_secret     = null
   }
+
 }
 
 variable "corsallowed_enable" {
@@ -1168,29 +1153,6 @@ variable "egress_engine" {
         ]
       }
     ]
-    # ,
-    # thorEgress = [
-    #   {
-    #     to = [{
-    #       ipBlock = {
-    #         cidr = "10.9.8.7/32"
-    #       },
-    #       ipBlock = {
-    #         cidr = "10.0.1.0/24"
-    #       }
-    #     }]
-    #     ports = [
-    #       {
-    #         protocol = "TCP"
-    #         port     = 443
-    #       },
-    #       {
-    #         protocol = "TCP"
-    #         port     = 8899
-    #       }
-    #     ]
-    #   }
-    # ]
   }
 }
 
@@ -1204,7 +1166,7 @@ variable "vault_config" {
       kind            = optional(string)
       vault_namespace = optional(string)
       role_id         = optional(string)
-      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
     })),
     ecl = map(object({
       name            = optional(string)
@@ -1212,7 +1174,7 @@ variable "vault_config" {
       kind            = optional(string)
       vault_namespace = optional(string)
       role_id         = optional(string)
-      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
     })),
     ecluser = map(object({
       name            = optional(string)
@@ -1220,7 +1182,7 @@ variable "vault_config" {
       kind            = optional(string)
       vault_namespace = optional(string)
       role_id         = optional(string)
-      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
     }))
     esp = map(object({
       name            = optional(string)
@@ -1228,7 +1190,7 @@ variable "vault_config" {
       kind            = optional(string)
       vault_namespace = optional(string)
       role_id         = optional(string)
-      secret_name     = optional(string) # Should match the secret name created in the system_secrets variable
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
     }))
   })
   default = null
