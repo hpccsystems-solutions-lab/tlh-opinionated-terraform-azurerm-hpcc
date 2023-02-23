@@ -551,6 +551,64 @@ module "hpcc" {
       egress                = "engineEgress"
       gitUsername           = "svc-hpcc-pubrec-git"
       childProcessTimeLimit = "86400"
+      defaultRepo = "<default repo>"
+      defaultRepoVersion = "data-build-prod"
+    }
+  }
+
+  vault_secrets = {
+    git_approle_secret = {
+      "git-approle-secret-one" = {
+        secret_name  = "git-approle-secret-one"
+        secret_value = "<your_secret_id>"
+      }
+    },
+    ecl_approle_secret = null,
+    ecluser_approle_secret = {
+      "ecluser-approle-secret-one" = {
+        secret_name  = "ecluser-approle-secret-one"
+        secret_value = "<your_secret_id>"
+      }
+    },
+    esp_approle_secret = {
+      "esp-approle-secret-one" = {
+        secret_name = "esp-approle-secret-one"
+        secret_value = "<your_secret_id>"
+      }
+    }
+  }
+
+  vault_config = {
+    git = {
+      "git-1" = {
+        name = "my-git-vault"
+        url : "<Your Vault URL>"
+        kind : "kv-v2"
+        role_id         = "<your role_id>"
+        secret_name     = "git-approle-secret-one"
+        vault_namespace = "hpccsystems"
+      },
+    }
+    ecl = null,
+    esp = {
+      "my-esp-vault" = {
+        name            = "my-esp-vault"
+        url             = "<Your Vault URL>"
+        kind            = "kv-v2"
+        role_id         = "<your role_id>"
+        secret_name     = "esp-approle-secret-one"
+        vault_namespace = "hpccsystems"
+      }
+    },
+    ecluser = {
+      "my-eclUser-vault" = {
+        name            = "my-eclUser-vault"
+        url             = "<Your Vault URL>"
+        kind            = "kv-v2"
+        role_id         = "<your role_id>"
+        secret_name     = "ecluser-approle-secret-one"
+        vault_namespace = "hpccsystems"
+      }
     }
   }
 }
