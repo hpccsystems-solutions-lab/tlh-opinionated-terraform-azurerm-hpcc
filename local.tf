@@ -667,7 +667,10 @@ locals {
           kind   = "Issuer"
           domain = var.internal_domain
           spec = {
-            selfSigned = {}
+            # selfSigned = {}
+            ca = {
+              secretName = "hpcc-public-issuer-key-pair"
+            }
           }
         }
         remote = {
