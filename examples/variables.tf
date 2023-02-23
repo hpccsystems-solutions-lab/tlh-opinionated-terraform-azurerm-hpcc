@@ -164,25 +164,6 @@ variable "hpcc_container" {
   # default   = null
 }
 
-variable "hpcc_container_registry_auth" {
-  description = "Registry authentication for HPCC containers."
-  type = object({
-    password = string
-    username = string
-  })
-  default   = null
-  sensitive = true
-}
-
-variable "private_cidrs" {
-  description = "Private AKS cidrs"
-  type        = list(string)
-}
-
-variable "public_cidrs" {
-  description = "Public AKS cidrs"
-  type        = list(string)
-}
 
 variable "tfe_prod_subnet_id" {
   description = "Terraform enterprise Subnet id"
@@ -202,7 +183,7 @@ variable "jfrog_registry" {
   sensitive = true
 }
 
-variable "container_registry_auth" {
+variable "jfrog_auth" {
   description = "values to set as secrets for JFrog repo access"
   type = object({
     username = string

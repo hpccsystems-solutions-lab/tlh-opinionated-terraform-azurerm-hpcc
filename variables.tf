@@ -763,10 +763,14 @@ variable "disable_rowservice" {
 variable "eclccserver_settings" {
   description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
   type = map(object({
-    useChildProcesses = bool
-    replicas          = number
-    maxActive         = number
-    egress            = optional(string)
+    useChildProcesses     = bool
+    replicas              = number
+    maxActive             = number
+    egress                = optional(string)
+    gitUsername           = optional(string)
+    defaultRepo           = optional(string)
+    defaultRepoVersion    = optional(string)
+    childProcessTimeLimit = optional(number)
     resources = object({
       cpu    = string
       memory = string
@@ -776,12 +780,9 @@ variable "eclccserver_settings" {
   }))
   default = {
     "myeclccserver" = {
-      useChildProcesses     = false
-      cpu                   = "1"
-      memory                = "4G"
-      maxActive             = 4
-      replicas              = 1
-      childProcessTimeLimit = 86400
+      useChildProcesses = false
+      maxActive         = 4
+      replicas          = 1
       resources = {
         cpu    = "1"
         memory = "4G"
@@ -1083,6 +1084,37 @@ variable "secrets" {
     remote_cert_secret = {}
   }
 }
+
+
+variable "vault_secrets" {
+  description = "System Secrets"
+  type = object({
+    git_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
+    ecl_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
+    ecluser_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
+    esp_approle_secret = map(object({
+      secret_name  = optional(string)
+      secret_value = optional(string)
+    }))
+  })
+  default = {
+    git_approle_secret     = null
+    ecl_approle_secret     = null
+    ecluser_approle_secret = null
+    esp_approle_secret     = null
+  }
+
+}
+
 variable "corsallowed_enable" {
   description = "Enable cors allowed on ECL watch"
   type        = bool
@@ -1121,31 +1153,49 @@ variable "egress_engine" {
         ]
       }
     ]
-    # ,
-    # thorEgress = [
-    #   {
-    #     to = [{
-    #       ipBlock = {
-    #         cidr = "10.9.8.7/32"
-    #       },
-    #       ipBlock = {
-    #         cidr = "10.0.1.0/24"
-    #       }
-    #     }]
-    #     ports = [
-    #       {
-    #         protocol = "TCP"
-    #         port     = 443
-    #       },
-    #       {
-    #         protocol = "TCP"
-    #         port     = 8899
-    #       }
-    #     ]
-    #   }
-    # ]
   }
 }
+
+
+variable "vault_config" {
+  description = "Input for vault secrets."
+  type = object({
+    git = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
+    })),
+    ecl = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
+    })),
+    ecluser = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
+    }))
+    esp = map(object({
+      name            = optional(string)
+      url             = optional(string)
+      kind            = optional(string)
+      vault_namespace = optional(string)
+      role_id         = optional(string)
+      secret_name     = optional(string) # Should match the secret name created in the corresponding vault_secrets variable
+    }))
+  })
+  default = null
+}
+
 
 variable "egress" {
   description = "egress settings"

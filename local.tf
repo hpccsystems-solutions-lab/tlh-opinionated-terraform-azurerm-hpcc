@@ -136,6 +136,8 @@ locals {
     resources             = v.resources
     egress                = v.egress
     gitUsername           = v.gitUsername
+    defaultRepo           = v.defaultRepo
+    defaultRepoVersion    = v.defaultRepoVersion
   }]
 
   ldap_defaults = {
@@ -146,6 +148,55 @@ locals {
     ldapSecurePort = 636
   }
 
+
+
+  # Vault Secrets Section
+  vault_enabled = var.vault_config == null && var.vault_config != null ? false : true
+
+  all_vault_secrets = local.vault_enabled ? values(merge(var.vault_secrets.ecluser_approle_secret, var.vault_secrets.ecl_approle_secret, var.vault_secrets.git_approle_secret, var.vault_secrets.esp_approle_secret)) : []
+
+  vault_secrets = local.vault_enabled ? { for k in local.all_vault_secrets : k.secret_name => k.secret_name
+
+  } : null
+
+
+  vault_git_config = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_name
+  }] : null
+
+  vault_ecl_config = var.vault_config.ecl != null ? [for k, v in var.vault_config.ecl : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_name
+  }] : null
+
+  vault_ecluser_config = var.vault_config.ecluser != null ? [for k, v in var.vault_config.ecluser : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_name
+  }] : null
+
+  vault_esp_config = var.vault_config.esp != null ? [for k, v in var.vault_config.esp : {
+    name          = v.name
+    url           = v.url
+    kind          = v.kind
+    namespace     = v.vault_namespace
+    appRoleId     = v.role_id
+    appRoleSecret = v.secret_name
+  }] : null
+
+  # LDAP Secrets section 
   ldap_enabled = var.ldap_config == null ? false : true
 
   auth_mode = local.ldap_enabled ? "ldap" : "none"
@@ -454,9 +505,46 @@ locals {
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 
+      # Log Analytics Integration Values
+      logAccess = {
+        name = "Azure LogAnalytics LogAccess"
+        type = "AzureLogAnalyticsCurl"
+        logMaps = [{
+          type            = "global"
+          storeName       = "ContainerLog"
+          searchColumn    = "LogEntry"
+          timeStampColumn = "hpcc_log_timestamp"
+          }, {
+          type         = "workunits"
+          storeName    = "ContainerLog"
+          searchColumn = "hpcc_log_jobid"
+          }, {
+          type            = "components"
+          storeName       = "ContainerInventory"
+          searchColumn    = "Name"
+          keyColumn       = "ContainerID"
+          timeStampColumn = "TimeGenerated"
+          }, {
+          type         = "audience"
+          searchColumn = "hpcc_log_audience"
+          }, {
+          type         = "class"
+          searchColumn = "hpcc_log_class"
+          }, {
+          type         = "instance"
+          storeName    = "ContainerInventory"
+          searchColumn = "Name"
+          }, {
+          type         = "host"
+          searchColumn = "Computer"
+        }]
+      }
 
 
+
+      # Egress Values 
       egress = var.egress_engine
+
       visibilities = {
         cluster = {
           type = "ClusterIP"
@@ -803,8 +891,16 @@ locals {
       ecl        = {}
       git        = {}
       storage    = var.secrets.remote_cert_secret
-      system     = {}
+      system     = merge(local.vault_secrets, {})
+      esp        = {}
     }
+
+    vaults = local.vault_enabled ? {
+      git     = local.vault_git_config
+      ecl     = local.vault_ecl_config
+      eclUser = local.vault_ecluser_config
+      esp     = local.vault_esp_config
+    } : null
 
   }
 
