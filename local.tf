@@ -663,11 +663,10 @@ locals {
           }
         }
         public = {
-          name   = "hpcc-public-issuer"
-          kind   = "Issuer"
+          name   = "zerossl"
+          kind   = "ClusterIssuer"
           domain = var.internal_domain
           spec = {
-            # selfSigned = {}
             ca = {
               secretName = "hpcc-public-issuer-key-pair"
             }
