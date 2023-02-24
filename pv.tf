@@ -129,27 +129,52 @@ resource "kubernetes_persistent_volume" "hpc_cache" {
   }
 }
 
+# resource "kubernetes_persistent_volume" "spill" {
+
+#   count = local.spill_space_enabled ? 1 : 0
+
+#   metadata {
+#     labels = {
+#       storage-tier = "spill"
+#     }
+#     name = "${var.namespace.name}-pv-spill"
+#   }
+#   spec {
+#     capacity = {
+#       storage = "${var.spill_volume_size}G"
+#     }
+#     access_modes = ["ReadWriteOnce"]
+#     persistent_volume_source {
+#       host_path {
+#         path = "/mnt"
+#       }
+#     }
+#     storage_class_name = "spill"
+#   }
+# }
+
+# Multiple Spill PVs - Issue #123
+
 resource "kubernetes_persistent_volume" "spill" {
 
-  count = local.spill_space_enabled ? 1 : 0
-
+  for_each = local.spill_space_enabled ? var.spill_volumes : {}
   metadata {
     labels = {
-      storage-tier = "spill"
+      storage-tier = each.value.storage_class
     }
-    name = "${var.namespace.name}-pv-spill"
+    name = "${var.namespace.name}-pv-${each.value.name}"
   }
   spec {
     capacity = {
-      storage = "${var.spill_volume_size}G"
+      storage = "${each.value.size}G"
     }
-    access_modes = ["ReadWriteOnce"]
+    access_modes = ["${each.value.access_mode}"]
     persistent_volume_source {
       host_path {
-        path = "/mnt"
+        path = each.value.host_path
       }
     }
-    storage_class_name = "spill"
+    storage_class_name = each.value.storage_class
   }
 }
 

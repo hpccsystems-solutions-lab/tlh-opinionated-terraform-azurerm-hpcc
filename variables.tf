@@ -672,10 +672,21 @@ variable "roxie_config" {
   ]
 }
 
-variable "spill_volume_size" {
-  description = "Size of spill volume to be created (in GB)."
-  type        = number
-  default     = null
+variable "spill_volumes" {
+  description = "Spill Volumes"
+  type = map(object({
+    name          = optional(string, "spill")                      # "Name of spill volume to be created."
+    size          = optional(number, 2)                            # "Size of spill volume to be created (in GB)."
+    prefix        = optional(string, "/var/lib/HPCCSystems/spill") # "Prefix of spill volume to be created."
+    host_path     = optional(string, "/mnt")                       # "Host path on spill volume to be created."
+    storage_class = optional(string, "spill")                      # "Storage class of spill volume to be used."
+    access_mode   = optional(string, "ReadWriteOnce")              # "Access mode of spill volume to be used."
+  }))
+
+  validation = {
+    condition     = alltrue([for v in values(var.spill_volumes) : contains(["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod"], v.access_mode)])
+    error_message = "Access Mode can only be one of the following values: ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod."
+  }
 }
 
 variable "thor_config" {
@@ -701,6 +712,7 @@ variable "thor_config" {
     prefix              = string
     egress              = string
     tolerations_value   = string
+    spillPlane          = string
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -729,6 +741,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
+    spillPlane          = "spill"
     egress              = "engineEgress"
     tolerations_value   = "thorpool"
     workerMemory = {

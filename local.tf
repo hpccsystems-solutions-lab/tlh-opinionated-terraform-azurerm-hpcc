@@ -39,7 +39,7 @@ locals {
   blob_nfs_data_enabled  = local.storage_config.blob_nfs == null ? false : true
   hpc_cache_data_enabled = local.storage_config.hpc_cache == null ? false : true
   remote_data_enabled    = local.storage_config.hpcc == null ? false : true
-  spill_space_enabled    = var.spill_volume_size == null ? false : true
+  spill_space_enabled    = length(var.spill_volumes) > 0 ? true : false
 
   blob_nfs_data_storage = local.blob_nfs_data_enabled ? { for plane in local.storage_config.blob_nfs :
     length(local.storage_config.blob_nfs) == 1 ? "data" : "data-${plane.id}" => {
@@ -618,12 +618,11 @@ locals {
             prefix     = "/var/lib/HPCCSystems/hpcc-data"
             pvc        = "pvc-hpc-cache-data"
           }
-          ] : [], local.spill_space_enabled ? [
-          {
+          ] : [], local.spill_space_enabled ? [for k, v in var.spill_volumes : {
             category         = "spill"
-            name             = "localspill"
-            prefix           = "/var/lib/HPCCSystems/spill"
-            pvc              = "pvc-spill"
+            name             = v.name
+            prefix           = v.prefix
+            pvc              = "${var.namespace.name}-pvc-${v.name}"
             forcePermissions = true
           }
         ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
