@@ -18,7 +18,7 @@ spec:
    - Georgia
   isCA: true
   issuerRef:
-    name: ${name}
+    name: ${issuerName}
     group: "cert-manager.io"
     kind: Issuer
   dnsNames:

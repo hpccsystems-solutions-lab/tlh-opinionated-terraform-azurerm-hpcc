@@ -27,7 +27,7 @@ resource "kubectl_manifest" "local_issuer_cert" {
  apiVersion: cert-manager.io/v1
  kind: Certificate
  metadata:
-  name: "hpcc-local-issuer"
+  name: "hpcc-local-certificate"
   namespace: ${var.namespace}
  spec:
   secretName: "hpcc-local-issuer-key-pair"
@@ -80,7 +80,7 @@ resource "kubectl_manifest" "remote_cert_issuer" {
  apiVersion: cert-manager.io/v1
  kind: Certificate
  metadata:
-  name: "hpcc-remote-issuer"
+  name: "hpcc-remote-certificate"
   namespace: ${var.namespace}
  spec:
   secretName: "hpcc-remote-issuer-key-pair"
@@ -135,7 +135,7 @@ resource "kubectl_manifest" "signing_cert_issuer" {
  apiVersion: cert-manager.io/v1
  kind: Certificate
  metadata:
-  name: "hpcc-signing-issuer"
+  name: "hpcc-signing-certificate"
   namespace: ${var.namespace}
  spec:
   secretName: "hpcc-signing-issuer-key-pair"
@@ -178,8 +178,9 @@ resource "kubernetes_manifest" "public_cert_issuer" {
   manifest = yamldecode(templatefile(
     "${path.module}/certificate.yml",
     {
-      "name"       = "zerossl"
+      "name"       = "hpcc-public-certificate"
       "secretName" = "hpcc-public-issuer-key-pair"
+      "issuerName" = "zerossl"
       "dnsNames"   = var.internal_domain
       "namespace"  = "cert-manager"
     }

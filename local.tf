@@ -666,7 +666,7 @@ locals {
           name   = "zerossl"
           kind   = "ClusterIssuer"
           domain = var.internal_domain
-          spec = null
+          spec   = null
         }
         remote = {
           enabled = true
