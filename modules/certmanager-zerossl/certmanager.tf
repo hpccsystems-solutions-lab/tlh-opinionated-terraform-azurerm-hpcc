@@ -178,7 +178,7 @@ resource "kubernetes_manifest" "public_cert_issuer" {
   manifest = yamldecode(templatefile(
     "${path.module}/certificate.yml",
     {
-      "name"       = "hpcc-public-issuer"
+      "name"       = "zerossl"
       "secretName" = "hpcc-public-issuer-key-pair"
       "dnsNames"   = var.internal_domain
       "namespace"  = "cert-manager"

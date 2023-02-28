@@ -666,11 +666,7 @@ locals {
           name   = "zerossl"
           kind   = "ClusterIssuer"
           domain = var.internal_domain
-          spec = {
-            ca = {
-              secretName = "hpcc-public-issuer-key-pair"
-            }
-          }
+          spec = null
         }
         remote = {
           enabled = true
