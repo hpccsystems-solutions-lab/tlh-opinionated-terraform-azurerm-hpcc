@@ -51,29 +51,29 @@ resource "kubectl_manifest" "local_issuer_cert" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubectl_manifest.local_issuer]
+  # depends_on = [kubectl_manifest.local_issuer]
 }
 
 # ###############remote########################
-resource "kubectl_manifest" "remote_issuer" {
+# resource "kubectl_manifest" "remote_issuer" {
 
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-   name: "hpcc-remote-issuer"
-   namespace: ${var.namespace}
-   labels: 
-    app.kubernetes.io/managed-by: "Helm"
-   annotations:
-    meta.helm.sh/release-name: "hpcc"
-    meta.helm.sh/release-namespace: ${var.namespace}
-  spec:
-    selfSigned: {}
-  EOF
-  server_side_apply = true
-  ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
-}
+#   yaml_body         = <<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#    name: "hpcc-remote-issuer"
+#    namespace: ${var.namespace}
+#    labels: 
+#     app.kubernetes.io/managed-by: "Helm"
+#    annotations:
+#     meta.helm.sh/release-name: "hpcc"
+#     meta.helm.sh/release-namespace: ${var.namespace}
+#   spec:
+#     selfSigned: {}
+#   EOF
+#   server_side_apply = true
+#   ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
+# }
 resource "kubectl_manifest" "remote_cert_issuer" {
 
   yaml_body         = <<-EOF
@@ -104,30 +104,30 @@ resource "kubectl_manifest" "remote_cert_issuer" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubectl_manifest.remote_issuer]
+  # depends_on = [kubectl_manifest.remote_issuer]
 }
 
 # ###################signing#################
-resource "kubectl_manifest" "signing_issuer" {
+# resource "kubectl_manifest" "signing_issuer" {
 
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-   name: "hpcc-signing-issuer"
-   namespace: ${var.namespace}
-   labels: 
-    app.kubernetes.io/managed-by: "Helm"
-   annotations:
-    meta.helm.sh/release-name: "hpcc"
-    meta.helm.sh/release-namespace: ${var.namespace}
-  spec:
-    selfSigned: {}
-  EOF
-  server_side_apply = true
-  ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
+#   yaml_body         = <<-EOF
+#   apiVersion: cert-manager.io/v1
+#   kind: Issuer
+#   metadata:
+#    name: "hpcc-signing-issuer"
+#    namespace: ${var.namespace}
+#    labels: 
+#     app.kubernetes.io/managed-by: "Helm"
+#    annotations:
+#     meta.helm.sh/release-name: "hpcc"
+#     meta.helm.sh/release-namespace: ${var.namespace}
+#   spec:
+#     selfSigned: {}
+#   EOF
+#   server_side_apply = true
+#   ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
 
-}
+# }
 
 resource "kubectl_manifest" "signing_cert_issuer" {
 
@@ -159,7 +159,7 @@ resource "kubectl_manifest" "signing_cert_issuer" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubectl_manifest.signing_issuer]
+  # depends_on = [kubectl_manifest.signing_issuer]
 }
 
 # ##################public #####################
@@ -184,5 +184,5 @@ resource "kubernetes_manifest" "public_cert_issuer" {
       "namespace"  = "cert-manager"
     }
   ))
-  depends_on = [kubernetes_manifest.public_issuer]
+  # depends_on = [kubernetes_manifest.public_issuer]
 }
