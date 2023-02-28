@@ -180,7 +180,7 @@ resource "kubernetes_manifest" "public_cert_issuer" {
     {
       "name"       = "hpcc-public-certificate"
       "secretName" = "hpcc-public-issuer-key-pair"
-      "issuerName" = "letsencrypt-staging"
+      "issuerName" = "zerossl"
       "dnsNames"   = var.internal_domain
       "namespace"  = "cert-manager"
     }
