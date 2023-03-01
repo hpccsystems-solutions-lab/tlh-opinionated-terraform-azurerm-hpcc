@@ -135,6 +135,7 @@ locals {
     maxActive             = v.maxActive
     resources             = v.resources
     egress                = v.egress
+    listen                = v.listen_queue
     gitUsername           = v.gitUsername
     defaultRepo           = v.defaultRepo
     defaultRepoVersion    = v.defaultRepoVersion

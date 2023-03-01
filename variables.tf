@@ -803,6 +803,7 @@ variable "eclccserver_settings" {
       cpu    = string
       memory = string
     })
+    listen_queue          = optional(list(string))
     childProcessTimeLimit = optional(number)
     gitUsername           = optional(string)
   }))
