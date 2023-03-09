@@ -139,6 +139,7 @@ locals {
     gitUsername           = v.gitUsername
     defaultRepo           = v.defaultRepo
     defaultRepoVersion    = v.defaultRepoVersion
+    options               = v.legacySyntax != false ? concat([{ name = "eclcc-legacyimport", value = 1 }, { name = "eclcc-legacywhen", value = 1 }], v.options) : v.options
   }]
 
   ldap_defaults = {

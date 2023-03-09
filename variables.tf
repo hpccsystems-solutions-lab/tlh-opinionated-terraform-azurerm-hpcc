@@ -806,6 +806,11 @@ variable "eclccserver_settings" {
     listen_queue          = optional(list(string))
     childProcessTimeLimit = optional(number)
     gitUsername           = optional(string)
+    legacySyntax          = optional(bool)
+    options = optional(list(object({
+      name  = string
+      value = string
+    })))
   }))
   default = {
     "myeclccserver" = {
@@ -816,6 +821,8 @@ variable "eclccserver_settings" {
         cpu    = "1"
         memory = "4G"
       }
+      legacySyntax = false
+      options      = []
   } }
 }
 
