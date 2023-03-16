@@ -135,9 +135,11 @@ locals {
     maxActive             = v.maxActive
     resources             = v.resources
     egress                = v.egress
+    listen                = v.listen_queue
     gitUsername           = v.gitUsername
     defaultRepo           = v.defaultRepo
     defaultRepoVersion    = v.defaultRepoVersion
+    options               = v.legacySyntax != false ? concat([{ name = "eclcc-legacyimport", value = 1 }, { name = "eclcc-legacywhen", value = 1 }], v.options) : v.options
   }]
 
   ldap_defaults = {
@@ -495,9 +497,17 @@ locals {
   helm_chart_values = {
 
     global = {
-      env                  = [for k, v in var.environment_variables : { name = k, value = v }]
-      noResourceValidation = true
-      busybox              = local.acr_default.busybox
+      env = [for k, v in var.environment_variables : { name = k, value = v }]
+      expert = {
+        numRenameRetries = var.global_num_rename_retries
+        maxConnections   = var.global_max_connections
+        keepalive = {
+          interval = var.keepalive_settings.interval
+          probes   = var.keepalive_settings.probes
+          time     = var.keepalive_settings.time
+        }
+      }
+      busybox = local.acr_default.busybox
       image = merge({
         version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
         root       = var.hpcc_container.image_root

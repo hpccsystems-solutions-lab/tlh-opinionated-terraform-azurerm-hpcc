@@ -227,6 +227,34 @@ variable "helm_chart_version" {
   default     = "8.6.20"
 }
 
+#178 - Adding variables  to support keep alive and max connections like expert global setttings
+
+variable "keepalive_settings" {
+  description = "Keepalive settings - Global.expert level."
+  type = object({
+    interval = number
+    probes   = number
+    time     = number
+  })
+  default = {
+    interval = 75
+    probes   = 9
+    time     = 200
+  }
+}
+
+variable "global_max_connections" {
+  description = "Value for Global.maxConnections - Global.expert level."
+  type        = number
+  default     = null
+}
+
+variable "global_num_rename_retries" {
+  description = "Value for Global.numRenameRetries - Global.expert level."
+  type        = number
+  default     = null
+}
+
 variable "enable_premium_zrs_storage_class" {
   description = "Storage class to use for ZRS file shares."
   type        = bool
@@ -775,8 +803,14 @@ variable "eclccserver_settings" {
       cpu    = string
       memory = string
     })
+    listen_queue          = optional(list(string))
     childProcessTimeLimit = optional(number)
     gitUsername           = optional(string)
+    legacySyntax          = optional(bool)
+    options = optional(list(object({
+      name  = string
+      value = string
+    })))
   }))
   default = {
     "myeclccserver" = {
@@ -787,6 +821,8 @@ variable "eclccserver_settings" {
         cpu    = "1"
         memory = "4G"
       }
+      legacySyntax = false
+      options      = []
   } }
 }
 
