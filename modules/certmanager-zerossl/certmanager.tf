@@ -1,25 +1,24 @@
 ###local_issuer####
 ######
-# resource "kubectl_manifest" "local_issuer" {
+resource "kubectl_manifest" "default_issuer" {
 
-#   yaml_body         = <<-EOF
-#   apiVersion: cert-manager.io/v1
-#   kind: Issuer
-#   metadata:
-#    name: "hpcc-local-issuer"
-#    namespace: ${var.namespace}
-#    labels: 
-#     app.kubernetes.io/managed-by: "Helm"
-#    annotations:
-#     meta.helm.sh/release-name: "hpcc"
-#     meta.helm.sh/release-namespace: ${var.namespace}
-#   spec:
-#     selfSigned: {}
-#   EOF
-#   server_side_apply = true
-#   ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
-
-# }
+  yaml_body         = <<-EOF
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+   name: "hpcc-default-issuer"
+   namespace: ${var.namespace}
+   labels: 
+    app.kubernetes.io/managed-by: "Helm"
+   annotations:
+    meta.helm.sh/release-name: "hpcc"
+    meta.helm.sh/release-namespace: ${var.namespace}
+  spec:
+    selfSigned: {}
+  EOF
+  server_side_apply = true
+  ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
+}
 
 resource "kubectl_manifest" "local_issuer_cert" {
 
@@ -44,37 +43,18 @@ resource "kubectl_manifest" "local_issuer_cert" {
    - Georgia
   isCA: true
   issuerRef:
-    name: "hpcc-local-issuer"
+    name: "hpcc-default-issuer"
     kind: Issuer
   dnsNames:
   - ${var.internal_domain}
   EOF
   server_side_apply = true
 
-  # depends_on = [kubectl_manifest.local_issuer]
+  depends_on = [kubectl_manifest.default_issuer]
 }
 
-# ###############remote########################
-# resource "kubectl_manifest" "remote_issuer" {
-
-#   yaml_body         = <<-EOF
-#   apiVersion: cert-manager.io/v1
-#   kind: Issuer
-#   metadata:
-#    name: "hpcc-remote-issuer"
-#    namespace: ${var.namespace}
-#    labels: 
-#     app.kubernetes.io/managed-by: "Helm"
-#    annotations:
-#     meta.helm.sh/release-name: "hpcc"
-#     meta.helm.sh/release-namespace: ${var.namespace}
-#   spec:
-#     selfSigned: {}
-#   EOF
-#   server_side_apply = true
-#   ignore_fields     = ["metadata.annotations", "metadata.labels", "spec.selfSigned"]
-# }
-resource "kubectl_manifest" "remote_cert_issuer" {
+# Remote Certificate
+resource "kubectl_manifest" "remote_certificate" {
 
   yaml_body         = <<-EOF
  apiVersion: cert-manager.io/v1
@@ -97,14 +77,14 @@ resource "kubectl_manifest" "remote_cert_issuer" {
    - Georgia
   isCA: true
   issuerRef:
-    name: "hpcc-remote-issuer"
+    name: "hpcc-default-issuer"
     kind: Issuer
   dnsNames:
   - ${var.internal_domain}
   EOF
   server_side_apply = true
 
-  # depends_on = [kubectl_manifest.remote_issuer]
+  depends_on = [kubectl_manifest.default_issuer]
 }
 
 # ###################signing#################
@@ -159,20 +139,10 @@ resource "kubectl_manifest" "signing_cert_issuer" {
   EOF
   server_side_apply = true
 
-  # depends_on = [kubectl_manifest.signing_issuer]
+  depends_on = [kubectl_manifest.default_issuer]
+
 }
 
-# ##################public #####################
-
-# resource "kubernetes_manifest" "public_issuer" {
-#   manifest = yamldecode(templatefile(
-#     "${path.module}/issuer.yml",
-#     {
-#       "name"      = "hpcc-public-issuer"
-#       "namespace" = var.namespace
-#     }
-#   ))
-# }
 
 resource "kubernetes_manifest" "public_cert_issuer" {
   manifest = yamldecode(templatefile(
@@ -185,5 +155,4 @@ resource "kubernetes_manifest" "public_cert_issuer" {
       "namespace"  = "cert-manager"
     }
   ))
-  # depends_on = [kubernetes_manifest.public_issuer]
 }
