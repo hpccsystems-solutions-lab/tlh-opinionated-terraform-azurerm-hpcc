@@ -129,7 +129,7 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.ecluser_approle_secret_id,
     kubernetes_secret.esp_approle_secret_id,
     module.node_tuning,
-    # module.certmanager,
+    module.certmanager,
     # kubectl_manifest.local_secret,
     # kubectl_manifest.remote_secret,
     # kubectl_manifest.signing_secret,
