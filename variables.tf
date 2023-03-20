@@ -711,10 +711,10 @@ variable "spill_volumes" {
     access_mode   = optional(string, "ReadWriteOnce")              # "Access mode of spill volume to be used."
   }))
 
-  validation = {
-    condition     = alltrue([for v in values(var.spill_volumes) : contains(["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod"], v.access_mode)])
-    error_message = "Access Mode can only be one of the following values: ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod."
-  }
+  # validation = {
+  #   condition     = alltrue([for v in values(var.spill_volumes) : contains(["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod"], v.access_mode)])
+  #   error_message = "Access Mode can only be one of the following values: ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod."
+  # }
 }
 
 variable "thor_config" {
