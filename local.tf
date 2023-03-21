@@ -789,7 +789,7 @@ locals {
 
     esp = [
       merge({
-        name          = "dfs"
+        name          = format("dfs-%s", var.namespace.name)
         application   = "dfs"
         remoteClients = var.esp_remoteclients
         auth          = "none"
@@ -805,7 +805,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "eclwatch"
+        name        = format("eclwatch-%s", var.namespace.name)
         application = "eclwatch"
         auth        = local.auth_mode
         replicas    = 1
@@ -833,7 +833,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "eclqueries"
+        name        = format("eclqueries-%s", var.namespace.name)
         application = "eclqueries"
         auth        = local.auth_mode
         replicas    = 1
@@ -848,7 +848,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "esdl-sandbox"
+        name        = format("esdl-sandbox-%s", var.namespace.name)
         application = "esdl-sandbox"
         auth        = local.auth_mode
         replicas    = 1
@@ -863,7 +863,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "sql2ecl"
+        name        = format("sql2ecl-%s", var.namespace.name)
         application = "sql2ecl"
         auth        = local.auth_mode
         replicas    = 1
