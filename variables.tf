@@ -798,7 +798,6 @@ variable "eclccserver_settings" {
     gitUsername           = optional(string)
     defaultRepo           = optional(string)
     defaultRepoVersion    = optional(string)
-    childProcessTimeLimit = optional(number)
     resources = object({
       cpu    = string
       memory = string
@@ -817,6 +816,7 @@ variable "eclccserver_settings" {
       useChildProcesses = false
       maxActive         = 4
       replicas          = 1
+      childProcessTimeLimit = 10
       resources = {
         cpu    = "1"
         memory = "4G"
