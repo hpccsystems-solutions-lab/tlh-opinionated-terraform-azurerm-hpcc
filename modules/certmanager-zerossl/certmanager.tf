@@ -1,4 +1,4 @@
-###local_issuer####
+###default_issuer####
 ######
 resource "kubectl_manifest" "default_issuer" {
 
@@ -122,16 +122,3 @@ resource "kubectl_manifest" "signing_certificate" {
 
 }
 
-
-# resource "kubernetes_manifest" "public_cert_issuer" {
-#   manifest = yamldecode(templatefile(
-#     "${path.module}/certificate.yml",
-#     {
-#       "name"       = "hpcc-public-certificate"
-#       "secretName" = "hpcc-public-issuer-key-pair"
-#       "issuerName" = "zerossl"
-#       "dnsNames"   = var.internal_domain
-#       "namespace"  = "cert-manager"
-#     }
-#   ))
-# }
