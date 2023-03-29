@@ -791,14 +791,13 @@ variable "disable_rowservice" {
 variable "eclccserver_settings" {
   description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
   type = map(object({
-    useChildProcesses     = bool
-    replicas              = number
-    maxActive             = number
-    egress                = optional(string)
-    gitUsername           = optional(string)
-    defaultRepo           = optional(string)
-    defaultRepoVersion    = optional(string)
-    childProcessTimeLimit = optional(number)
+    useChildProcesses  = bool
+    replicas           = number
+    maxActive          = number
+    egress             = optional(string)
+    gitUsername        = optional(string)
+    defaultRepo        = optional(string)
+    defaultRepoVersion = optional(string)
     resources = object({
       cpu    = string
       memory = string
@@ -814,9 +813,10 @@ variable "eclccserver_settings" {
   }))
   default = {
     "myeclccserver" = {
-      useChildProcesses = false
-      maxActive         = 4
-      replicas          = 1
+      useChildProcesses     = false
+      maxActive             = 4
+      replicas              = 1
+      childProcessTimeLimit = 10
       resources = {
         cpu    = "1"
         memory = "4G"
