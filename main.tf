@@ -18,77 +18,11 @@ module "node_tuning" {
 }
 
 module "certmanager" {
-  source          = "./modules/certmanager"
+  source          = "./modules/certmanager-zerossl"
   internal_domain = var.internal_domain
   namespace       = var.namespace.name
 
   depends_on = [kubernetes_namespace.default]
-}
-
-resource "kubectl_manifest" "remote_secret" {
-
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-remote-issuer
-    namespace: ${var.namespace.name}
-    labels: 
-     app.kubernetes.io/managed-by: "Helm"
-    annotations:
-     meta.helm.sh/release-name: "hpcc"
-     meta.helm.sh/release-namespace: ${var.namespace.name}
-  spec:
-    ca: 
-     secretName: "hpcc-remote-issuer-key-pair"
-  EOF
-  server_side_apply = true
-
-  depends_on = [module.certmanager]
-}
-
-resource "kubectl_manifest" "local_secret" {
-
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-local-issuer
-    namespace: ${var.namespace.name}
-    labels: 
-     app.kubernetes.io/managed-by: "Helm"
-    annotations:
-     meta.helm.sh/release-name: "hpcc"
-     meta.helm.sh/release-namespace: ${var.namespace.name}
-  spec:
-    ca: 
-     secretName: "hpcc-local-issuer-key-pair"
-  EOF
-  server_side_apply = true
-
-  depends_on = [module.certmanager]
-}
-
-resource "kubectl_manifest" "signing_secret" {
-
-  yaml_body         = <<-EOF
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: hpcc-signing-issuer
-    namespace: ${var.namespace.name}
-    labels: 
-     app.kubernetes.io/managed-by: "Helm"
-    annotations:
-     meta.helm.sh/release-name: "hpcc"
-     meta.helm.sh/release-namespace: ${var.namespace.name}
-  spec:
-    ca: 
-     secretName: "hpcc-signing-issuer-key-pair"
-  EOF
-  server_side_apply = true
-
-  depends_on = [module.certmanager]
 }
 
 ## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
@@ -130,9 +64,9 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.esp_approle_secret_id,
     module.node_tuning,
     module.certmanager,
-    kubectl_manifest.local_secret,
-    kubectl_manifest.remote_secret,
-    kubectl_manifest.signing_secret,
+    # kubectl_manifest.local_secret,
+    # kubectl_manifest.remote_secret,
+    # kubectl_manifest.signing_secret,
     null_resource.service_delete_script
   ]
 
