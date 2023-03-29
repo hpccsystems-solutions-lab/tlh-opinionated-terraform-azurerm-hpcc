@@ -2,7 +2,7 @@ name: terraform validation
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main]
     paths:
       - "**.tf"
   workflow_dispatch:
