@@ -842,6 +842,7 @@ variable "dali_settings" {
       cpu    = string
       memory = string
     })
+    maxStartupTime = number
   })
   default = {
     coalescer = {
@@ -857,6 +858,7 @@ variable "dali_settings" {
       cpu    = "2"
       memory = "8G"
     }
+    maxStartupTime = 1200
   }
 }
 

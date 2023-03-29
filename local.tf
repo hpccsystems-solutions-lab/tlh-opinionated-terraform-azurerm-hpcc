@@ -748,8 +748,9 @@ locals {
 
     dali = [
       merge({
-        name = "mydali"
-        auth = local.auth_mode
+        name           = "mydali"
+        auth           = local.auth_mode
+        maxStartupTime = var.dali_settings.maxStartupTime
         services = {
           coalescer = {
             service = {
