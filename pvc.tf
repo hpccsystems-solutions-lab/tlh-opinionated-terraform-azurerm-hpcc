@@ -153,7 +153,6 @@ resource "kubernetes_persistent_volume_claim" "remotedata" {
 ## L Series PVCs
 
 resource "kubernetes_persistent_volume_claim" "l_spill_one" {
-  wait_until_bound = true
   depends_on = [
     kubernetes_namespace.default,
   ]
@@ -182,7 +181,6 @@ resource "kubernetes_persistent_volume_claim" "l_spill_one" {
 }
 
 resource "kubernetes_persistent_volume_claim" "l_spill_two" {
-  wait_until_bound = true
   depends_on = [
     kubernetes_namespace.default,
   ]
