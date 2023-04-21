@@ -665,7 +665,7 @@ locals {
       {
         category         = "spill"
         name             = "local-spill-pvc2"
-        prefix           = v.prefix
+        prefix           = "/var/lib/HPCCSystems/spill"
         pvc              = "pvc-spill-local-2"
         forcePermissions = true
       }
