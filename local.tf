@@ -635,7 +635,22 @@ locals {
             pvc              = "${var.namespace.name}-pvc-${v.name}"
             forcePermissions = true
           }
-        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
+          ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], [ # L Series Spill Stuff
+          {
+            category         = "spill"
+            name             = "local-spill-pvc1"
+            prefix           = "/var/lib/HPCCSystems/spilla"
+            pvc              = "pvc-spill-local-1"
+            forcePermissions = true
+          },
+          {
+            category         = "spill"
+            name             = "local-spill-pvc2"
+            prefix           = "/var/lib/HPCCSystems/spillb"
+            pvc              = "pvc-spill-local-2"
+            forcePermissions = true
+          },
+        ],
         local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
           {
             category   = "remote"
@@ -656,20 +671,6 @@ locals {
             }
           ]
       }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {},
-      {
-        category         = "spill"
-        name             = "local-spill-pvc1"
-        prefix           = "/var/lib/HPCCSystems/spilla"
-        pvc              = "pvc-spill-local-1"
-        forcePermissions = true
-      },
-      {
-        category         = "spill"
-        name             = "local-spill-pvc2"
-        prefix           = "/var/lib/HPCCSystems/spillb"
-        pvc              = "pvc-spill-local-2"
-        forcePermissions = true
-      }
     )
 
     certificates = {
