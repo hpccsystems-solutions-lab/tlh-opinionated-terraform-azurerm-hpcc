@@ -154,6 +154,9 @@ resource "kubernetes_persistent_volume_claim" "remotedata" {
 
 resource "kubernetes_persistent_volume_claim" "l_spill_one" {
   wait_until_bound = true
+  depends_on = [
+    kubernetes_namespace.default,
+  ]
   metadata {
     name      = "pvc-spill-local-1"
     namespace = "hpcc"
@@ -163,7 +166,7 @@ resource "kubernetes_persistent_volume_claim" "l_spill_one" {
     storage_class_name = "local-nvme-delete"
     resources {
       requests = {
-        storage = "2T"
+        storage = "1788Gi"
       }
     }
     selector {
@@ -180,6 +183,9 @@ resource "kubernetes_persistent_volume_claim" "l_spill_one" {
 
 resource "kubernetes_persistent_volume_claim" "l_spill_two" {
   wait_until_bound = true
+  depends_on = [
+    kubernetes_namespace.default,
+  ]  
   metadata {
     name      = "pvc-spill-local-2"
     namespace = "hpcc"
