@@ -120,6 +120,8 @@ resource "helm_release" "hpcc" {
     kubernetes_persistent_volume_claim.blob_nfs,
     kubernetes_persistent_volume_claim.hpc_cache,
     kubernetes_persistent_volume_claim.spill,
+    kubernetes_persistent_volume_claim.l_spill_one,
+    kubernetes_persistent_volume_claim.l_spill_two,
     kubernetes_secret.hpcc_container_registry_auth,
     kubernetes_secret.dali_hpcc_admin,
     kubernetes_secret.dali_ldap_admin,
