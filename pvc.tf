@@ -185,7 +185,7 @@ resource "kubernetes_persistent_volume_claim" "l_spill_two" {
   wait_until_bound = true
   depends_on = [
     kubernetes_namespace.default,
-  ]  
+  ]
   metadata {
     name      = "pvc-spill-local-2"
     namespace = "hpcc"
