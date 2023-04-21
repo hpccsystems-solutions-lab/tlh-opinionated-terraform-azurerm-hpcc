@@ -148,3 +148,58 @@ resource "kubernetes_persistent_volume_claim" "remotedata" {
     create = "5m"
   }
 }
+
+
+## L Series PVCs
+
+resource "kubernetes_persistent_volume_claim" "l_spill_one" {
+  wait_until_bound = true
+  metadata {
+    name      = "pvc-spill-local-1"
+    namespace = "hpcc"
+  }
+  spec {
+    access_modes       = ["ReadOnlyMany"]
+    storage_class_name = "local-nvme-delete"
+    resources {
+      requests = {
+        storage = "2T"
+      }
+    }
+    selector {
+      match_labels = {
+        storage-tier = "local-nvme-delete"
+      }
+    }
+  }
+
+  timeouts {
+    create = "5m"
+  }
+}
+
+resource "kubernetes_persistent_volume_claim" "l_spill_two" {
+  wait_until_bound = true
+  metadata {
+    name      = "pvc-spill-local-2"
+    namespace = "hpcc"
+  }
+  spec {
+    access_modes       = ["ReadOnlyMany"]
+    storage_class_name = "local-nvme-delete"
+    resources {
+      requests = {
+        storage = "1788Gi"
+      }
+    }
+    selector {
+      match_labels = {
+        storage-tier = "local-nvme-delete"
+      }
+    }
+  }
+
+  timeouts {
+    create = "5m"
+  }
+}
