@@ -655,17 +655,18 @@ locals {
               local  = format("%s-remote-hpcc-data", k)
             }
           ]
-      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}, {
+      }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {}, 
+      {
       category                                       = "spill"
       name                                           = "local-spill-pvc1"
-      prefix                                         = "/var/lib/HPCCSystems/spill"
+      prefix                                         = "/var/lib/HPCCSystems/spilla"
       pvc                                            = "pvc-spill-local-1"
       forcePermissions                               = true
       },
       {
         category         = "spill"
         name             = "local-spill-pvc2"
-        prefix           = "/var/lib/HPCCSystems/spill"
+        prefix           = "/var/lib/HPCCSystems/spillb"
         pvc              = "pvc-spill-local-2"
         forcePermissions = true
       }
