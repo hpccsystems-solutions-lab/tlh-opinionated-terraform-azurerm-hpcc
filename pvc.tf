@@ -152,60 +152,60 @@ resource "kubernetes_persistent_volume_claim" "remotedata" {
 
 ## L Series PVCs
 
-resource "kubernetes_persistent_volume_claim" "l_spill_one" {
-  depends_on = [
-    kubernetes_namespace.default,
-    helm_release.hpcc,    
-  ]
-  metadata {
-    name      = "pvc-spill-local-1"
-    namespace = "hpcc"
-  }
-  spec {
-    access_modes       = ["ReadOnlyMany"]
-    storage_class_name = "local-nvme-delete"
-    resources {
-      requests = {
-        storage = "1788Gi"
-      }
-    }
-    selector {
-      match_labels = {
-        storage-tier = "local-nvme-delete"
-      }
-    }
-  }
+# resource "kubernetes_persistent_volume_claim" "l_spill_one" {
+#   depends_on = [
+#     kubernetes_namespace.default,
+#     helm_release.hpcc,    
+#   ]
+#   metadata {
+#     name      = "pvc-spill-local-1"
+#     namespace = "hpcc"
+#   }
+#   spec {
+#     access_modes       = ["ReadOnlyMany"]
+#     storage_class_name = "local-nvme-delete"
+#     resources {
+#       requests = {
+#         storage = "1788Gi"
+#       }
+#     }
+#     selector {
+#       match_labels = {
+#         storage-tier = "local-nvme-delete"
+#       }
+#     }
+#   }
 
-  timeouts {
-    create = "5m"
-  }
-}
+#   timeouts {
+#     create = "5m"
+#   }
+# }
 
-resource "kubernetes_persistent_volume_claim" "l_spill_two" {
-  depends_on = [
-    kubernetes_namespace.default,
-    helm_release.hpcc,
-  ]
-  metadata {
-    name      = "pvc-spill-local-2"
-    namespace = "hpcc"
-  }
-  spec {
-    access_modes       = ["ReadOnlyMany"]
-    storage_class_name = "local-nvme-delete"
-    resources {
-      requests = {
-        storage = "1788Gi"
-      }
-    }
-    selector {
-      match_labels = {
-        storage-tier = "local-nvme-delete"
-      }
-    }
-  }
+# resource "kubernetes_persistent_volume_claim" "l_spill_two" {
+#   depends_on = [
+#     kubernetes_namespace.default,
+#     helm_release.hpcc,
+#   ]
+#   metadata {
+#     name      = "pvc-spill-local-2"
+#     namespace = "hpcc"
+#   }
+#   spec {
+#     access_modes       = ["ReadOnlyMany"]
+#     storage_class_name = "local-nvme-delete"
+#     resources {
+#       requests = {
+#         storage = "1788Gi"
+#       }
+#     }
+#     selector {
+#       match_labels = {
+#         storage-tier = "local-nvme-delete"
+#       }
+#     }
+#   }
 
-  timeouts {
-    create = "5m"
-  }
-}
+#   timeouts {
+#     create = "5m"
+#   }
+# }
