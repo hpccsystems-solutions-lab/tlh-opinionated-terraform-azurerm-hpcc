@@ -155,6 +155,7 @@ resource "kubernetes_persistent_volume_claim" "remotedata" {
 resource "kubernetes_persistent_volume_claim" "l_spill_one" {
   depends_on = [
     kubernetes_namespace.default,
+    helm_release.hpcc,    
   ]
   metadata {
     name      = "pvc-spill-local-1"
@@ -183,6 +184,7 @@ resource "kubernetes_persistent_volume_claim" "l_spill_one" {
 resource "kubernetes_persistent_volume_claim" "l_spill_two" {
   depends_on = [
     kubernetes_namespace.default,
+    helm_release.hpcc,
   ]
   metadata {
     name      = "pvc-spill-local-2"
