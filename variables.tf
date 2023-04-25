@@ -1298,8 +1298,8 @@ variable "eclagent_settings" {
 }
 
 variable "external_secrets" {
-  type = optional(object({
-    enabled = optional(bool, false)
+  type = object({
+    enabled = bool
     namespace = optional(object({
       name   = string
       labels = map(string)
@@ -1317,5 +1317,8 @@ variable "external_secrets" {
     #         property = string
     #     })
     # }))
-  }))
+  })
+  default = {
+    enabled = false
+  }
 }
