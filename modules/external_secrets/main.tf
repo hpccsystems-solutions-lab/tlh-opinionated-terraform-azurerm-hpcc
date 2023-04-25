@@ -73,7 +73,7 @@ resource "kubectl_manifest" "secretstores" {
       vault:
         server: "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
         namespace: "hpccsystems/hpccsystems_test"
-        path: "smallscaletest_dev"
+        path: "smallscaletest_dev/"
         version: "v2"
         auth:
           appRole:
@@ -109,8 +109,16 @@ resource "kubectl_manifest" "externalsecrets" {
     data:
     - secretKey: ca.crt
       remoteRef:
-        key: /client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        key: client-remote-dfs-dfs-hpcc-insuranceprod-tls
         property: ca.crt
+    - secretKey: tls.key
+      remoteRef:
+        key: client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        property: tls.key
+    - secretKey: tls.crt
+      remoteRef:
+        key: client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        property: tls.crt                
   EOF
   server_side_apply = true
 
