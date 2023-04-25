@@ -30,7 +30,7 @@ resource "kubernetes_secret" "secret_id" {
 
   metadata {
     name      = "external-secrets-approle-secret"
-    namespace = var.namespace.name
+    namespace = "hpcc"
   }
 
   data = {
