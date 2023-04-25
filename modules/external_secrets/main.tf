@@ -18,7 +18,7 @@ resource "helm_release" "external-secret-operator" {
   ]
 
   depends_on = [
-    kubernetes_namespace.default
+    kubernetes_namespace.external-secrets
   ]
 }
 
