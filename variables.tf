@@ -1296,3 +1296,26 @@ variable "eclagent_settings" {
     }
   }
 }
+
+variable "external_secrets" {
+  type = object({
+    enabled = optional(bool, false)
+    namespace = optional(object({
+      name   = string
+      labels = map(string)
+      }), {
+      name = "external-secrets"
+      labels = {
+        name = "external-secrets"
+      }
+    })
+    vault_secret_id = optional(string, "")
+    # secrets = map(object({
+    #     secretKey = string
+    #     remoteRef = object({
+    #         key = string
+    #         property = string
+    #     })
+    # }))
+  })
+}

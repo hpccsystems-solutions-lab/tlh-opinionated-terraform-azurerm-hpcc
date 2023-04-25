@@ -25,6 +25,20 @@ module "certmanager" {
   depends_on = [kubernetes_namespace.default]
 }
 
+module "external_secrets" {
+  source = "./modules/external_secrets"
+
+  depends_on = [kubernetes_namespace.default]
+
+  count = var.external_secrets.enabled ? 1 : 0
+
+  namespace       = var.external_secrets.namespace
+  vault_secret_id = var.external_secrets.vault_secret_id
+
+  # secret_id = kubernetes_secret.secret_id.data
+  # secrets   = kubernetes_secret.secrets.data
+}
+
 ## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
 
 resource "null_resource" "service_delete_script" {
@@ -64,6 +78,7 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.esp_approle_secret_id,
     module.node_tuning,
     module.certmanager,
+    module.external_secrets,
     # kubectl_manifest.local_secret,
     # kubectl_manifest.remote_secret,
     # kubectl_manifest.signing_secret,
