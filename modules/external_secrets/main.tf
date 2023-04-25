@@ -73,7 +73,7 @@ resource "kubectl_manifest" "secretstores" {
       vault:
         server: "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
         namespace: "hpccsystems/hpccsystems_test"
-        path: "smallscaletest"
+        path: "smallscaletest_dev"
         version: "v2"
         auth:
           appRole:
