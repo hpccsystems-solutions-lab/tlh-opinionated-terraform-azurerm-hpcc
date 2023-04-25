@@ -1,8 +1,8 @@
 variable "namespace" {
-  type = {
+  type = object({
     name   = string
     labels = map(string)
-  }
+  })
 }
 
 variable "vault_secret_id" {
