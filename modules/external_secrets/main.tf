@@ -43,131 +43,76 @@ resource "kubernetes_secret" "secret_id" {
 # Creates a secret that will store what is taken from vault
 
 
-# resource "kubernetes_secret" "secrets" {
+resource "kubernetes_secret" "init-secrets" {
 
-#   for_each = local.namespaces_set_all
-#   metadata {
-#     name      = "${each.value}-secrets"
-#     namespace = each.value
-#   }
+  metadata {
+    name      = "smallscaletest-dev-remote-secrets"
+    namespace = "hpcc"
+  }
 
-#   data = {
-#     extra = "dGhpcyBpcyBleHRyYSBmcm9tIGNyZWF0aW5nIHRoZSBzZWNyZXQ="
-#   }
+  data = {
+    extra = "dGhpcyBpcyBleHRyYSBmcm9tIGNyZWF0aW5nIHRoZSBzZWNyZXQ="
+  }
 
-#   depends_on = [helm_release.external-secret-operator]
-# }
+  depends_on = [helm_release.external-secret-operator]
+}
 
 # Creates a secretstore for each namespace listed in locals.tf varticals
 # Secretstore connects to vault on a specified path 
 
-# resource "kubectl_manifest" "secretstores" {
+resource "kubectl_manifest" "secretstores" {
 
-#   provider = kubectl.stable
+  yaml_body         = <<-EOF
+  apiVersion: external-secrets.io/v1beta1
+  kind: SecretStore
+  metadata:
+    name: smallscaletest-dev-secretstore
+    namespace: hpcc
+  spec:
+    provider:
+      vault:
+        server: "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
+        namespace: "hpccsystems/hpccsystems_test"
+        path: "smallscaletest"
+        version: "v2"
+        auth:
+          appRole:
+            path: "approle"
+            roleId: "403cb692-00ea-0524-c6a3-dd4695810704"
+            secretRef:
+              name: "external-secrets-approle-secret"
+              key: "secretId"
+  EOF
+  server_side_apply = true
 
-#   for_each          = local.namespaces_set_all
-#   yaml_body         = <<-EOF
-#   apiVersion: external-secrets.io/v1beta1
-#   kind: SecretStore
-#   metadata:
-#     name: ${each.value}-secretstore
-#     namespace: ${each.value}
-#   spec:
-#     provider:
-#       vault:
-#         server: "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
-#         namespace: "dataengineering/dops/prod"
-#         path: "${format("%s", split("-", each.value)[1])}"
-#         version: "v2"
-#         auth:
-#           appRole:
-#             path: "approle"
-#             roleId: ${var.VAULT_ROLE_ID}
-#             secretRef:
-#               name: "vault-approle-secret"
-#               key: "secretId"
-#   EOF
-#   server_side_apply = true
-
-#   depends_on = [kubernetes_secret.secret_id, kubernetes_secret.secrets]
-# }
+  depends_on = [kubernetes_secret.init-secrets, kubernetes_secret.secret_id]
+}
 
 # # Creates an externalsecret for each namespace listed in locals.tf verticals
 # # Specifies the data to be pulled from vault
-# resource "kubectl_manifest" "externalsecrets" {
 
-#   provider = kubectl.stable
 
-#   for_each = local.namespaces_set_all
+resource "kubectl_manifest" "externalsecrets" {
+  yaml_body         = <<-EOF
+  apiVersion: external-secrets.io/v1beta1
+  kind: ExternalSecret
+  metadata:
+    name: smallscaletest-dev-externalsecrets
+    namespace: hpcc
+  spec:
+    refreshInterval: "1m"
+    secretStoreRef:
+      name: smallscaletest-dev-secretstore
+      kind: SecretStore
+    target:
+      name: "smallscaletest-dev-remote-secrets"
+    data:
+    - secretKey: ca.crt
+      remoteRef:
+        key: /client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        property: ca.crt
+  EOF
+  server_side_apply = true
 
-#   yaml_body         = <<-EOF
-#   apiVersion: external-secrets.io/v1beta1
-#   kind: ExternalSecret
-#   metadata:
-#     name: ${each.value}-externalsecrets
-#     namespace: ${each.value}
-#   spec:
-#     refreshInterval: "1m"
-#     secretStoreRef:
-#       name: ${each.value}-secretstore
-#       kind: SecretStore
-#     target:
-#       name: ${each.value}-secrets
-#     data:
-#     - secretKey: DB_NAME
-#       remoteRef:
-#         key: /db
-#         property: DB_NAME 
-#     - secretKey: DB_PASS
-#       remoteRef:
-#         key: /db
-#         property: DB_PASS
-#     - secretKey: DB_PORT
-#       remoteRef:
-#         key: /db
-#         property: DB_PORT
-#     - secretKey: DB_SERVER
-#       remoteRef:
-#         key: /db
-#         property: DB_SERVER
-#     - secretKey: DB_USER
-#       remoteRef:
-#         key: /db
-#         property: DB_USER
-#     - secretKey: HPCC_PASS
-#       remoteRef:
-#         key: /hpcc
-#         property: HPCC_PASS
-#     - secretKey: HPCC_USER
-#       remoteRef:
-#         key: /hpcc
-#         property: HPCC_USER
-#     - secretKey: ORBIT_EDPW
-#       remoteRef:
-#         key: /orbit
-#         property: ORBIT_EDPW
-#     - secretKey: ORBIT_ENUN
-#       remoteRef:
-#         key: /orbit
-#         property: ORBIT_ENUN
-#     - secretKey: ORBIT_PASS
-#       remoteRef:
-#         key: /orbit
-#         property: ORBIT_PASS
-#     - secretKey: ORBIT_PRENPW
-#       remoteRef:
-#         key: /orbit
-#         property: ORBIT_PRENPW
-#     - secretKey: ORBIT_QAENPW
-#       remoteRef:
-#         key: /orbit
-#         property: ORBIT_QAENPW
-#     - secretKey: ORBIT_USER
-#       remoteRef:
-#         key: /orbit
-#         property: ORBIT_USER
-#   EOF
-#   server_side_apply = true
-
-#   depends_on = [kubectl_manifest.secretstores]
-# }
+  depends_on = [kubectl_manifest.secretstores]
+}
