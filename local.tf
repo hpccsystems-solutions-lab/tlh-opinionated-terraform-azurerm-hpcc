@@ -641,14 +641,14 @@ locals {
             name             = "local-spill-pvc1"
             prefix           = "/var/lib/HPCCSystems/spilla"
             storageClass     = "local-nvme-delete"
-            storageSize     = "1788Gi"
+            storageSize     = "1700Gi"
           },
           {
             category         = "spill"
             name             = "local-spill-pvc2"
             prefix           = "/var/lib/HPCCSystems/spillb"
             storageClass     = "local-nvme-delete"
-            storageSize     = "1788Gi"
+            storageSize     = "1500Gi"
           },
         ],
         local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
