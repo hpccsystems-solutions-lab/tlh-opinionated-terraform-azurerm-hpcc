@@ -1015,7 +1015,7 @@ variable "cluster_name" {
 
 variable "esp_remoteclients" {
   description = "name of the remote client cert to be installed"
-  type        = list(map(string))
+  type        = any
   default = [
     {
       name = "insuranceprod"
