@@ -1019,8 +1019,10 @@ variable "esp_remoteclients" {
   default = [
     {
       name = "insuranceprod"
+      secretTemplate = {
       labels = {
         "vault_destination" = "smallscaletest_dev"
+      }
       }
     }
   ]
