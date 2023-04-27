@@ -1020,9 +1020,25 @@ variable "esp_remoteclients" {
     {
       name = "insuranceprod"
       secretTemplate = {
-      labels = {
-        "vault_destination" = "smallscaletest_dev"
+        labels = {
+          "vault_destination" = "smallscaletest_dev"
+        }
       }
+    },
+    {
+      name = "dopsprod"
+      secretTemplate = {
+        labels = {
+          "vault_destination" = "smallscaletest_dev"
+        }
+      }
+    },
+    {
+      name = "rampsprod"
+      secretTemplate = {
+        labels = {
+          "vault_destination" = "dops_dev"
+        }
       }
     }
   ]
