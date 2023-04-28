@@ -46,7 +46,21 @@ resource "kubernetes_secret" "secret_id" {
 resource "kubernetes_secret" "init-secrets" {
 
   metadata {
-    name      = "smallscaletest-dev-remote-secrets"
+    name      = "smallscaletest-dev-remote-secret-insuranceprod"
+    namespace = "hpcc"
+  }
+
+  data = {
+    extra = "dGhpcyBpcyBleHRyYSBmcm9tIGNyZWF0aW5nIHRoZSBzZWNyZXQ="
+  }
+
+  depends_on = [helm_release.external-secret-operator]
+}
+
+resource "kubernetes_secret" "init-secrets-two" {
+
+  metadata {
+    name      = "smallscaletest-dev-remote-secrets-dopsprod"
     namespace = "hpcc"
   }
 
@@ -91,6 +105,7 @@ resource "kubectl_manifest" "secretstores" {
 # # Creates an externalsecret for each namespace listed in locals.tf verticals
 # # Specifies the data to be pulled from vault
 
+# Insurance External Secret 
 
 resource "kubectl_manifest" "externalsecrets" {
   yaml_body         = <<-EOF
@@ -105,7 +120,7 @@ resource "kubectl_manifest" "externalsecrets" {
       name: smallscaletest-dev-secretstore
       kind: SecretStore
     target:
-      name: "smallscaletest-dev-remote-secrets"
+      name: "smallscaletest-dev-remote-secret-insuranceprod"
     data:
     - secretKey: ca.crt
       remoteRef:
@@ -118,6 +133,40 @@ resource "kubectl_manifest" "externalsecrets" {
     - secretKey: tls.crt
       remoteRef:
         key: client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        property: tls.crt                
+  EOF
+  server_side_apply = true
+
+  depends_on = [kubectl_manifest.secretstores]
+}
+
+
+resource "kubectl_manifest" "externalsecrets_two" {
+  yaml_body         = <<-EOF
+  apiVersion: external-secrets.io/v1beta1
+  kind: ExternalSecret
+  metadata:
+    name: smallscaletest-dev-externalsecrets-two
+    namespace: hpcc
+  spec:
+    refreshInterval: "1m"
+    secretStoreRef:
+      name: smallscaletest-dev-secretstore
+      kind: SecretStore
+    target:
+      name: "smallscaletest-dev-remote-secret-insuranceprod"
+    data:
+    - secretKey: ca.crt
+      remoteRef:
+        key: client-remote-dfs-dfs-hpcc-dopsprod-tls
+        property: ca.crt
+    - secretKey: tls.key
+      remoteRef:
+        key: client-remote-dfs-dfs-hpcc-dopsprod-tls
+        property: tls.key
+    - secretKey: tls.crt
+      remoteRef:
+        key: client-remote-dfs-dfs-hpcc-dopsprod-tls
         property: tls.crt                
   EOF
   server_side_apply = true
