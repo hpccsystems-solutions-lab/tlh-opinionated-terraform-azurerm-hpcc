@@ -1347,7 +1347,7 @@ variable "external_secrets" {
 variable "share_certificates_cron_job" {
   description = "Configuration for Cron job which is responsible for sharing certificates between vaults"
   type = object({
-    enabled = optional(bool, false)
+    enabled = bool
     cron_job_settings = object({
       schedule                      = optional(string, "0 */2 * * *") # Every 2 hours
       starting_deadline_seconds     = optional(number, 10)
@@ -1360,4 +1360,7 @@ variable "share_certificates_cron_job" {
       container_startup_command     = optional(list(string), ["python3", "vault_secret.py"]) # Startup Command if you are using the Image Built by HPCC OPS
     })
   })
+  default = {
+    enabled = false
+  }
 }
