@@ -1348,7 +1348,7 @@ variable "share_certificates_cron_job" {
   description = "Configuration for Cron job which is responsible for sharing certificates between vaults"
   type = object({
     enabled = bool
-    cron_job_settings = object({
+    cron_job_settings = optional(object({
       schedule                      = optional(string, "0 */2 * * *") # Every 2 hours
       starting_deadline_seconds     = optional(number, 10)
       failed_jobs_history_limit     = optional(number, 5)
@@ -1358,7 +1358,7 @@ variable "share_certificates_cron_job" {
       container_name                = optional(string, "share-certificates")
       container_image               = optional(string)
       container_startup_command     = optional(list(string), ["python3", "vault_secret.py"]) # Startup Command if you are using the Image Built by HPCC OPS
-    })
+    }))
   })
   default = {
     enabled = false
