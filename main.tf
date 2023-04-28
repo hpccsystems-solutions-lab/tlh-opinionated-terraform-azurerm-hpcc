@@ -17,12 +17,20 @@ module "node_tuning" {
 
 }
 
-module "certmanager" {
-  source          = "./modules/certmanager-zerossl"
+module "certificates" {
+  source          = "./modules/certificates"
   internal_domain = var.internal_domain
   namespace       = var.namespace.name
 
   depends_on = [kubernetes_namespace.default]
+}
+
+module "sharing_certificates" {
+  source = "./modules/sharing_certificates"
+
+  depends_on = [
+    kubernetes_namespace.default
+  ]
 }
 
 module "external_secrets" {
@@ -77,11 +85,8 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.ecluser_approle_secret_id,
     kubernetes_secret.esp_approle_secret_id,
     module.node_tuning,
-    module.certmanager,
+    module.certificates,
     module.external_secrets,
-    # kubectl_manifest.local_secret,
-    # kubectl_manifest.remote_secret,
-    # kubectl_manifest.signing_secret,
     null_resource.service_delete_script
   ]
 
