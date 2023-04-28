@@ -25,20 +25,20 @@ module "certificates" {
   depends_on = [kubernetes_namespace.default]
 }
 
-module "sharing_certificates" {
-  source = "./modules/sharing_certificates"
+# module "sharing_certificates" {
+#   source = "./modules/sharing_certificates"
 
-  count = var.share_certificates_cron_job.enabled ? 1 : 0
+#   count = var.share_certificates_cron_job.enabled ? 1 : 0
 
-  namespace         = var.namespace.name
-  cron_job_settings = var.share_certificates_cron_job.cron_job_settings
-  environment       = var.environment
-  productname       = var.productname
+#   namespace         = var.namespace.name
+#   cron_job_settings = var.share_certificates_cron_job.cron_job_settings
+#   environment       = var.environment
+#   productname       = var.productname
 
-  depends_on = [
-    kubernetes_namespace.default
-  ]
-}
+#   depends_on = [
+#     kubernetes_namespace.default
+#   ]
+# }
 
 module "external_secrets" {
   source = "./modules/external_secrets"
