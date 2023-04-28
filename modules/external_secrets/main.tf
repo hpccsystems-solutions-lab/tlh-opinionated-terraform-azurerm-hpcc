@@ -112,7 +112,7 @@ resource "kubectl_manifest" "externalsecrets" {
   apiVersion: external-secrets.io/v1beta1
   kind: ExternalSecret
   metadata:
-    name: smallscaletest-dev-externalsecrets
+    name: smallscaletest-dev-externalsecrets-insuranceprod
     namespace: hpcc
   spec:
     refreshInterval: "1m"
@@ -146,7 +146,7 @@ resource "kubectl_manifest" "externalsecrets_two" {
   apiVersion: external-secrets.io/v1beta1
   kind: ExternalSecret
   metadata:
-    name: smallscaletest-dev-externalsecrets-two
+    name: smallscaletest-dev-externalsecrets-dopsprod
     namespace: hpcc
   spec:
     refreshInterval: "1m"
@@ -154,7 +154,7 @@ resource "kubectl_manifest" "externalsecrets_two" {
       name: smallscaletest-dev-secretstore
       kind: SecretStore
     target:
-      name: "smallscaletest-dev-remote-secret-insuranceprod"
+      name: "smallscaletest-dev-remote-secrets-dopsprod"
     data:
     - secretKey: ca.crt
       remoteRef:
