@@ -13,7 +13,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
   }
   spec {
     concurrency_policy            = "Replace"
-    failed_jobs_history_limit     = 5
+    failed_jobs_history_limit     = var.failed_jobs_history_limit
     schedule                      = var.schedule
     starting_deadline_seconds     = var.starting_deadline_seconds
     successful_jobs_history_limit = var.successful_jobs_history_limit
@@ -26,7 +26,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
           spec {
             container {
               name    = var.container_name
-              image   = var.container_image
+              image   = local.container_image
               command = var.container_startup_command
             }
           }

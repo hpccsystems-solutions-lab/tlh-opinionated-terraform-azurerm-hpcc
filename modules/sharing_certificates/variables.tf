@@ -16,3 +16,13 @@ variable "cron_job_settings" {
     container_startup_command = list(string)
   })
 }
+
+variable "environment" {
+  description = "Environment name where the resources are being deployed"
+  type = string
+}
+
+variable "productname" {
+  description = "Product name which is being deployed"
+  type = string
+}
