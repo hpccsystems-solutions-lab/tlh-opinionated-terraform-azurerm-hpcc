@@ -1015,33 +1015,13 @@ variable "cluster_name" {
 
 variable "esp_remoteclients" {
   description = "name of the remote client cert to be installed"
-  type        = any
-  default = [
-    {
-      name = "insuranceprod"
-      secretTemplate = {
-        labels = {
-          "vault_destination" = "smallscaletest_dev"
-        }
-      }
-    },
-    {
-      name = "dopsprod"
-      secretTemplate = {
-        labels = {
-          "vault_destination" = "smallscaletest_dev"
-        }
-      }
-    },
-    {
-      name = "rampsprod"
-      secretTemplate = {
-        labels = {
-          "vault_destination" = "dops_dev"
-        }
-      }
-    }
-  ]
+  type = optional(list(
+    optional(object({
+      name   = string
+      labels = map(string)
+    }))
+  ))
+  default = []
 }
 variable "placements" {
   description = "maxskew topologyspreadconstraints placements value for hppc"
