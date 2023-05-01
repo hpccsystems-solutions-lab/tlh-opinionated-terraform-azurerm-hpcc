@@ -150,6 +150,14 @@ locals {
     ldapSecurePort = 636
   }
 
+  # ESP Remote Clients 
+
+  esp_remoteclients = [for k, v in var.esp_remoteclients_test : {
+    name = v.name
+    secretTemplate = {
+      labels = v.labels
+    }
+  }]
 
 
   # Vault Secrets Section
@@ -792,7 +800,7 @@ locals {
       merge({
         name          = format("dfs-%s", var.namespace.name)
         application   = "dfs"
-        remoteClients = var.esp_remoteclients
+        remoteClients = local.esp_remoteclients
         auth          = "none"
         replicas      = 1
         service = {

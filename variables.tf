@@ -1013,15 +1013,23 @@ variable "cluster_name" {
   type        = string
 }
 
+# variable "esp_remoteclients" {
+#   description = "name of the remote client cert to be installed"
+#   type = optional(list(
+#     optional(object({
+#       name   = string
+#       labels = map(string)
+#     }))
+#   ))
+#   default = []
+# }
 variable "esp_remoteclients" {
-  description = "name of the remote client cert to be installed"
-  type = optional(list(
-    optional(object({
-      name   = string
-      labels = map(string)
-    }))
-  ))
-  default = []
+  type = map(object({
+    name   = string
+    labels = map(string)
+  }))
+
+  default = {}
 }
 variable "placements" {
   description = "maxskew topologyspreadconstraints placements value for hppc"
