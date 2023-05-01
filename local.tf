@@ -152,12 +152,12 @@ locals {
 
   # ESP Remote Clients 
 
-  esp_remoteclients = [for k, v in var.esp_remoteclients_test : {
+  esp_remoteclients = length(var.esp_remoteclients) > 0 ? [for k, v in var.esp_remoteclients : {
     name = v.name
     secretTemplate = {
       labels = v.labels
     }
-  }]
+  }] : []
 
 
   # Vault Secrets Section
