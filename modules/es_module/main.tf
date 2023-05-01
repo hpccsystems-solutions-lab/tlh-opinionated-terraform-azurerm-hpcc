@@ -10,7 +10,7 @@ resource "helm_release" "external-secret-operator" {
   name       = "external-secrets"
   repository = "https://charts.external-secrets.io"
   chart      = "external-secrets"
-  version    = "0.5.9"
+  version    = "0.8.1"
   namespace  = var.helm_namespace.name
 
   values = [

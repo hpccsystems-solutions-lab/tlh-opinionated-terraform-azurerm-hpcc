@@ -25,36 +25,36 @@ module "certificates" {
   depends_on = [kubernetes_namespace.default]
 }
 
-# module "external_secrets" {
-#   source = "./modules/es_module"
-
-#   depends_on = [kubernetes_namespace.default]
-
-#   count = var.external_secrets.enabled ? 1 : 0
-
-#   application_namespace = var.namespace.name
-#   helm_namespace  = var.external_secrets.namespace
-#   vault_secret_id = var.external_secrets.vault_secret_id
-#   secret_stores = var.external_secrets.secretStores
-
-#   # secret_id = kubernetes_secret.secret_id.data
-#   # secrets   = kubernetes_secret.secrets.data
-# }
-
-
 module "external_secrets" {
-  source = "./modules/external_secrets"
+  source = "./modules/es_module"
 
   depends_on = [kubernetes_namespace.default]
 
   count = var.external_secrets.enabled ? 1 : 0
 
-  namespace       = var.external_secrets.namespace
+  application_namespace = var.namespace.name
+  helm_namespace  = var.external_secrets.namespace
   vault_secret_id = var.external_secrets.vault_secret_id
+  secret_stores = var.external_secrets.secret_stores
 
   # secret_id = kubernetes_secret.secret_id.data
   # secrets   = kubernetes_secret.secrets.data
 }
+
+
+# module "external_secrets" {
+#   source = "./modules/external_secrets"
+
+#   depends_on = [kubernetes_namespace.default]
+
+#   count = var.external_secrets.enabled ? 1 : 0
+
+#   namespace       = var.external_secrets.namespace
+#   vault_secret_id = var.external_secrets.vault_secret_id
+
+#   # secret_id = kubernetes_secret.secret_id.data
+#   # secrets   = kubernetes_secret.secrets.data
+# }
 
 ## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
 
