@@ -46,7 +46,7 @@ resource "kubernetes_secret" "secret_id" {
 resource "kubernetes_secret" "init-secrets" {
 
   metadata {
-    name      = "smallscaletest-dev-remote-secret-insuranceprod"
+    name      = "smallscaletest-dev-remote-secret-insurancedrthor"
     namespace = "hpcc"
   }
 
@@ -112,7 +112,7 @@ resource "kubectl_manifest" "externalsecrets" {
   apiVersion: external-secrets.io/v1beta1
   kind: ExternalSecret
   metadata:
-    name: smallscaletest-dev-externalsecrets-insurancedr
+    name: smallscaletest-dev-externalsecrets-insurancedrthor
     namespace: hpcc
   spec:
     refreshInterval: "1m"
@@ -120,19 +120,19 @@ resource "kubectl_manifest" "externalsecrets" {
       name: smallscaletest-dev-secretstore
       kind: SecretStore
     target:
-      name: "smallscaletest-dev-remote-secret-insurancedr"
+      name: "smallscaletest-dev-remote-secret-insurancedrthor"
     data:
     - secretKey: ca.crt
       remoteRef:
-        key: client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        key: client-remote-dfs-dfs-hpcc-insurancedrthor-dev-2-smallscaletest-dev-tls
         property: ca.crt
     - secretKey: tls.key
       remoteRef:
-        key: client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        key: client-remote-dfs-dfs-hpcc-insurancedrthor-dev-2-smallscaletest-dev-tls
         property: tls.key
     - secretKey: tls.crt
       remoteRef:
-        key: client-remote-dfs-dfs-hpcc-insuranceprod-tls
+        key: client-remote-dfs-dfs-hpcc-insurancedrthor-dev-2-smallscaletest-dev-tls
         property: tls.crt                
   EOF
   server_side_apply = true
@@ -158,15 +158,15 @@ resource "kubectl_manifest" "externalsecrets_two" {
     data:
     - secretKey: ca.crt
       remoteRef:
-        key: client-remote-dfs-dfs-hpcc-dopsprod-tls
+        key: client-remote-dfs-dfs-hpcc-insurancedrthor-dev-2-dops-dev-tls
         property: ca.crt
     - secretKey: tls.key
       remoteRef:
-        key: client-remote-dfs-dfs-hpcc-dopsprod-tls
+        key: client-remote-dfs-dfs-hpcc-insurancedrthor-dev-2-dops-dev-tls
         property: tls.key
     - secretKey: tls.crt
       remoteRef:
-        key: client-remote-dfs-dfs-hpcc-dopsprod-tls
+        key: client-remote-dfs-dfs-hpcc-insurancedrthor-dev-2-dops-dev-tls
         property: tls.crt                
   EOF
   server_side_apply = true
