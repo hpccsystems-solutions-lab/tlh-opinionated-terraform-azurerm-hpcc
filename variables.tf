@@ -1343,6 +1343,7 @@ variable "external_secrets" {
   })
   default = {
     enabled = false
+    secret_stores = {}
   }
 }
 
