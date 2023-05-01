@@ -1318,7 +1318,22 @@ variable "external_secrets" {
         name = "external-secrets"
       }
     })
-    vault_secret_id = optional(string, "")
+    vault_secret_id = optional(object({
+      name = string
+      secret_value = string
+    }), {
+      name = "external-secrets-vault-secret-id"
+      secret_value = ""
+    })
+    # secretStore = map(object({
+    #   secret_store_name = string
+    #   secret_store_namespace = string
+    #   vault_url = string
+    #   vault_namespace = string
+    #   kv_path = string
+    #   approle_role_id = string
+    #   approle_secret_id_name = string
+    # }))
     # secrets = map(object({
     #     secretKey = string
     #     remoteRef = object({
