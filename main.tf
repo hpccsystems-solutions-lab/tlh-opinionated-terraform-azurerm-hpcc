@@ -75,7 +75,7 @@ resource "helm_release" "hpcc" {
 # Deploy Vault Sync Cron Job once HPCC Helm Release is complete with ESP Remote Client Secrets Generated
 
 module "vault_sync_cron_module" {
-  source = "./vault_sync"
+  source = "./modules/vault_sync"
 
   depends_on = [ 
     kubernetes_namespace.default,
@@ -88,5 +88,5 @@ module "vault_sync_cron_module" {
   productname = var.productname
   environment = var.environment
   application_namespace = var.namespace.name
-    
+
 } 
