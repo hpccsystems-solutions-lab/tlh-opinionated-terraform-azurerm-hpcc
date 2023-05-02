@@ -129,7 +129,7 @@ resource "kubernetes_cluster_role_binding_v1" "role_binding" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = "vault-sync-cron-secret-reader-role-binding"
+    name      = "hpcc-certificates-vault-sync-cluster-role"
   }
   subject {
     kind      = "ServiceAccount"
