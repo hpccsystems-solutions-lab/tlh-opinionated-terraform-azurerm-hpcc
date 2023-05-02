@@ -1013,16 +1013,6 @@ variable "cluster_name" {
   type        = string
 }
 
-# variable "esp_remoteclients" {
-#   description = "name of the remote client cert to be installed"
-#   type = optional(list(
-#     optional(object({
-#       name   = string
-#       labels = map(string)
-#     }))
-#   ))
-#   default = []
-# }
 variable "esp_remoteclients" {
   type = map(object({
     name   = string
@@ -1318,7 +1308,6 @@ variable "external_secrets" {
         name = "external-secrets"
       }
     })
-    # vault_secret_id = optional(string, "")
     vault_secret_id = optional(object({
       name = string
       secret_value = string

@@ -10,7 +10,6 @@ module "node_tuning" {
 
   count = var.enable_node_tuning ? 1 : 0
 
-  # containers              = var.node_tuning_containers
   containers = local.acr_default
 
   container_registry_auth = var.node_tuning_container_registry_auth
@@ -37,45 +36,9 @@ module "external_secrets" {
   vault_secret_id = var.external_secrets.vault_secret_id
   secret_stores = var.external_secrets.secret_stores
   secrets   = var.external_secrets.secrets
-  
+
 }
 
-
-# module "external_secrets" {
-#   source = "./modules/external_secrets"
-
-#   depends_on = [kubernetes_namespace.default]
-
-#   count = var.external_secrets.enabled ? 1 : 0
-
-#   namespace       = var.external_secrets.namespace
-#   vault_secret_id = var.external_secrets.vault_secret_id
-
-#   # secret_id = kubernetes_secret.secret_id.data
-#   # secrets   = kubernetes_secret.secrets.data
-# }
-
-## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
-
-resource "null_resource" "service_delete_script" {
-  provisioner "local-exec" {
-    command = <<EOF
-  echo "--------------Install KUBECTL on TFE-----------------"
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-  kubectl version --client
-  echo "------------Start Deleting Services ------------------"
-  kubectl delete svc sasha-coalescer -n hpcc
-  echo "Deleted Sasha Coalescer Service"
-  kubectl delete svc eclservices -n hpcc
-  echo "Deleted ECL Services Service"
-  echo "------------------------------------------------" 
-  EOF
-    environment = {
-      KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
-    }
-  }
-}
 
 resource "helm_release" "hpcc" {
   depends_on = [
@@ -95,7 +58,6 @@ resource "helm_release" "hpcc" {
     module.node_tuning,
     module.certificates,
     module.external_secrets,
-    null_resource.service_delete_script
   ]
 
   timeout = var.helm_chart_timeout

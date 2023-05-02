@@ -71,7 +71,7 @@ resource "kubectl_manifest" "secretstores" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubernetes_secret.external_secrets_approle_secret_id]
+  depends_on = [helm_release.external_secrets_helm_release, kubernetes_secret.external_secrets_approle_secret_id]
 }
 
 # Creates a secret that will store what is pulled from vault. The Target K8s Secret, initializing with dummy value.
@@ -133,6 +133,6 @@ resource "kubectl_manifest" "externalsecrets_object" {
   EOF
   server_side_apply = true
 
-  depends_on = [kubectl_manifest.secretstores, kubernetes_secret.target_secrets]
+  depends_on = [helm_release.external_secrets_helm_release, kubectl_manifest.secretstores, kubernetes_secret.target_secrets]
 }
 
