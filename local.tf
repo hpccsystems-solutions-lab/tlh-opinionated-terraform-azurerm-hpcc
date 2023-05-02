@@ -159,6 +159,10 @@ locals {
     }
   }] : []
 
+  # Remote Plane Secrets 
+
+  remote_plane_secrets = local.remote_storage_enabled ? { for k, v in var.remote_storage_plane : v.dfs_secret_name => v.dfs_secret_name
+  } : null
 
   # Vault Secrets Section
   vault_enabled = var.vault_config == null && var.vault_config != null ? false : true
@@ -483,6 +487,7 @@ locals {
 
   remote_storage_helm_values = local.remote_storage_enabled ? { for k, v in var.remote_storage_plane : k => {
     dfs_service_name = v.dfs_service_name
+    dfs_secret_name = v.dfs_secret_name
     numDevices       = length(v.target_storage_accounts)
   } } : null
 
@@ -652,12 +657,13 @@ locals {
             name       = format("%s-remote-hpcc-data", k)
             pvc        = format("%s-remote-hpcc-data", k)
             numDevices = v.numDevices
-            secret     = var.secrets.remote_cert_secret
+            
           }
         ] : []
         ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {
           name    = format("%s-data", k)
           service = v.dfs_service_name
+          secret     = v.dfs_secret_name
           planes = [
             {
               remote = "data"
