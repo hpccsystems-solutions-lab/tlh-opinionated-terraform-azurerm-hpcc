@@ -19,12 +19,11 @@ variable "vault_secret_id" {
 variable "secret_stores" {
   description = "A map of SecretStore names and their Vault Configuration"
   type = map(object({
-    secret_store_name      = string
-    secret_store_namespace = string
-    vault_url              = string
-    vault_namespace        = string
-    vault_kv_path          = string
-    approle_role_id        = string
+    secret_store_name = string
+    vault_url         = string
+    vault_namespace   = string
+    vault_kv_path     = string
+    approle_role_id   = string
   }))
 }
 
