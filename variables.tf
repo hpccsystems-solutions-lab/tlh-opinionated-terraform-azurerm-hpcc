@@ -1328,23 +1328,21 @@ variable "external_secrets" {
     })
     secret_stores = map(object({
       secret_store_name = string
-      secret_store_namespace = string
       vault_url = string
       vault_namespace = string
       vault_kv_path = string
       approle_role_id = string
     }))
-    # secrets = map(object({
-    #     secretKey = string
-    #     remoteRef = object({
-    #         key = string
-    #         property = string
-    #     })
-    # }))
+    secrets = map(object({
+        target_secret_name = string
+        remote_secret_name = string
+        secret_store_name  = string
+    }))
   })
   default = {
     enabled = false
     secret_stores = {}
+    secrets = {}
   }
 }
 

@@ -36,9 +36,8 @@ module "external_secrets" {
   helm_namespace  = var.external_secrets.namespace
   vault_secret_id = var.external_secrets.vault_secret_id
   secret_stores = var.external_secrets.secret_stores
-
-  # secret_id = kubernetes_secret.secret_id.data
-  # secrets   = kubernetes_secret.secrets.data
+  secrets   = var.external_secrets.secrets
+  
 }
 
 
