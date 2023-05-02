@@ -1349,7 +1349,17 @@ variable "vault_sync_cron_job" {
       container_name                = optional(string, "vault-sync-cronjob")
       container_image               = optional(string)
       container_startup_command     = optional(list(string), ["python3", "vault_secret.py"]) # Startup Command if you are using the Image Built by HPCC OPS
-      container_environment_settings = optional(map(string), {})
+      container_environment_settings = optional(object({
+        VAULT_ROLE_ID = string,
+        VAULT_SECRET_ID = string,
+        VAULT_URL = string,
+        VAULT_NAMESPACE = string
+      }), {
+        VAULT_ROLE_ID = "",
+        VAULT_SECRET_ID = "",
+        VAULT_NAMESPACE = "",
+        VAULT_URL = "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
+      })
     }))
   })
   default = {
