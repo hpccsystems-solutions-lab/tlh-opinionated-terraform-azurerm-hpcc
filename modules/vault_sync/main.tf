@@ -20,6 +20,53 @@ resource "kubernetes_secret" "vault_sync_cron_env_settings" {
 
 
 
+
+# Service Account to Access Secrets in K8s Namespace
+
+resource "kubernetes_service_account" "service_account" {
+  metadata {
+    name = "hpcc-vault-sync-service-account"
+    namespace = var.application_namespace
+  }
+}
+
+# Cluster Role for Service Account
+
+resource "kubernetes_cluster_role" "cluster_role" {
+  metadata {
+    name = "hpcc-certificates-vault-sync-cluster-role"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["secrets"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
+
+# Binding Cluster Role to Service Account
+
+resource "kubernetes_cluster_role_binding_v1" "role_binding" {
+  metadata {
+    name = "hpcc-certificates-share-cluster-rolebinding"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "hpcc-certificates-vault-sync-cluster-role"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "hpcc-vault-sync-service-account"
+    namespace = var.application_namespace
+  }
+
+  depends_on = [
+    kubernetes_service_account.service_account
+  ]
+}
+
+
 # K8s CronJob to scan for Remote Certificates
 
 resource "kubernetes_cron_job" "scan_certificates_job" {
@@ -49,6 +96,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
         template {
           metadata {}
           spec {
+            service_account_name = "hpcc-vault-sync-service-account"
             container {
               name    = var.cron_job_settings.container_name
               image   = local.container_image
@@ -96,49 +144,3 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
     }
   }
 }
-
-# Service Account to Access Secrets in K8s Namespace
-
-resource "kubernetes_service_account" "service_account" {
-  metadata {
-    name = "hpcc-vault-sync-service-account"
-    namespace = var.application_namespace
-  }
-}
-
-# Cluster Role for Service Account
-
-resource "kubernetes_cluster_role" "cluster_role" {
-  metadata {
-    name = "hpcc-certificates-vault-sync-cluster-role"
-  }
-
-  rule {
-    api_groups = [""]
-    resources  = ["secrets"]
-    verbs      = ["get", "list", "watch"]
-  }
-}
-
-# Binding Cluster Role to Service Account
-
-resource "kubernetes_cluster_role_binding_v1" "role_binding" {
-  metadata {
-    name = "hpcc-certificates-share-cluster-rolebinding"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "hpcc-certificates-vault-sync-cluster-role"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "hpcc-vault-sync-service-account"
-    namespace = var.application_namespace
-  }
-
-  depends_on = [
-    kubernetes_service_account.service_account
-  ]
-}
-
