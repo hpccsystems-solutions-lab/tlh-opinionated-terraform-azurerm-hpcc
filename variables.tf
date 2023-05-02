@@ -1366,3 +1366,4 @@ variable "vault_sync_cron_job" {
     enabled = false
   }
 }
+

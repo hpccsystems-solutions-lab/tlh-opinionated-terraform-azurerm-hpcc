@@ -104,10 +104,11 @@ resource "kubernetes_cluster_role_binding_v1" "role_binding" {
   subject {
     kind      = "ServiceAccount"
     name      = "hpcc-vault-sync-service-account"
-    api_group = "rbac.authorization.k8s.io"
+    namespace = var.application_namespace
   }
 
   depends_on = [
     kubernetes_service_account.service_account
   ]
 }
+
