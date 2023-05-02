@@ -27,7 +27,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
   depends_on = [
     kubernetes_cluster_role.cluster_role,
     kubernetes_service_account.service_account,
-    kubernetes_cluster_role_binding_v1.cluster_role,
+    kubernetes_cluster_role_binding_v1.role_binding,
     kubernetes_secret.vault_sync_cron_env_settings
   ]
   metadata {
