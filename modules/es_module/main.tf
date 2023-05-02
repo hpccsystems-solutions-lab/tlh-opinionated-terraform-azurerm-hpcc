@@ -66,7 +66,7 @@ resource "kubectl_manifest" "secretstores" {
             path: "approle"
             roleId: ${each.value.approle_role_id}
             secretRef:
-              name: ${kubernetes_secret.approle_secret_id.0.metadata.0.name}
+              name: ${kubernetes_secret.external_secrets_approle_secret_id.0.metadata.0.name}
               key: "secretId"
   EOF
   server_side_apply = true
