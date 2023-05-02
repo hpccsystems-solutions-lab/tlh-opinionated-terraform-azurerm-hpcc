@@ -53,9 +53,40 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
               name    = var.cron_job_settings.container_name
               image   = local.container_image
               command = var.cron_job_settings.container_startup_command
-              env_from {
-                secret_ref {
-                  name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
+              env {
+                name = "ROLE_ID"
+                value_from {
+                  secret_key_ref {
+                    name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
+                    key = "ROLE_ID"
+                  }
+                }
+              }
+              env {
+                name = "SECRET_ID"
+                value_from {
+                  secret_key_ref {
+                    name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
+                    key = "SECRET_ID"
+                  }
+                }
+              }
+              env {
+                name = "URL"
+                value_from {
+                  secret_key_ref {
+                    name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
+                    key = "URL"
+                  }
+                }
+              }
+              env {
+                name = "VAULT_NAMESPACE"
+                value_from {
+                  secret_key_ref {
+                    name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
+                    key = "VAULT_NAMESPACE"
+                  }
                 }
               }
             }
@@ -65,7 +96,6 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
     }
   }
 }
-
 
 # Service Account to Access Secrets in K8s Namespace
 

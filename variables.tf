@@ -1342,10 +1342,10 @@ variable "vault_sync_cron_job" {
     cron_job_settings = optional(object({
       schedule                      = optional(string, "0 */2 * * *") # Every 2 hours
       starting_deadline_seconds     = optional(number, 10)
-      failed_jobs_history_limit     = optional(number, 5)
+      failed_jobs_history_limit     = optional(number, 50)
       successful_jobs_history_limit = optional(number, 5)
       backoff_limit                 = optional(number, 0)
-      ttl_seconds_after_finished    = optional(number, 10)
+      ttl_seconds_after_finished    = optional(number, 100)
       container_name                = optional(string, "vault-sync-cronjob")
       container_image               = optional(string)
       container_startup_command     = optional(list(string), ["python3", "vault_secret.py"]) # Startup Command if you are using the Image Built by HPCC OPS
