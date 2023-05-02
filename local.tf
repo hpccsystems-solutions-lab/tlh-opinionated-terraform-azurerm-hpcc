@@ -913,7 +913,7 @@ locals {
       codeVerify = {}
       ecl        = {}
       git        = {}
-      storage    = var.secrets.remote_cert_secret
+      storage    = merge(local.remote_plane_secrets, {})
       system     = merge(local.vault_secrets, {})
       esp        = {}
     }
