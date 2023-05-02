@@ -79,7 +79,7 @@ resource "kubectl_manifest" "secretstores" {
 
 resource "kubernetes_secret" "target_secrets" {
 
-  ffor_each = length(var.secrets) > 0 ? var.secrets : {}
+  for_each = length(var.secrets) > 0 ? var.secrets : {}
 
   metadata {
     name      = each.value.target_secret_name
