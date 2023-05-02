@@ -1335,8 +1335,8 @@ variable "external_secrets" {
   }
 }
 
-variable "share_certificates_cron_job" {
-  description = "Configuration for Cron job which is responsible for sharing certificates between vaults"
+variable "vault_sync_cron_job" {
+  description = "Enabling this variable schedules a cron job which will enable environments to shar K8s secrets by uploading to a given Vault KV. Secrets deployed with labels vault_destination will be discovered and sent to the Vault. Secrets can be labeled using esp_remoteclients variable."
   type = object({
     enabled = bool
     cron_job_settings = optional(object({
@@ -1346,9 +1346,10 @@ variable "share_certificates_cron_job" {
       successful_jobs_history_limit = optional(number, 5)
       backoff_limit                 = optional(number, 0)
       ttl_seconds_after_finished    = optional(number, 10)
-      container_name                = optional(string, "share-certificates")
+      container_name                = optional(string, "vault-sync-cronjob")
       container_image               = optional(string)
       container_startup_command     = optional(list(string), ["python3", "vault_secret.py"]) # Startup Command if you are using the Image Built by HPCC OPS
+      container_environment_settings = optional(map(string), {})
     }))
   })
   default = {

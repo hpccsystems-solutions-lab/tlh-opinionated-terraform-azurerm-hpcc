@@ -39,7 +39,6 @@ module "external_secrets" {
 
 }
 
-
 resource "helm_release" "hpcc" {
   depends_on = [
     kubernetes_namespace.default,
@@ -72,3 +71,22 @@ resource "helm_release" "hpcc" {
     var.helm_chart_overrides
   ]
 }
+
+# Deploy Vault Sync Cron Job once HPCC Helm Release is complete with ESP Remote Client Secrets Generated
+
+module "vault_sync_cron_module" {
+  source = "./vault_sync"
+
+  depends_on = [ 
+    kubernetes_namespace.default,
+    helm_release.hpcc
+  ]
+
+  count = var.vault_sync_cron_job.enabled ? 1 : 0
+
+  cron_job_settings = var.vault_sync_cron_job.cron_job_settings
+  productname = var.productname
+  environment = var.environment
+  application_namespace = var.namespace.name
+    
+} 
