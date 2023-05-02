@@ -29,7 +29,7 @@ variable "secret_stores" {
 }
 
 variable "secrets" {
-  ddescription = "A map of External Secrets object, includes Remote Vault KV details"
+  description = "A map of External Secrets object, includes Remote Vault KV details"
   type = map(object({
     target_secret_name = string
     remote_secret_name = string
