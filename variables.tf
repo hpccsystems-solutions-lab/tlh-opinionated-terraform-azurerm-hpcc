@@ -1273,6 +1273,7 @@ variable "eclagent_settings" {
     maxActive         = number
     prefix            = string
     use_child_process = bool
+    spillPlane        = optional(string, "spill")
     type              = string
     resources = object({
       cpu    = string
@@ -1287,6 +1288,7 @@ variable "eclagent_settings" {
       prefix            = "hthor"
       use_child_process = false
       type              = "hthor"
+      spillPlane             = "spill"
       resources = {
         cpu    = "1"
         memory = "4G"
@@ -1297,6 +1299,7 @@ variable "eclagent_settings" {
       replicas          = 1
       maxActive         = 20
       prefix            = "roxie-workunit"
+      spillPlane             = "spill"
       use_child_process = true
       type              = "roxie"
       resources = {

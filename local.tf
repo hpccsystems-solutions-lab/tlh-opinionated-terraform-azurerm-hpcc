@@ -234,6 +234,7 @@ locals {
     type              = v.type
     resources         = v.resources
     egress            = v.egress
+    spillPlane       = v.spillPlane
   }]
 
   roxie_config_excludes = ["nodeSelector"]
