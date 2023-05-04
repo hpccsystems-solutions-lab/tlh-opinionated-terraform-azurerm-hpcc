@@ -739,7 +739,7 @@ variable "thor_config" {
     numWorkersPerPod    = number
     prefix              = string
     egress              = string
-    # tolerations_value   = string
+    tolerations_value   = string
     spillPlane          = string
     workerMemory = object({
       query      = string
@@ -771,7 +771,7 @@ variable "thor_config" {
     prefix              = "thor"
     spillPlane          = "spill"
     egress              = "engineEgress"
-    # tolerations_value   = "thorpool"
+    tolerations_value   = "thorpool"
     workerMemory = {
       query      = "3G"
       thirdParty = "500M"
