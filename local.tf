@@ -1,4 +1,6 @@
 locals {
+
+  log_access_app_object_id         = ""
   create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
   azurefiles_admin_storage_enabled = contains([for storage in var.admin_services_storage : storage.type], "azurefiles")

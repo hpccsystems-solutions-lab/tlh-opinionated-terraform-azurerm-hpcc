@@ -1,33 +1,9 @@
-# Kubernetes Secret for Log Access from log_access_config variable 
-
-# resource "kubernetes_secret" "azure_log_analytics_workspace" {
-#   depends_on = [
-#     kubernetes_namespace.default
-#   ]
-
-#   count = var.log_access_config != null ? 1 : 0
-
-#   metadata {
-#     name      = "azure-logaccess"
-#     namespace = var.namespace.name
-#     labels = {
-#       name = "azure-logaccess"
-#     }
-#   }
-
-#   data = {
-#     "aad-client-id"     = var.log_access_config.AAD_CLIENT_ID
-#     "aad-tenant-id"     = var.log_access_config.AAD_TENANT_ID
-#     "aad-client-secret" = var.log_access_config.AAD_SECRET_ID
-#     "ala-workspace-id"  = var.log_access_config.LAW_WORKSPACE_ID
-#   }
-
-#   type = "kubernetes.io/generic"
-# }
+# Role Assignment for Accessing Enterprise Application.
 
 
-# resource "azurerm_role_assignment" "azure_log_analytics_workspace" {
-#   scope                = var.log_access_config.LAW_SCOPE
-#   role_definition_name = "Log Analytics Contributor"
-#   principal_id         = var.log_access_config.OBJECT_ID
-# }
+resource "azurerm_role_assignment" "log_access_subscription" {
+
+  scope                = coalesce(var.log_access_role_assignment.scope, data.azurerm_subscription.current.subscription_id)
+  role_definition_name = "Log Analytics Contributor"
+  principal_id         = coalesce(var.log_access_role_assignment.object_id, local.log_access_app_object_id)
+}
