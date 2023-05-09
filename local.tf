@@ -641,8 +641,8 @@ locals {
             category         = "spill"
             name             = "local-spill-pvc1"
             prefix           = "/var/lib/HPCCSystems/spilla"
-            storageClass     = "local-disk"
-            storageSize     = "1788Gi"
+            storageClass     = "local-storage"
+            storageSize     = "1759Gi"
           },
           # {
           #   category         = "spill"
