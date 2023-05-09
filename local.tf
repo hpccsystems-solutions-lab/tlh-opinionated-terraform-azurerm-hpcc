@@ -643,6 +643,7 @@ locals {
             prefix           = "/var/lib/HPCCSystems/spilla"
             storageClass     = "local-storage"
             storageSize     = "1759Gi"
+            storageMode     = "ReadWriteOnce"
           },
           {
             category         = "spill"
