@@ -648,7 +648,7 @@ locals {
             category         = "spill"
             name             = "local-spill-pvc2"
             prefix           = "/var/lib/HPCCSystems/spillb"
-            storageClass     = "local-disk"
+            storageClass     = "local-storage"
             storageSize     = "3500Gi"
             storageMode     = "ReadWriteOnce"
           },
