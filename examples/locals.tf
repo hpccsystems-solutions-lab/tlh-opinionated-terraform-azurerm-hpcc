@@ -3,7 +3,7 @@ locals {
 
   cluster_name = "<aks-cluster-name>"
 
-  cluster_version    = "1.23"
+  cluster_version = "1.23"
 
   dns_resource_group = "app-dns-prod-eastus2"
 
