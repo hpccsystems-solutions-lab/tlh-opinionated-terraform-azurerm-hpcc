@@ -649,7 +649,8 @@ locals {
             name             = "local-spill-pvc2"
             prefix           = "/var/lib/HPCCSystems/spillb"
             storageClass     = "local-disk"
-            storageSize     = "1788Gi"
+            storageSize     = "3500Gi"
+            storageMode     = "ReadWriteOnce"
           },
         ],
         local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
