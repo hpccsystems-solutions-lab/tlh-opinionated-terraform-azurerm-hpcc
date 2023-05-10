@@ -1304,3 +1304,4 @@ variable "log_access_role_assignment" {
     object_id = string
   })
 }
+
