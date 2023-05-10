@@ -1299,9 +1299,8 @@ variable "eclagent_settings" {
 
 variable "log_access_role_assignment" {
   description = "Creates Role Assignment for enabling Log Access Viewer, ALA ZAP Reports"
-  type = optional(object({
+  type = object({
     scope     = string
     object_id = string
-  }))
-  default = {}
+  })
 }
