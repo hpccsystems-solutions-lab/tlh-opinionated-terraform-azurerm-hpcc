@@ -259,7 +259,7 @@ locals {
       ]
     })
   ]
-}
+
   thor_config_excludes = ["nodeSelector"]
   thor_config = [for thor in var.thor_config :
     { for k, v in thor : k => v if !contains(local.thor_config_excludes, k) }
