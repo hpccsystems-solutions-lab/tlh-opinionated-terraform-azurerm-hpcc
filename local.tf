@@ -241,6 +241,25 @@ locals {
     { for k, v in roxie : k => v if !contains(local.roxie_config_excludes, k) }
   ]
 
+  # Add External DNS for Roxie Services
+  roxie_config_external_dns_annotations = [for roxie in local.roxie_config :
+    merge(roxie, {
+      services = [ for service in roxie.services :
+        merge(service, {
+          annotations = merge(
+            local.roxie_external_dns_annotations,
+            service.annotations,
+            local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", roxie.name , var.namespace.name, local.domain) } : {},
+            {
+              "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+              "lnrs.io/zone-type"                                       = "public"
+            }
+          )
+        })
+      ]
+    })
+  ]
+}
   thor_config_excludes = ["nodeSelector"]
   thor_config = [for thor in var.thor_config :
     { for k, v in thor : k => v if !contains(local.thor_config_excludes, k) }
@@ -880,7 +899,7 @@ locals {
       }, local.esp_ldap_config)
     ]
 
-    roxie = local.roxie_config
+    roxie = local.roxie_config_external_dns_annotations
 
     thor = local.thor_config
 

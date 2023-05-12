@@ -537,6 +537,7 @@ variable "roxie_config" {
       listenQueue = number
       numThreads  = number
       visibility  = string
+      annotations = map(string)
     }))
     topoServer = object({
       replicas = number
@@ -687,6 +688,7 @@ variable "roxie_config" {
           listenQueue = 200
           numThreads  = 30
           visibility  = "local"
+          annotations = {}
         }
       ]
       topoServer = {
