@@ -244,12 +244,11 @@ locals {
   # Add External DNS for Roxie Services
   roxie_config_external_dns_annotations = [for roxie in local.roxie_config :
     merge(roxie, {
-      services = [ for service in roxie.services :
+      services = [for service in roxie.services :
         merge(service, {
           annotations = merge(
-            local.roxie_external_dns_annotations,
             service.annotations,
-            local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", roxie.name , var.namespace.name, local.domain) } : {},
+            local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", roxie.name, var.namespace.name, local.domain) } : {},
             {
               "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
               "lnrs.io/zone-type"                                       = "public"
