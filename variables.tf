@@ -737,6 +737,9 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
+    cost = object({
+      perCpu = number
+    })
   }))
   default = [{
     disabled = true
@@ -801,6 +804,9 @@ variable "eclccserver_settings" {
     resources = object({
       cpu    = string
       memory = string
+    })
+    cost = object({
+      perCpu = number
     })
     listen_queue          = optional(list(string))
     childProcessTimeLimit = optional(number)
@@ -1097,8 +1103,8 @@ variable "placements" {
   }
 }
 
-variable "cost" {
-  description = "cost settings"
+variable "global_cost" {
+  description = "Global cost settings"
   type = object({
     perCpu        = number
     storageAtRest = number
@@ -1267,6 +1273,9 @@ variable "eclagent_settings" {
       cpu    = string
       memory = string
     })
+    cost = {
+      perCpu = number
+    }
     egress = optional(string)
   }))
   default = {
