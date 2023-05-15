@@ -770,6 +770,9 @@ variable "thor_config" {
       cpu    = 3
       memory = "4G"
     }
+    cost = {
+      perCpu = 1
+    }
   }]
 }
 
@@ -829,6 +832,9 @@ variable "eclccserver_settings" {
       }
       legacySyntax = false
       options      = []
+      cost = {
+        perCpu = 1
+      }
   } }
 }
 
@@ -1273,9 +1279,9 @@ variable "eclagent_settings" {
       cpu    = string
       memory = string
     })
-    cost = {
+    cost = object({
       perCpu = number
-    }
+    })
     egress = optional(string)
   }))
   default = {
@@ -1290,18 +1296,9 @@ variable "eclagent_settings" {
         memory = "4G"
       }
       egress = "engineEgress"
-    },
-    "roxie-workunit" = {
-      replicas          = 1
-      maxActive         = 20
-      prefix            = "roxie-workunit"
-      use_child_process = true
-      type              = "roxie"
-      resources = {
-        cpu    = "1"
-        memory = "4G"
+      cost = {
+        perCpu = 1
       }
-      egress = "engineEgress"
-    }
+    },
   }
 }
