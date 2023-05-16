@@ -238,7 +238,7 @@ locals {
     resources         = v.resources
     egress            = v.egress
     cost              = v.cost
-    spillPlane       = v.spillPlane
+    spillPlane        = v.spillPlane
   }]
 
   roxie_config_excludes = ["nodeSelector"]
@@ -676,20 +676,20 @@ locals {
           }
           ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], [ # L Series Spill Stuff
           {
-            category         = "spill"
-            name             = "local-spill-pvc1"
-            prefix           = "/var/lib/HPCCSystems/spilla"
-            storageClass     = "local-storage"
-            storageSize     = "1759Gi"
-            storageMode     = "ReadWriteOnce"
+            category     = "spill"
+            name         = "local-spill-pvc1"
+            prefix       = "/var/lib/HPCCSystems/spilla"
+            storageClass = "local-storage"
+            storageSize  = "1759Gi"
+            storageMode  = "ReadWriteOnce"
           },
           {
-            category         = "spill"
-            name             = "local-spill-pvc2"
-            prefix           = "/var/lib/HPCCSystems/spillb"
-            storageClass     = "local-storage"
-            storageSize     = "3500Gi"
-            storageMode     = "ReadWriteOnce"
+            category     = "spill"
+            name         = "local-spill-pvc2"
+            prefix       = "/var/lib/HPCCSystems/spillb"
+            storageClass = "local-storage"
+            storageSize  = "3500Gi"
+            storageMode  = "ReadWriteOnce"
           },
         ],
         local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
