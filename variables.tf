@@ -742,7 +742,7 @@ variable "thor_config" {
     prefix              = string
     egress              = string
     tolerations_value   = string
-    spillPlane          = string
+    spillPlane          = optional(string)
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -1289,7 +1289,7 @@ variable "eclagent_settings" {
     maxActive         = number
     prefix            = string
     use_child_process = bool
-    spillPlane        = optional(string, "spill")
+    spillPlane        = optional(string)
     type              = string
     resources = object({
       cpu    = string
