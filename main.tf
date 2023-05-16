@@ -56,7 +56,6 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.esp_approle_secret_id,
     module.node_tuning,
     azurerm_role_assignment.log_access_subscription,
-    null_resource.service_delete_script,
     module.certificates,
     module.external_secrets,
   ]
