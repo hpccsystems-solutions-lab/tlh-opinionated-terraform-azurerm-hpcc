@@ -1,4 +1,4 @@
-hpcc_data_plane_count = 2 
+hpcc_data_plane_count = 2
 
 # Naming
 

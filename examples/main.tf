@@ -551,8 +551,8 @@ module "hpcc" {
       egress                = "engineEgress"
       gitUsername           = "svc-hpcc-pubrec-git"
       childProcessTimeLimit = "86400"
-      defaultRepo = "<default repo>"
-      defaultRepoVersion = "data-build-prod"
+      defaultRepo           = "<default repo>"
+      defaultRepoVersion    = "data-build-prod"
     }
   }
 
@@ -572,7 +572,7 @@ module "hpcc" {
     },
     esp_approle_secret = {
       "esp-approle-secret-one" = {
-        secret_name = "esp-approle-secret-one"
+        secret_name  = "esp-approle-secret-one"
         secret_value = "<your_secret_id>"
       }
     }

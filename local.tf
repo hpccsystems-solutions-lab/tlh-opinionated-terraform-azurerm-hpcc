@@ -1,4 +1,6 @@
 locals {
+
+  log_access_app_object_id         = "66e3c8b4-2421-47d2-ad5e-c382286c3ed2"
   create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
   azurefiles_admin_storage_enabled = contains([for storage in var.admin_services_storage : storage.type], "azurefiles")
@@ -139,6 +141,7 @@ locals {
     gitUsername           = v.gitUsername
     defaultRepo           = v.defaultRepo
     defaultRepoVersion    = v.defaultRepoVersion
+    cost                  = v.cost
     options               = v.legacySyntax != false ? concat([{ name = "eclcc-legacyimport", value = 1 }, { name = "eclcc-legacywhen", value = 1 }], v.options) : v.options
   }]
 
@@ -234,12 +237,47 @@ locals {
     type              = v.type
     resources         = v.resources
     egress            = v.egress
+    cost              = v.cost
     spillPlane       = v.spillPlane
   }]
 
   roxie_config_excludes = ["nodeSelector"]
-  roxie_config = [for roxie in var.roxie_config :
+
+  # Appends namespace to roxie name and service names
+
+  roxie_name_update = [for roxie in var.roxie_config :
+    merge(roxie, {
+      name   = format("%s-%s", roxie.name, var.namespace.name)
+      prefix = format("%s-%s", roxie.prefix, var.namespace.name)
+      services = [for service in roxie.services :
+        merge(service, {
+          name = format("%s-%s", service.name, var.namespace.name)
+        })
+      ]
+    })
+  ]
+
+
+  roxie_config = [for roxie in local.roxie_name_update :
     { for k, v in roxie : k => v if !contains(local.roxie_config_excludes, k) }
+  ]
+
+  # Add External DNS for Roxie Services
+  roxie_config_external_dns_annotations = [for roxie in local.roxie_config :
+    merge(roxie, {
+      services = [for service in roxie.services :
+        merge(service, {
+          annotations = merge(
+            service.annotations,
+            local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", roxie.name, local.domain) } : {},
+            {
+              "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+              "lnrs.io/zone-type"                                       = "public"
+            }
+          )
+        })
+      ]
+    })
   ]
 
   thor_config_excludes = ["nodeSelector"]
@@ -580,10 +618,10 @@ locals {
 
       cost = {
         currencyCode  = "USD"
-        perCpu        = var.cost.perCpu
-        storageAtRest = var.cost.storageAtRest
-        storageReads  = var.cost.storageReads
-        storageWrites = var.cost.storageWrites
+        perCpu        = var.global_cost.perCpu
+        storageAtRest = var.global_cost.storageAtRest
+        storageReads  = var.global_cost.storageReads
+        storageWrites = var.global_cost.storageWrites
       }
 
     }
@@ -690,12 +728,10 @@ locals {
           }
         }
         public = {
-          name   = "hpcc-public-issuer"
-          kind   = "Issuer"
+          name   = "zerossl"
+          kind   = "ClusterIssuer"
           domain = var.internal_domain
-          spec = {
-            selfSigned = {}
-          }
+          spec   = null
         }
         remote = {
           enabled = true
@@ -765,8 +801,9 @@ locals {
 
     dali = [
       merge({
-        name = "mydali"
-        auth = local.auth_mode
+        name           = "mydali"
+        auth           = local.auth_mode
+        maxStartupTime = var.dali_settings.maxStartupTime
         services = {
           coalescer = {
             service = {
@@ -808,7 +845,7 @@ locals {
 
     esp = [
       merge({
-        name          = "dfs"
+        name          = format("dfs-%s", var.namespace.name)
         application   = "dfs"
         remoteClients = var.esp_remoteclients
         auth          = "none"
@@ -824,7 +861,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "eclwatch"
+        name        = format("eclwatch-%s", var.namespace.name)
         application = "eclwatch"
         auth        = local.auth_mode
         replicas    = 1
@@ -852,7 +889,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "eclqueries"
+        name        = format("eclqueries-%s", var.namespace.name)
         application = "eclqueries"
         auth        = local.auth_mode
         replicas    = 1
@@ -867,7 +904,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "esdl-sandbox"
+        name        = format("esdl-sandbox-%s", var.namespace.name)
         application = "esdl-sandbox"
         auth        = local.auth_mode
         replicas    = 1
@@ -882,7 +919,7 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = "sql2ecl"
+        name        = format("sql2ecl-%s", var.namespace.name)
         application = "sql2ecl"
         auth        = local.auth_mode
         replicas    = 1
@@ -898,7 +935,7 @@ locals {
       }, local.esp_ldap_config)
     ]
 
-    roxie = local.roxie_config
+    roxie = local.roxie_config_external_dns_annotations
 
     thor = local.thor_config
 

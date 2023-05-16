@@ -537,6 +537,7 @@ variable "roxie_config" {
       listenQueue = number
       numThreads  = number
       visibility  = string
+      annotations = optional(map(string))
     }))
     topoServer = object({
       replicas = number
@@ -687,6 +688,7 @@ variable "roxie_config" {
           listenQueue = 200
           numThreads  = 30
           visibility  = "local"
+          annotations = {}
         }
       ]
       topoServer = {
@@ -749,6 +751,9 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
+    cost = object({
+      perCpu = number
+    })
   }))
   default = [{
     disabled = true
@@ -780,6 +785,9 @@ variable "thor_config" {
       cpu    = 3
       memory = "4G"
     }
+    cost = {
+      perCpu = 1
+    }
   }]
 }
 
@@ -804,17 +812,19 @@ variable "disable_rowservice" {
 variable "eclccserver_settings" {
   description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
   type = map(object({
-    useChildProcesses     = bool
-    replicas              = number
-    maxActive             = number
-    egress                = optional(string)
-    gitUsername           = optional(string)
-    defaultRepo           = optional(string)
-    defaultRepoVersion    = optional(string)
-    childProcessTimeLimit = optional(number)
+    useChildProcesses  = bool
+    replicas           = number
+    maxActive          = number
+    egress             = optional(string)
+    gitUsername        = optional(string)
+    defaultRepo        = optional(string)
+    defaultRepoVersion = optional(string)
     resources = object({
       cpu    = string
       memory = string
+    })
+    cost = object({
+      perCpu = number
     })
     listen_queue          = optional(list(string))
     childProcessTimeLimit = optional(number)
@@ -827,15 +837,19 @@ variable "eclccserver_settings" {
   }))
   default = {
     "myeclccserver" = {
-      useChildProcesses = false
-      maxActive         = 4
-      replicas          = 1
+      useChildProcesses     = false
+      maxActive             = 4
+      replicas              = 1
+      childProcessTimeLimit = 10
       resources = {
         cpu    = "1"
         memory = "4G"
       }
       legacySyntax = false
       options      = []
+      cost = {
+        perCpu = 1
+      }
   } }
 }
 
@@ -855,6 +869,7 @@ variable "dali_settings" {
       cpu    = string
       memory = string
     })
+    maxStartupTime = number
   })
   default = {
     coalescer = {
@@ -870,6 +885,7 @@ variable "dali_settings" {
       cpu    = "2"
       memory = "8G"
     }
+    maxStartupTime = 1200
   }
 }
 
@@ -1108,8 +1124,8 @@ variable "placements" {
   }
 }
 
-variable "cost" {
-  description = "cost settings"
+variable "global_cost" {
+  description = "Global cost settings"
   type = object({
     perCpu        = number
     storageAtRest = number
@@ -1279,6 +1295,9 @@ variable "eclagent_settings" {
       cpu    = string
       memory = string
     })
+    cost = object({
+      perCpu = number
+    })
     egress = optional(string)
   }))
   default = {
@@ -1294,19 +1313,18 @@ variable "eclagent_settings" {
         memory = "4G"
       }
       egress = "engineEgress"
-    },
-    "roxie-workunit" = {
-      replicas          = 1
-      maxActive         = 20
-      prefix            = "roxie-workunit"
-      spillPlane             = "spill"
-      use_child_process = true
-      type              = "roxie"
-      resources = {
-        cpu    = "1"
-        memory = "4G"
+      cost = {
+        perCpu = 1
       }
-      egress = "engineEgress"
-    }
+    },
   }
 }
+
+variable "log_access_role_assignment" {
+  description = "Creates Role Assignment for enabling Log Access Viewer, ALA ZAP Reports"
+  type = object({
+    scope     = string
+    object_id = string
+  })
+}
+
