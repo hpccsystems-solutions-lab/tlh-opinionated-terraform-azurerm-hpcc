@@ -10,9 +10,9 @@ resource "kubernetes_secret" "vault_sync_cron_env_settings" {
   }
 
   data = {
-    SECRET_ID = var.cron_job_settings.container_environment_settings.VAULT_SECRET_ID
-    ROLE_ID = var.cron_job_settings.container_environment_settings.VAULT_ROLE_ID
-    URL = var.cron_job_settings.container_environment_settings.VAULT_URL
+    SECRET_ID       = var.cron_job_settings.container_environment_settings.VAULT_SECRET_ID
+    ROLE_ID         = var.cron_job_settings.container_environment_settings.VAULT_ROLE_ID
+    URL             = var.cron_job_settings.container_environment_settings.VAULT_URL
     VAULT_NAMESPACE = var.cron_job_settings.container_environment_settings.VAULT_NAMESPACE
   }
 
@@ -25,7 +25,7 @@ resource "kubernetes_secret" "vault_sync_cron_env_settings" {
 
 resource "kubernetes_service_account" "service_account" {
   metadata {
-    name = "hpcc-vault-sync-service-account"
+    name      = "hpcc-vault-sync-service-account"
     namespace = var.application_namespace
   }
 }
@@ -78,7 +78,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
     kubernetes_secret.vault_sync_cron_env_settings
   ]
   metadata {
-    name = "hpcc-vault-sync-cronjob"
+    name      = "hpcc-vault-sync-cronjob"
     namespace = var.application_namespace
   }
   spec {
@@ -106,7 +106,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
                 value_from {
                   secret_key_ref {
                     name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
-                    key = "ROLE_ID"
+                    key  = "ROLE_ID"
                   }
                 }
               }
@@ -115,7 +115,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
                 value_from {
                   secret_key_ref {
                     name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
-                    key = "SECRET_ID"
+                    key  = "SECRET_ID"
                   }
                 }
               }
@@ -124,7 +124,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
                 value_from {
                   secret_key_ref {
                     name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
-                    key = "URL"
+                    key  = "URL"
                   }
                 }
               }
@@ -133,7 +133,7 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
                 value_from {
                   secret_key_ref {
                     name = kubernetes_secret.vault_sync_cron_env_settings.0.metadata.0.name
-                    key = "VAULT_NAMESPACE"
+                    key  = "VAULT_NAMESPACE"
                   }
                 }
               }
