@@ -706,7 +706,7 @@ variable "spill_volumes" {
   description = "Spill Volumes"
   type = map(object({
     name          = optional(string, "spill")                      # "Name of spill volume to be created."
-    size          = optional(number, 300)                            # "Size of spill volume to be created (in GB)."
+    size          = optional(number, 300)                          # "Size of spill volume to be created (in GB)."
     prefix        = optional(string, "/var/lib/HPCCSystems/spill") # "Prefix of spill volume to be created."
     host_path     = optional(string, "/mnt")                       # "Host path on spill volume to be created."
     storage_class = optional(string, "spill")                      # "Storage class of spill volume to be used."
