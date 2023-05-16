@@ -1307,7 +1307,7 @@ variable "eclagent_settings" {
       prefix            = "hthor"
       use_child_process = false
       type              = "hthor"
-      spillPlane             = "spill"
+      spillPlane        = "spill"
       resources = {
         cpu    = "1"
         memory = "4G"
