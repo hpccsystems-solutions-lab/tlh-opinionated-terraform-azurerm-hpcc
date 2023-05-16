@@ -703,20 +703,26 @@ variable "roxie_config" {
 }
 
 variable "spill_volumes" {
-  description = "Spill Volumes"
+  description = "Map of objects to create Spill Volumes"
   type = map(object({
-    name          = optional(string, "spill")                      # "Name of spill volume to be created."
-    size          = optional(number, 300)                            # "Size of spill volume to be created (in GB)."
-    prefix        = optional(string, "/var/lib/HPCCSystems/spill") # "Prefix of spill volume to be created."
-    host_path     = optional(string, "/mnt")                       # "Host path on spill volume to be created."
-    storage_class = optional(string, "spill")                      # "Storage class of spill volume to be used."
-    access_mode   = optional(string, "ReadWriteOnce")              # "Access mode of spill volume to be used."
+    name          = string # "Name of spill volume to be created."
+    size          = number # "Size of spill volume to be created (in GB)."
+    prefix        = string # "Prefix of spill volume to be created."
+    host_path     = string # "Host path on spill volume to be created."
+    storage_class = string # "Storage class of spill volume to be used."
+    access_mode   = string # "Access mode of spill volume to be used."
   }))
 
-  # validation = {
-  #   condition     = alltrue([for v in values(var.spill_volumes) : contains(["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod"], v.access_mode)])
-  #   error_message = "Access Mode can only be one of the following values: ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod."
-  # }
+  default = {
+    "spill" = {
+      name          = "spill"
+      size          = 300
+      prefix        = "/var/lib/HPCCSystems/spill"
+      host_path     = "/mnt"
+      storage_class = "spill"
+      access_mode   = "ReadWriteOnce"
+    }
+  }
 }
 
 variable "thor_config" {
