@@ -32,10 +32,10 @@ module "external_secrets" {
   count = var.external_secrets.enabled ? 1 : 0
 
   application_namespace = var.namespace.name
-  helm_namespace  = var.external_secrets.namespace
-  vault_secret_id = var.external_secrets.vault_secret_id
-  secret_stores = var.external_secrets.secret_stores
-  secrets   = var.external_secrets.secrets
+  helm_namespace        = var.external_secrets.namespace
+  vault_secret_id       = var.external_secrets.vault_secret_id
+  secret_stores         = var.external_secrets.secret_stores
+  secrets               = var.external_secrets.secrets
 
 }
 
@@ -79,16 +79,16 @@ resource "helm_release" "hpcc" {
 module "vault_sync_cron_module" {
   source = "./modules/vault_sync"
 
-  depends_on = [ 
+  depends_on = [
     kubernetes_namespace.default,
     helm_release.hpcc
   ]
 
   count = var.vault_sync_cron_job.enabled ? 1 : 0
 
-  cron_job_settings = var.vault_sync_cron_job.cron_job_settings
-  productname = var.productname
-  environment = var.environment
+  cron_job_settings     = var.vault_sync_cron_job.cron_job_settings
+  productname           = var.productname
+  environment           = var.environment
   application_namespace = var.namespace.name
 
 } 
