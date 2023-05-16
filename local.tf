@@ -674,26 +674,7 @@ locals {
             pvc              = "${var.namespace.name}-pvc-${v.name}"
             forcePermissions = true
           }
-          ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], 
-        #   [ # L Series Spill Stuff
-        #   {
-        #     category     = "spill"
-        #     name         = "local-spill-pvc1"
-        #     prefix       = "/var/lib/HPCCSystems/spilla"
-        #     storageClass = "local-storage"
-        #     storageSize  = "1759Gi"
-        #     storageMode  = "ReadWriteOnce"
-        #   },
-        #   {
-        #     category     = "spill"
-        #     name         = "local-spill-pvc2"
-        #     prefix       = "/var/lib/HPCCSystems/spillb"
-        #     storageClass = "local-storage"
-        #     storageSize  = "3500Gi"
-        #     storageMode  = "ReadWriteOnce"
-        #   },
-        # ],
-        local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
+          ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
           {
             category   = "remote"
             prefix     = format("/var/lib/HPCCSystems/%s-data", k)
