@@ -19,5 +19,4 @@ jobs:
           output-file: Terraform.md
           output-method: inject
           git-push: "true"
-          args: --sort-by-required
           git-commit-message: "terraform-docs: automated action"
