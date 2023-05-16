@@ -13,7 +13,7 @@ jobs:
       run: terraform fmt -recursive
       continue-on-error: false
     - name: Commit Files
-      continue-on-error: false
+      continue-on-error: true
       run:  |
         git config --local user.email "action@github.com"
         git config --local user.name "Actions"
