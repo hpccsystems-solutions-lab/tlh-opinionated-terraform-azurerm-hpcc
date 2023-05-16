@@ -1324,29 +1324,29 @@ variable "external_secrets" {
       }
     })
     vault_secret_id = optional(object({
-      name = string
+      name         = string
       secret_value = string
-    }), {
-      name = "external-secrets-vault-secret-id"
+      }), {
+      name         = "external-secrets-vault-secret-id"
       secret_value = ""
     })
     secret_stores = map(object({
       secret_store_name = string
-      vault_url = string
-      vault_namespace = string
-      vault_kv_path = string
-      approle_role_id = string
+      vault_url         = string
+      vault_namespace   = string
+      vault_kv_path     = string
+      approle_role_id   = string
     }))
     secrets = map(object({
-        target_secret_name = string
-        remote_secret_name = string
-        secret_store_name  = string
+      target_secret_name = string
+      remote_secret_name = string
+      secret_store_name  = string
     }))
   })
   default = {
-    enabled = false
+    enabled       = false
     secret_stores = {}
-    secrets = {}
+    secrets       = {}
   }
 }
 
@@ -1365,15 +1365,15 @@ variable "vault_sync_cron_job" {
       container_image               = optional(string)
       container_startup_command     = optional(list(string), ["python3", "vault_secret.py"]) # Startup Command if you are using the Image Built by HPCC OPS
       container_environment_settings = optional(object({
-        VAULT_ROLE_ID = string,
+        VAULT_ROLE_ID   = string,
         VAULT_SECRET_ID = string,
-        VAULT_URL = string,
+        VAULT_URL       = string,
         VAULT_NAMESPACE = string
-      }), {
-        VAULT_ROLE_ID = "",
+        }), {
+        VAULT_ROLE_ID   = "",
         VAULT_SECRET_ID = "",
         VAULT_NAMESPACE = "",
-        VAULT_URL = "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
+        VAULT_URL       = "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
       })
     }))
   })
