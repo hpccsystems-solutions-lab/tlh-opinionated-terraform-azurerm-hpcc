@@ -139,6 +139,7 @@ locals {
     gitUsername           = v.gitUsername
     defaultRepo           = v.defaultRepo
     defaultRepoVersion    = v.defaultRepoVersion
+    cost                  = v.cost
     options               = v.legacySyntax != false ? concat([{ name = "eclcc-legacyimport", value = 1 }, { name = "eclcc-legacywhen", value = 1 }], v.options) : v.options
   }]
 
@@ -234,6 +235,7 @@ locals {
     type              = v.type
     resources         = v.resources
     egress            = v.egress
+    cost              = v.cost
   }]
 
   roxie_config_excludes = ["nodeSelector"]
@@ -579,10 +581,10 @@ locals {
 
       cost = {
         currencyCode  = "USD"
-        perCpu        = var.cost.perCpu
-        storageAtRest = var.cost.storageAtRest
-        storageReads  = var.cost.storageReads
-        storageWrites = var.cost.storageWrites
+        perCpu        = var.global_cost.perCpu
+        storageAtRest = var.global_cost.storageAtRest
+        storageReads  = var.global_cost.storageReads
+        storageWrites = var.global_cost.storageWrites
       }
 
     }
