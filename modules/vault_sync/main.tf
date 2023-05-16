@@ -137,6 +137,10 @@ resource "kubernetes_cron_job" "scan_certificates_job" {
                   }
                 }
               }
+              env {
+                name  = "APP_NAMESPACE"
+                value = var.application_namespace
+              }
             }
           }
         }
