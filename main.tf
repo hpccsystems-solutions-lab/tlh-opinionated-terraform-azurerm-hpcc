@@ -10,41 +10,33 @@ module "node_tuning" {
 
   count = var.enable_node_tuning ? 1 : 0
 
-  # containers              = var.node_tuning_containers
   containers = local.acr_default
 
   container_registry_auth = var.node_tuning_container_registry_auth
 
 }
 
-module "certmanager" {
-  source          = "./modules/certmanager-zerossl"
+module "certificates" {
+  source          = "./modules/certificates"
   internal_domain = var.internal_domain
   namespace       = var.namespace.name
 
   depends_on = [kubernetes_namespace.default]
 }
 
-## Adding Script to delete K8s Services due to release v0.9.2 of the module. 
+module "external_secrets" {
+  source = "./modules/es_module"
 
-resource "null_resource" "service_delete_script" {
-  provisioner "local-exec" {
-    command = <<EOF
-  echo "--------------Install KUBECTL on TFE-----------------"
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-  kubectl version --client
-  echo "------------Start Deleting Services ------------------"
-  kubectl delete svc sasha-coalescer -n hpcc
-  echo "Deleted Sasha Coalescer Service"
-  kubectl delete svc eclservices -n hpcc
-  echo "Deleted ECL Services Service"
-  echo "------------------------------------------------" 
-  EOF
-    environment = {
-      KUBECONFIG = data.azurerm_kubernetes_cluster.aks_kubeconfig.kube_admin_config_raw
-    }
-  }
+  depends_on = [kubernetes_namespace.default]
+
+  count = var.external_secrets.enabled ? 1 : 0
+
+  application_namespace = var.namespace.name
+  helm_namespace        = var.external_secrets.namespace
+  vault_secret_id       = var.external_secrets.vault_secret_id
+  secret_stores         = var.external_secrets.secret_stores
+  secrets               = var.external_secrets.secrets
+
 }
 
 resource "helm_release" "hpcc" {
@@ -63,9 +55,9 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.ecluser_approle_secret_id,
     kubernetes_secret.esp_approle_secret_id,
     module.node_tuning,
-    module.certmanager,
     azurerm_role_assignment.log_access_subscription,
-    null_resource.service_delete_script
+    module.certificates,
+    module.external_secrets,
   ]
 
   timeout = var.helm_chart_timeout
@@ -80,3 +72,22 @@ resource "helm_release" "hpcc" {
     var.helm_chart_overrides
   ]
 }
+
+# Deploy Vault Sync Cron Job once HPCC Helm Release is complete with ESP Remote Client Secrets Generated
+
+module "vault_sync_cron_module" {
+  source = "./modules/vault_sync"
+
+  depends_on = [
+    kubernetes_namespace.default,
+    helm_release.hpcc
+  ]
+
+  count = var.vault_sync_cron_job.enabled ? 1 : 0
+
+  cron_job_settings     = var.vault_sync_cron_job.cron_job_settings
+  productname           = var.productname
+  environment           = var.environment
+  application_namespace = var.namespace.name
+
+} 

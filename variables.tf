@@ -181,6 +181,7 @@ variable "remote_storage_plane" {
   description = "Input for attaching remote storage plane"
   type = map(object({
     dfs_service_name = string
+    dfs_secret_name  = string
     target_storage_accounts = map(object({
       name   = string
       prefix = string
@@ -1047,13 +1048,12 @@ variable "cluster_name" {
 }
 
 variable "esp_remoteclients" {
-  description = "name of the remote client cert to be installed"
-  type        = list(map(string))
-  default = [
-    {
-      name = "insuranceprod"
-    }
-  ]
+  type = map(object({
+    name   = string
+    labels = map(string)
+  }))
+
+  default = {}
 }
 variable "placements" {
   description = "maxskew topologyspreadconstraints placements value for hppc"
@@ -1334,3 +1334,73 @@ variable "log_access_role_assignment" {
   })
 }
 
+variable "external_secrets" {
+  type = object({
+    enabled = bool
+    namespace = optional(object({
+      name   = string
+      labels = map(string)
+      }), {
+      name = "external-secrets"
+      labels = {
+        name = "external-secrets"
+      }
+    })
+    vault_secret_id = optional(object({
+      name         = string
+      secret_value = string
+      }), {
+      name         = "external-secrets-vault-secret-id"
+      secret_value = ""
+    })
+    secret_stores = map(object({
+      secret_store_name = string
+      vault_url         = string
+      vault_namespace   = string
+      vault_kv_path     = string
+      approle_role_id   = string
+    }))
+    secrets = map(object({
+      target_secret_name = string
+      remote_secret_name = string
+      secret_store_name  = string
+    }))
+  })
+  default = {
+    enabled       = false
+    secret_stores = {}
+    secrets       = {}
+  }
+}
+
+variable "vault_sync_cron_job" {
+  description = "Enabling this variable schedules a cron job which will enable environments to shar K8s secrets by uploading to a given Vault KV. Secrets deployed with labels vault_destination will be discovered and sent to the Vault. Secrets can be labeled using esp_remoteclients variable."
+  type = object({
+    enabled = bool
+    cron_job_settings = optional(object({
+      schedule                      = optional(string, "0 */2 * * *") # Every 2 hours
+      starting_deadline_seconds     = optional(number, 10)
+      failed_jobs_history_limit     = optional(number, 5)
+      successful_jobs_history_limit = optional(number, 5)
+      backoff_limit                 = optional(number, 0)
+      ttl_seconds_after_finished    = optional(number, 60)
+      container_name                = optional(string, "vault-sync-cronjob")
+      container_image               = optional(string)
+      container_startup_command     = optional(list(string), ["python3", "vault_secret_sync.py"]) # Startup Command if you are using the Image Built by HPCC OPS
+      container_environment_settings = optional(object({
+        VAULT_ROLE_ID   = string,
+        VAULT_SECRET_ID = string,
+        VAULT_URL       = string,
+        VAULT_NAMESPACE = string
+        }), {
+        VAULT_ROLE_ID   = "",
+        VAULT_SECRET_ID = "",
+        VAULT_NAMESPACE = "",
+        VAULT_URL       = "https://vault.cluster.us-vault-prod.azure.lnrsg.io"
+      })
+    }))
+  })
+  default = {
+    enabled = false
+  }
+}
