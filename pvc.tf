@@ -96,26 +96,26 @@ resource "kubernetes_persistent_volume_claim" "spill" {
     kubernetes_persistent_volume.spill
   ]
 
-  count = local.spill_space_enabled ? 1 : 0
+  for_each = local.spill_space_enabled ? var.spill_volumes : {}
 
   metadata {
-    name      = "pvc-spill"
+    name      = "${var.namespace.name}-pvc-${each.value.name}"
     namespace = var.namespace.name
   }
   spec {
-    access_modes = ["ReadWriteOnce"]
+    access_modes = ["${each.value.access_mode}"]
     resources {
       requests = {
-        storage = "${var.spill_volume_size}G"
+        storage = "${each.value.size}G"
       }
     }
     selector {
       match_labels = {
-        storage-tier = "spill"
+        storage-tier = each.value.storage_class
       }
     }
-    storage_class_name = "spill"
-    volume_name        = kubernetes_persistent_volume.spill.0.metadata.0.name
+    storage_class_name = each.value.storage_class
+    volume_name        = "${var.namespace.name}-pv-${each.value.name}"
   }
 }
 
@@ -148,3 +148,4 @@ resource "kubernetes_persistent_volume_claim" "remotedata" {
     create = "5m"
   }
 }
+
