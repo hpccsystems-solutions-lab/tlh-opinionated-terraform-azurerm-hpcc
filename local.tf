@@ -674,7 +674,7 @@ locals {
             pvc              = "${var.namespace.name}-pvc-${v.name}"
             forcePermissions = true
           }
-          ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], 
+        ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [],
         #   [ # L Series Spill Stuff
         #   {
         #     category     = "spill"
