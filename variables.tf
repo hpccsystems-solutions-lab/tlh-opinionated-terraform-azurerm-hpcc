@@ -538,6 +538,7 @@ variable "roxie_config" {
       listenQueue = number
       numThreads  = number
       visibility  = string
+      annotations = optional(map(string))
     }))
     topoServer = object({
       replicas = number
@@ -688,6 +689,7 @@ variable "roxie_config" {
           listenQueue = 200
           numThreads  = 30
           visibility  = "local"
+          annotations = {}
         }
       ]
       topoServer = {
@@ -701,10 +703,27 @@ variable "roxie_config" {
   ]
 }
 
-variable "spill_volume_size" {
-  description = "Size of spill volume to be created (in GB)."
-  type        = number
-  default     = null
+variable "spill_volumes" {
+  description = "Map of objects to create Spill Volumes"
+  type = map(object({
+    name          = string # "Name of spill volume to be created."
+    size          = number # "Size of spill volume to be created (in GB)."
+    prefix        = string # "Prefix of spill volume to be created."
+    host_path     = string # "Host path on spill volume to be created."
+    storage_class = string # "Storage class of spill volume to be used."
+    access_mode   = string # "Access mode of spill volume to be used."
+  }))
+
+  default = {
+    "spill" = {
+      name          = "spill"
+      size          = 300
+      prefix        = "/var/lib/HPCCSystems/spill"
+      host_path     = "/mnt"
+      storage_class = "spill"
+      access_mode   = "ReadWriteOnce"
+    }
+  }
 }
 
 variable "thor_config" {
@@ -730,6 +749,7 @@ variable "thor_config" {
     prefix              = string
     egress              = string
     tolerations_value   = string
+    spillPlane          = optional(string, "spill")
     workerMemory = object({
       query      = string
       thirdParty = string
@@ -761,6 +781,7 @@ variable "thor_config" {
     numWorkers          = 2
     numWorkersPerPod    = 1
     prefix              = "thor"
+    spillPlane          = "spill"
     egress              = "engineEgress"
     tolerations_value   = "thorpool"
     workerMemory = {
@@ -1274,6 +1295,7 @@ variable "eclagent_settings" {
     maxActive         = number
     prefix            = string
     use_child_process = bool
+    spillPlane        = optional(string, "spill")
     type              = string
     resources = object({
       cpu    = string
@@ -1291,6 +1313,7 @@ variable "eclagent_settings" {
       prefix            = "hthor"
       use_child_process = false
       type              = "hthor"
+      spillPlane        = "spill"
       resources = {
         cpu    = "1"
         memory = "4G"
