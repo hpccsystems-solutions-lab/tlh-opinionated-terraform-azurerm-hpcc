@@ -1,0 +1,22 @@
+name: format
+on: 
+  [push, workflow_dispatch]
+jobs:
+ tf-fmt:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Git Checkout
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+    - name: Format Terraform Code
+      run: terraform fmt -recursive
+      continue-on-error: true
+    - name: Commit Files
+      continue-on-error: true
+      run:  |
+        git config --local user.email "action@github.com"
+        git config --local user.name "Actions"
+        git commit -am "Terraform Auto-Format"
+        git add --all
+        git push

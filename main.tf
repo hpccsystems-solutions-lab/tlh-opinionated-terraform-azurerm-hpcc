@@ -64,9 +64,7 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.esp_approle_secret_id,
     module.node_tuning,
     module.certmanager,
-    # kubectl_manifest.local_secret,
-    # kubectl_manifest.remote_secret,
-    # kubectl_manifest.signing_secret,
+    azurerm_role_assignment.log_access_subscription,
     null_resource.service_delete_script
   ]
 

@@ -739,6 +739,9 @@ variable "thor_config" {
       cpu    = string
       memory = string
     })
+    cost = object({
+      perCpu = number
+    })
   }))
   default = [{
     disabled = true
@@ -768,6 +771,9 @@ variable "thor_config" {
     workerResources = {
       cpu    = 3
       memory = "4G"
+    }
+    cost = {
+      perCpu = 1
     }
   }]
 }
@@ -804,6 +810,9 @@ variable "eclccserver_settings" {
       cpu    = string
       memory = string
     })
+    cost = object({
+      perCpu = number
+    })
     listen_queue          = optional(list(string))
     childProcessTimeLimit = optional(number)
     gitUsername           = optional(string)
@@ -825,6 +834,9 @@ variable "eclccserver_settings" {
       }
       legacySyntax = false
       options      = []
+      cost = {
+        perCpu = 1
+      }
   } }
 }
 
@@ -1099,8 +1111,8 @@ variable "placements" {
   }
 }
 
-variable "cost" {
-  description = "cost settings"
+variable "global_cost" {
+  description = "Global cost settings"
   type = object({
     perCpu        = number
     storageAtRest = number
@@ -1269,6 +1281,9 @@ variable "eclagent_settings" {
       cpu    = string
       memory = string
     })
+    cost = object({
+      perCpu = number
+    })
     egress = optional(string)
   }))
   default = {
@@ -1283,18 +1298,18 @@ variable "eclagent_settings" {
         memory = "4G"
       }
       egress = "engineEgress"
-    },
-    "roxie-workunit" = {
-      replicas          = 1
-      maxActive         = 20
-      prefix            = "roxie-workunit"
-      use_child_process = true
-      type              = "roxie"
-      resources = {
-        cpu    = "1"
-        memory = "4G"
+      cost = {
+        perCpu = 1
       }
-      egress = "engineEgress"
-    }
+    },
   }
 }
+
+variable "log_access_role_assignment" {
+  description = "Creates Role Assignment for enabling Log Access Viewer, ALA ZAP Reports"
+  type = object({
+    scope     = string
+    object_id = string
+  })
+}
+
