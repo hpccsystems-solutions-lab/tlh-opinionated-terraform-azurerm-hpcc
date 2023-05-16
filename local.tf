@@ -246,7 +246,7 @@ locals {
 
   roxie_name_update = [for roxie in var.roxie_config :
     merge(roxie, {
-      name = format("%s-%s", roxie.name, var.namespace.name)
+      name   = format("%s-%s", roxie.name, var.namespace.name)
       prefix = format("%s-%s", roxie.prefix, var.namespace.name)
       services = [for service in roxie.services :
         merge(service, {
