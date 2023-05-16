@@ -11,9 +11,9 @@ jobs:
       uses: hashicorp/setup-terraform@v1
     - name: Format Terraform Code
       run: terraform fmt -recursive
-      continue-on-error: true
+      continue-on-error: false
     - name: Commit Files
-      continue-on-error: true
+      continue-on-error: false
       run:  |
         git config --local user.email "action@github.com"
         git config --local user.name "Actions"
