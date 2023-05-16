@@ -129,29 +129,6 @@ resource "kubernetes_persistent_volume" "hpc_cache" {
   }
 }
 
-# resource "kubernetes_persistent_volume" "spill" {
-
-#   count = local.spill_space_enabled ? 1 : 0
-
-#   metadata {
-#     labels = {
-#       storage-tier = "spill"
-#     }
-#     name = "${var.namespace.name}-pv-spill"
-#   }
-#   spec {
-#     capacity = {
-#       storage = "${var.spill_volume_size}G"
-#     }
-#     access_modes = ["ReadWriteOnce"]
-#     persistent_volume_source {
-#       host_path {
-#         path = "/mnt"
-#       }
-#     }
-#     storage_class_name = "spill"
-#   }
-# }
 
 # Multiple Spill PVs - Issue #123
 
