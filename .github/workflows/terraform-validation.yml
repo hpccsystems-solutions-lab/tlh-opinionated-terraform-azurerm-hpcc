@@ -1,4 +1,4 @@
-name: terraform validation
+name: terraform init and validate
 
 on:
   pull_request:
@@ -25,6 +25,10 @@ jobs:
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
+        continue-on-error: true
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false
         continue-on-error: true
       - name: Terraform Validate
         id: validate
