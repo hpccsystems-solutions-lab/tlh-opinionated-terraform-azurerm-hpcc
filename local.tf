@@ -517,8 +517,8 @@ locals {
         storage_account_name   = sa_val.name
         storage_account_prefix = sa_val.prefix
         storage_account_key    = sa_key
-        volume_name            = format("%s-remote-pv-hpcc-data-%s", subscription_key, sa_val.name)
-        volume_claim_name      = format("%s-remote-pvc-hpcc-data-%s", subscription_key, sa_val.name)
+        volume_name            = format("%s-remote-pv-hpcc-data-%s", subscription_key, sa_key)
+        volume_claim_name      = format("%s-remote-pvc-hpcc-data-%s", subscription_key, sa_key)
       }
     ]
   ]) : []
