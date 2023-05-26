@@ -302,7 +302,7 @@ locals {
   ]
 
   roxie_placements = [for roxie in var.roxie_config :
-    { pods = ["target:${roxie.name}"], placement = { nodeSelector = roxie.nodeSelector } } if length(roxie.nodeSelector) > 0
+    { pods = [format("target:%s-%s", roxie.name, var.namespace.name)], placement = { nodeSelector = roxie.nodeSelector } } if length(roxie.nodeSelector) > 0
   ]
 
   thor_placements = [for thor in var.thor_config :
@@ -538,13 +538,13 @@ locals {
     hosts    = v.hosts
   }] : null
 
-  corsAllowed = [
-    {
-      origin  = var.corsAllowed.origin
-      headers = var.corsAllowed.headers
-      methods = var.corsAllowed.methods
+  corsAllowed = length(var.corsAllowed) > 0 ? [for k, v in var.corsAllowed : {
+    origin  = v.origin
+    headers = v.headers
+    methods = v.methods
     }
-  ]
+  ] : []
+
   helm_chart_values = {
 
     global = {
@@ -870,7 +870,7 @@ locals {
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclwatch", var.namespace.name, local.domain) } : {})
         }
         egress      = var.egress.esp_engine
-        corsAllowed = var.corsallowed_enable == true ? local.corsAllowed : []
+        corsAllowed = local.corsAllowed
       }, local.esp_ldap_config),
       merge({
         name        = "eclservices"

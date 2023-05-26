@@ -1186,23 +1186,16 @@ variable "vault_secrets" {
 
 }
 
-variable "corsallowed_enable" {
-  description = "Enable cors allowed on ECL watch"
-  type        = bool
-  default     = false
-}
+
+
 variable "corsAllowed" {
   description = "corsAllowed settings"
-  type = object({
-    origin  = string
-    headers = list(string)
-    methods = list(string)
-  })
-  default = {
-    origin  = "https://viz.hpccsystems.com"
-    headers = ["*"]
-    methods = ["GET", "POST", "OPTIONS"]
-  }
+  type = map(object({
+    origin  = optional(string)
+    headers = optional(list(string))
+    methods = optional(list(string))
+  }))
+  default = {}
 }
 
 variable "egress_engine" {
