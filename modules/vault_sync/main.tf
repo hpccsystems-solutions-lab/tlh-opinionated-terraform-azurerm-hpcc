@@ -69,7 +69,7 @@ resource "kubernetes_cluster_role_binding_v1" "role_binding" {
 
 # K8s CronJob to scan for Remote Certificates
 
-resource "kubernetes_cron_job" "scan_certificates_job" {
+resource "kubernetes_cron_job_v1" "scan_certificates_job" {
 
   depends_on = [
     kubernetes_cluster_role.cluster_role,
