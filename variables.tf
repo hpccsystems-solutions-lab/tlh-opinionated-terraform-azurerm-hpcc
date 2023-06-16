@@ -532,6 +532,7 @@ variable "roxie_config" {
     useDynamicServers              = bool
     useHardLink                    = bool
     useLogQueue                    = bool
+    useRemoteResources             = bool
     useMemoryMappedIndexes         = bool
     useTreeCopy                    = bool
     services = list(object({
