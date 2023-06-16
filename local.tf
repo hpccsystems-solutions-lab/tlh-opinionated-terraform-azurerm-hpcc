@@ -517,8 +517,8 @@ locals {
         storage_account_name   = sa_val.name
         storage_account_prefix = sa_val.prefix
         storage_account_key    = sa_key
-        volume_name            = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
-        volume_claim_name      = format("%s-remote-hpcc-data-%s", subscription_key, index(keys(subscription_val.target_storage_accounts), sa_key) + 1)
+        volume_name            = format("%s-remote-pv-hpcc-data-%s", subscription_key, sa_key)
+        volume_claim_name      = format("%s-remote-pvc-hpcc-data-%s", subscription_key, sa_key)
       }
     ]
   ]) : []
@@ -691,9 +691,8 @@ locals {
             category   = "remote"
             prefix     = format("/var/lib/HPCCSystems/%s-data", k)
             name       = format("%s-remote-hpcc-data", k)
-            pvc        = format("%s-remote-hpcc-data", k)
+            pvc        = format("%s-remote-pvc-hpcc-data", k)
             numDevices = v.numDevices
-
           }
         ] : []
         ) }, local.remote_storage_enabled ? { remote = [for k, v in local.remote_storage_helm_values : {

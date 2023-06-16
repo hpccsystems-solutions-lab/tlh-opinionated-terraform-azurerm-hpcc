@@ -147,5 +147,10 @@ resource "kubernetes_persistent_volume_claim" "remotedata" {
   timeouts {
     create = "5m"
   }
+
+  depends_on = [
+    kubernetes_namespace.default,
+    kubernetes_persistent_volume.remotedata
+  ]
 }
 

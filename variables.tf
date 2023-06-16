@@ -304,6 +304,7 @@ variable "ldap_config" {
       systemBasedn        = string
       usersBasedn         = string
       workunitsBasedn     = string
+      ldapCipherSuite     = string
     })
     esp = object({
       adminGroupName      = string
@@ -317,6 +318,7 @@ variable "ldap_config" {
       systemBasedn        = string
       usersBasedn         = string
       workunitsBasedn     = string
+      ldapCipherSuite     = string
     })
     ldap_server = string
   })
