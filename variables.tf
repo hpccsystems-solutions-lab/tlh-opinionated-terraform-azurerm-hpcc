@@ -1400,35 +1400,3 @@ variable "vault_sync_cron_job" {
     enabled = false
   }
 }
-
-variable "security_values" {
-
-  type = object({
-    eclSecurity = optional(object({
-      embedded = optional(string, "allow")
-      pipe     = optional(string, "allow")
-      extern   = optional(string, "allow")
-      datafile = optional(string, "allow")
-    }))
-  })
-
-  default = {
-    eclSecurity = {
-      embedded = "allow"
-      pipe     = "allow"
-      extern   = "allow"
-      datafile = "allow"
-    }
-  }
-}
-
-
-variable "esp_services_cost_setting" {
-  type = object({
-    esp = optional(object({
-      cost = optional(object({
-        perCpu = optional(number, 1)
-      }))
-    }))
-  })
-}
