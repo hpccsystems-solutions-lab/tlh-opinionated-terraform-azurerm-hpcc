@@ -106,7 +106,7 @@ variable "data_storage_config" {
           container_soft_delete_retention_days = optional(number)
         })
       })
-      hpc_cache = object({
+      hpc_cache = optional(object({
         cache_update_frequency = string
         dns = object({
           zone_name                = string
@@ -123,7 +123,7 @@ variable "data_storage_config" {
           storage_account_name = string
         }))
         subnet_id = string
-      })
+      }))
     })
     external = object({
       blob_nfs = list(object({
@@ -134,11 +134,11 @@ variable "data_storage_config" {
         storage_account_id   = string
         storage_account_name = string
       }))
-      hpc_cache = list(object({
+      hpc_cache = optional(list(object({
         id     = string
         path   = string
         server = string
-      }))
+      })))
       hpcc = list(object({
         name = string
         planes = list(object({
@@ -210,22 +210,22 @@ variable "enable_node_tuning" {
   default     = true
 }
 
-variable "helm_chart_overrides" {
-  description = "Helm chart values, in yaml format, to be merged last."
-  type        = string
-  default     = ""
+variable "helm_chart_strings_overrides" {
+  description = "Helm chart values as strings, in yaml format, to be merged last."
+  type        = list(string)
+  default     = []
+}
+
+variable "helm_chart_files_overrides" {
+  description = "Helm chart values files, in yaml format, to be merged."
+  type        = list(string)
+  default     = []
 }
 
 variable "helm_chart_timeout" {
   description = "Helm timeout for hpcc chart."
   type        = number
   default     = 600
-}
-
-variable "helm_chart_version" {
-  description = "Version of the HPCC Helm Chart to use."
-  type        = string
-  default     = "8.6.20"
 }
 
 #178 - Adding variables  to support keep alive and max connections like expert global setttings
@@ -265,10 +265,14 @@ variable "enable_premium_zrs_storage_class" {
 variable "hpcc_container" {
   description = "HPCC container information (if version is set to null helm chart version is used)."
   type = object({
-    image_name = string
-    image_root = string
-    version    = string
+    image_name           = optional(string)
+    image_root           = optional(string)
+    version              = optional(string)
+    custom_chart_version = optional(string)
+    custom_image_version = optional(string)
   })
+
+  default = null
 }
 
 variable "hpcc_container_registry_auth" {
@@ -822,33 +826,35 @@ variable "disable_rowservice" {
 variable "eclccserver_settings" {
   description = "Set cpu and memory values of the eclccserver. Toggle use_child_process to true to enable eclccserver child processes."
   type = map(object({
-    useChildProcesses  = bool
-    replicas           = number
-    maxActive          = number
-    egress             = optional(string)
-    gitUsername        = optional(string)
-    defaultRepo        = optional(string)
-    defaultRepoVersion = optional(string)
-    resources = object({
+    useChildProcesses  = optional(bool, false)
+    replicas           = optional(number, 1)
+    maxActive          = optional(number, 4)
+    egress             = optional(string, "engineEgress")
+    gitUsername        = optional(string, "")
+    defaultRepo        = optional(string, "")
+    defaultRepoVersion = optional(string, "")
+    resources = optional(object({
       cpu    = string
       memory = string
-    })
+    }))
     cost = object({
       perCpu = number
     })
-    listen_queue          = optional(list(string))
-    childProcessTimeLimit = optional(number)
-    gitUsername           = optional(string)
-    legacySyntax          = optional(bool)
+    listen_queue          = optional(list(string), [])
+    childProcessTimeLimit = optional(number, 10)
+    gitUsername           = optional(string, "")
+    legacySyntax          = optional(bool, false)
     options = optional(list(object({
       name  = string
       value = string
     })))
   }))
+
   default = {
     "myeclccserver" = {
       useChildProcesses     = false
       maxActive             = 4
+      egress                = "engineEgress"
       replicas              = 1
       childProcessTimeLimit = 10
       resources = {
@@ -1043,6 +1049,7 @@ variable "sasha_config" {
 variable "internal_domain" {
   description = "DNS Domain name"
   type        = string
+  default     = null
 }
 
 variable "cluster_name" {

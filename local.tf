@@ -20,10 +20,56 @@ locals {
     debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
   } : var.node_tuning_containers
 
-  external_dns_zone_enabled = var.internal_domain != null
-  domain                    = coalesce(var.internal_domain, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
-  account_code              = split(".", local.domain)[0]
-  aks_trimmed_name          = trimprefix(var.cluster_name, "${local.account_code}-")
+  external_dns_zone_enabled      = var.internal_domain != null
+  internal_load_balancer_enabled = local.external_dns_zone_enabled ? false : true                                             // For ECLWatch service
+  servicePort                    = local.external_dns_zone_enabled ? local.certificates.enabled == false ? 8010 : 18010 : 443 // For ECLWatch service
+  visibility                     = local.external_dns_zone_enabled ? "global" : "local"                                       // For ECLWatch service
+
+  certificates = {
+    enabled = true
+    issuers = {
+      local = {
+        name   = "hpcc-local-issuer"
+        kind   = "Issuer"
+        domain = var.internal_domain
+        spec = {
+          ca = {
+            secretName = "hpcc-local-issuer-key-pair"
+          }
+        }
+      }
+      public = {
+        name   = "zerossl"
+        kind   = "ClusterIssuer"
+        domain = var.internal_domain
+        spec   = null
+      }
+      remote = {
+        enabled = true
+        name    = "hpcc-remote-issuer"
+        kind    = "Issuer"
+        domain  = var.internal_domain
+        spec = {
+          ca = {
+            secretName = "hpcc-remote-issuer-key-pair"
+          }
+        }
+      }
+      signing = {
+        name = "hpcc-signing-issuer"
+        kind = "Issuer"
+        spec = {
+          ca = {
+            secretName = "hpcc-signing-issuer-key-pair"
+          }
+        }
+      }
+    }
+  }
+
+  domain           = coalesce(var.internal_domain, format("us-%s.%s.azure.lnrsg.io", var.productname, var.environment))
+  account_code     = split(".", local.domain)[0]
+  aks_trimmed_name = trimprefix(var.cluster_name, "${local.account_code}-")
 
 
   azure_files_pv_protocol = var.environment == "dev" ? "nfs" : null
@@ -176,41 +222,41 @@ locals {
   } : null
 
 
-  vault_git_config = var.vault_config.git != null ? [for k, v in var.vault_config.git : {
+  vault_git_config = var.vault_config != null ? var.vault_config.git != null ? [for k, v in var.vault_config.git : {
     name          = v.name
     url           = v.url
     kind          = v.kind
     namespace     = v.vault_namespace
     appRoleId     = v.role_id
     appRoleSecret = v.secret_name
-  }] : null
+  }] : null : null
 
-  vault_ecl_config = var.vault_config.ecl != null ? [for k, v in var.vault_config.ecl : {
+  vault_ecl_config = var.vault_config != null ? var.vault_config.ecl != null ? [for k, v in var.vault_config.ecl : {
     name          = v.name
     url           = v.url
     kind          = v.kind
     namespace     = v.vault_namespace
     appRoleId     = v.role_id
     appRoleSecret = v.secret_name
-  }] : null
+  }] : null : null
 
-  vault_ecluser_config = var.vault_config.ecluser != null ? [for k, v in var.vault_config.ecluser : {
+  vault_ecluser_config = var.vault_config != null ? var.vault_config.ecluser != null ? [for k, v in var.vault_config.ecluser : {
     name          = v.name
     url           = v.url
     kind          = v.kind
     namespace     = v.vault_namespace
     appRoleId     = v.role_id
     appRoleSecret = v.secret_name
-  }] : null
+  }] : null : null
 
-  vault_esp_config = var.vault_config.esp != null ? [for k, v in var.vault_config.esp : {
+  vault_esp_config = var.vault_config != null ? var.vault_config.esp != null ? [for k, v in var.vault_config.esp : {
     name          = v.name
     url           = v.url
     kind          = v.kind
     namespace     = v.vault_namespace
     appRoleId     = v.role_id
     appRoleSecret = v.secret_name
-  }] : null
+  }] : null : null
 
   # LDAP Secrets section 
   ldap_enabled = var.ldap_config == null ? false : true
@@ -560,9 +606,9 @@ locals {
       }
       busybox = local.acr_default.busybox
       image = merge({
-        version    = var.hpcc_container.version == null ? var.helm_chart_version : var.hpcc_container.version
-        root       = var.hpcc_container.image_root
-        name       = var.hpcc_container.image_name
+        version    = var.hpcc_container.version != null ? var.hpcc_container.version : "latest"
+        root       = var.hpcc_container.image_root == null ? "hpccsystems" : var.hpcc_container.image_root
+        name       = var.hpcc_container.image_name == null ? "platform-core" : var.hpcc_container.image_name
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 
@@ -708,47 +754,7 @@ locals {
       }] } : {}, local.external_hpcc_data ? { remote = local.storage_config.hpcc } : {},
     )
 
-    certificates = {
-      enabled = true
-      issuers = {
-        local = {
-          name   = "hpcc-local-issuer"
-          kind   = "Issuer"
-          domain = var.internal_domain
-          spec = {
-            ca = {
-              secretName = "hpcc-local-issuer-key-pair"
-            }
-          }
-        }
-        public = {
-          name   = "zerossl"
-          kind   = "ClusterIssuer"
-          domain = var.internal_domain
-          spec   = null
-        }
-        remote = {
-          enabled = true
-          name    = "hpcc-remote-issuer"
-          kind    = "Issuer"
-          domain  = var.internal_domain
-          spec = {
-            ca = {
-              secretName = "hpcc-remote-issuer-key-pair"
-            }
-          }
-        }
-        signing = {
-          name = "hpcc-signing-issuer"
-          kind = "Issuer"
-          spec = {
-            ca = {
-              secretName = "hpcc-signing-issuer-key-pair"
-            }
-          }
-        }
-      }
-    }
+    certificates = local.certificates
 
     placements = local.placements
 
@@ -861,10 +867,10 @@ locals {
         replicas    = 1
         service = {
           port        = 8888
-          servicePort = 443
-          visibility  = "local"
+          servicePort = local.servicePort
+          visibility  = local.visibility
           annotations = merge({
-            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+            "service.beta.kubernetes.io/azure-load-balancer-internal" = tostring(local.internal_load_balancer_enabled)
             "lnrs.io/zone-type"                                       = "public"
           }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclwatch", var.namespace.name, local.domain) } : {})
         }

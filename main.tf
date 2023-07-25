@@ -36,7 +36,6 @@ module "external_secrets" {
   vault_secret_id       = var.external_secrets.vault_secret_id
   secret_stores         = var.external_secrets.secret_stores
   secrets               = var.external_secrets.secrets
-
 }
 
 resource "helm_release" "hpcc" {
@@ -54,40 +53,41 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.ecl_approle_secret_id,
     kubernetes_secret.ecluser_approle_secret_id,
     kubernetes_secret.esp_approle_secret_id,
-    module.node_tuning,
-    azurerm_role_assignment.log_access_subscription,
-    module.certificates,
-    module.external_secrets,
+    # module.node_tuning,
+    # azurerm_role_assignment.log_access_subscription,
+    # module.certificates,
+    # module.external_secrets,
   ]
 
   timeout = var.helm_chart_timeout
 
   name       = "hpcc"
   namespace  = var.namespace.name
-  chart      = "hpcc"
-  repository = "https://hpcc-systems.github.io/helm-chart"
-  version    = var.helm_chart_version
-  values = [
-    yamlencode(local.helm_chart_values),
-    var.helm_chart_overrides
-  ]
+  chart      = var.hpcc_container.custom_chart_version == null ? "hpcc" : var.hpcc_container.custom_chart_version
+  repository = var.hpcc_container.custom_chart_version == null ? "https://hpcc-systems.github.io/helm-chart" : null
+  version    = var.hpcc_container.version
+  values = concat([
+    yamlencode(local.helm_chart_values)],
+    concat([for v in var.helm_chart_files_overrides : file(v)]),
+    var.helm_chart_strings_overrides
+  )
 }
 
 # Deploy Vault Sync Cron Job once HPCC Helm Release is complete with ESP Remote Client Secrets Generated
 
-module "vault_sync_cron_module" {
-  source = "./modules/vault_sync"
+# module "vault_sync_cron_module" {
+#   source = "./modules/vault_sync"
 
-  depends_on = [
-    kubernetes_namespace.default,
-    helm_release.hpcc
-  ]
+#   depends_on = [
+#     kubernetes_namespace.default,
+#     helm_release.hpcc
+#   ]
 
-  count = var.vault_sync_cron_job.enabled ? 1 : 0
+#   count = var.vault_sync_cron_job.enabled ? 1 : 0
 
-  cron_job_settings     = var.vault_sync_cron_job.cron_job_settings
-  productname           = var.productname
-  environment           = var.environment
-  application_namespace = var.namespace.name
+#   cron_job_settings     = var.vault_sync_cron_job.cron_job_settings
+#   productname           = var.productname
+#   environment           = var.environment
+#   application_namespace = var.namespace.name
 
-} 
+# } 
