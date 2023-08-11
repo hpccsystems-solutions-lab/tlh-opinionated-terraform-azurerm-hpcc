@@ -1065,6 +1065,7 @@ variable "esp_remoteclients" {
 
   default = {}
 }
+
 variable "placements" {
   description = "maxskew topologyspreadconstraints placements value for hppc"
   type = object({
