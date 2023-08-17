@@ -354,12 +354,14 @@ variable "namespace" {
   type = object({
     name   = string
     labels = map(string)
+    create_namespace = bool
   })
   default = {
     name = "hpcc"
     labels = {
       name = "hpcc"
     }
+    create_namespace = true
   }
 }
 
