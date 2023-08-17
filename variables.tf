@@ -204,12 +204,6 @@ variable "environment_variables" {
   default     = {}
 }
 
-variable "enable_node_tuning" {
-  description = "Enable node tuning daemonset (only needed once per AKS cluster)."
-  type        = bool
-  default     = true
-}
-
 variable "helm_chart_strings_overrides" {
   description = "Helm chart values as strings, in yaml format, to be merged last."
   type        = list(string)
@@ -265,9 +259,9 @@ variable "enable_premium_zrs_storage_class" {
 variable "hpcc_container" {
   description = "HPCC container information (if version is set to null helm chart version is used)."
   type = object({
-    image_name           = optional(string)
-    image_root           = optional(string)
-    version              = optional(string)
+    image_name           = optional(string, "platform-core")
+    image_root           = optional(string, "hpccsystems")
+    version              = optional(string, "latest")
     custom_chart_version = optional(string)
     custom_image_version = optional(string)
   })
@@ -369,15 +363,6 @@ variable "namespace" {
   }
 }
 
-variable "node_tuning_containers" {
-  description = "URIs for containers to be used by node tuning submodule."
-  type = object({
-    busybox = string
-    debian  = string
-  })
-  default = null
-}
-
 variable "environment" {
   description = "Environment HPCC is being deployed to."
   type        = string
@@ -387,16 +372,6 @@ variable "environment" {
 variable "productname" {
   description = "Environment HPCC is being deployed to."
   type        = string
-}
-
-variable "node_tuning_container_registry_auth" {
-  description = "Registry authentication for node tuning containers."
-  type = object({
-    password = string
-    username = string
-  })
-  default   = null
-  sensitive = true
 }
 
 variable "resource_group_name" {
@@ -1330,13 +1305,13 @@ variable "eclagent_settings" {
   }
 }
 
-variable "log_access_role_assignment" {
-  description = "Creates Role Assignment for enabling Log Access Viewer, ALA ZAP Reports"
-  type = object({
-    scope     = string
-    object_id = string
-  })
-}
+# variable "log_access_role_assignment" {
+#   description = "Creates Role Assignment for enabling Log Access Viewer, ALA ZAP Reports"
+#   type = object({
+#     scope     = string
+#     object_id = string
+#   })
+# }
 
 variable "external_secrets" {
   type = object({

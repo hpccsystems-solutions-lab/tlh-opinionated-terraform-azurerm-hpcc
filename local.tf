@@ -15,10 +15,10 @@ locals {
   external_data_cache   = (local.external_data_config ? (var.data_storage_config.external.hpc_cache == null ? false : true) : false)
   external_hpcc_data    = (local.external_data_config ? (var.data_storage_config.external.hpcc == null ? false : true) : false)
 
-  acr_default = var.node_tuning_containers == null ? {
-    busybox = format("%s%scr.azurecr.io/hpccoperations/busybox:latest", var.productname, var.environment)
-    debian  = format("%s%scr.azurecr.io/hpccoperations/debian:bullseye-slim", var.productname, var.environment)
-  } : var.node_tuning_containers
+  acr_default = {
+    busybox = "busybox:latest"
+    debian  = "debian:bullseye-slim"
+  }
 
   external_dns_zone_enabled      = var.internal_domain != null
   internal_load_balancer_enabled = local.external_dns_zone_enabled ? false : true                                             // For ECLWatch service
@@ -606,9 +606,9 @@ locals {
       }
       busybox = local.acr_default.busybox
       image = merge({
-        version    = var.hpcc_container.version != null ? var.hpcc_container.version : "latest"
-        root       = var.hpcc_container.image_root == null ? "hpccsystems" : var.hpcc_container.image_root
-        name       = var.hpcc_container.image_name == null ? "platform-core" : var.hpcc_container.image_name
+        version    = var.hpcc_container.version
+        root       = var.hpcc_container.image_root
+        name       = var.hpcc_container.image_name
         pullPolicy = "IfNotPresent"
       }, local.create_hpcc_registry_auth_secret ? { imagePullSecrets = kubernetes_secret.hpcc_container_registry_auth.0.metadata.0.name } : {})
 

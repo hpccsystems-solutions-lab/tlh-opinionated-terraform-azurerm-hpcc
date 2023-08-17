@@ -5,17 +5,6 @@ resource "kubernetes_namespace" "default" {
   }
 }
 
-module "node_tuning" {
-  source = "./modules/node_tuning"
-
-  count = var.enable_node_tuning ? 1 : 0
-
-  containers = local.acr_default
-
-  container_registry_auth = var.node_tuning_container_registry_auth
-
-}
-
 module "certificates" {
   source          = "./modules/certificates"
   internal_domain = var.internal_domain
@@ -53,10 +42,8 @@ resource "helm_release" "hpcc" {
     kubernetes_secret.ecl_approle_secret_id,
     kubernetes_secret.ecluser_approle_secret_id,
     kubernetes_secret.esp_approle_secret_id,
-    # module.node_tuning,
-    # azurerm_role_assignment.log_access_subscription,
-    # module.certificates,
-    # module.external_secrets,
+    module.certificates,
+    module.external_secrets,
   ]
 
   timeout = var.helm_chart_timeout
@@ -65,7 +52,7 @@ resource "helm_release" "hpcc" {
   namespace  = var.namespace.name
   chart      = var.hpcc_container.custom_chart_version == null ? "hpcc" : var.hpcc_container.custom_chart_version
   repository = var.hpcc_container.custom_chart_version == null ? "https://hpcc-systems.github.io/helm-chart" : null
-  version    = var.hpcc_container.version
+  version    = var.hpcc_container.version != "latest" ? var.hpcc_container.version : null
   values = concat([
     yamlencode(local.helm_chart_values)],
     concat([for v in var.helm_chart_files_overrides : file(v)]),
