@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "default" {
   count = var.namespace.create_namespace ? 1 : 0
-  
+
   metadata {
     name   = var.namespace.name
     labels = var.namespace.labels
