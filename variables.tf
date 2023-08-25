@@ -352,8 +352,8 @@ variable "location" {
 variable "namespace" {
   description = "Kubernetes namespace where resources will be created."
   type = object({
-    name   = string
-    labels = map(string)
+    name             = string
+    labels           = map(string)
     create_namespace = bool
   })
   default = {
