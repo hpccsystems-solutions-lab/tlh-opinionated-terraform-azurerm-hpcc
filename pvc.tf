@@ -56,40 +56,6 @@ resource "kubernetes_persistent_volume_claim" "blob_nfs" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "hpc_cache" {
-  depends_on = [
-    kubernetes_namespace.default,
-    kubernetes_persistent_volume.hpc_cache
-  ]
-
-  for_each = local.hpc_cache_data_storage
-
-  wait_until_bound = true
-  metadata {
-    name      = "pvc-hpc-cache-${each.key}"
-    namespace = var.namespace.name
-  }
-  spec {
-    access_modes       = ["ReadOnlyMany"]
-    storage_class_name = "hpcc-data"
-    resources {
-      requests = {
-        storage = kubernetes_persistent_volume.hpc_cache[each.key].spec.0.capacity.storage
-      }
-    }
-    selector {
-      match_labels = {
-        storage-tier = "hpccache"
-      }
-    }
-    volume_name = kubernetes_persistent_volume.hpc_cache[each.key].metadata.0.name
-  }
-
-  timeouts {
-    create = "20m"
-  }
-}
-
 resource "kubernetes_persistent_volume_claim" "spill" {
   depends_on = [
     kubernetes_namespace.default,

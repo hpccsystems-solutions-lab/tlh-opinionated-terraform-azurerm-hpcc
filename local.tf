@@ -2,17 +2,26 @@ locals {
 
   create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
-  azurefiles_admin_storage_enabled = contains([for storage in var.admin_services_storage : storage.type], "azurefiles")
-  blobnfs_admin_storage_enabled    = contains([for storage in var.admin_services_storage : storage.type], "blobnfs")
+  admin_services_storage = local.external_storage_config_enabled ? merge(
+    {
+      for plane in var.external_storage_config :
+      plane.category => {
+        size = plane.size,
+        type = plane.storage_type
+      } if plane.category != "data"
+  }) : var.admin_services_storage
 
-  internal_data_config = var.data_storage_config.internal == null ? false : true
-  external_data_config = var.data_storage_config.external == null ? false : true
+  azurefiles_admin_storage_enabled = contains([for storage in local.admin_services_storage : storage.type], "azurefiles")
+  blobnfs_admin_storage_enabled    = contains([for storage in local.admin_services_storage : storage.type], "blobnfs")
+
+  internal_data_config            = var.data_storage_config.internal == null ? false : true
+  external_data_config            = var.data_storage_config.external == null ? false : true
+  external_storage_config_enabled = var.external_storage_config != null ? true : false
 
   create_data_storage = (local.internal_data_config ? (var.data_storage_config.internal.blob_nfs == null ? false : true) : false)
-  create_data_cache   = (local.internal_data_config ? (var.data_storage_config.internal.hpc_cache == null ? false : true) : false)
+  # create_data_storage = var.external_storage_config == null ? true : false
 
   external_data_storage = (local.external_data_config ? (var.data_storage_config.external.blob_nfs == null ? false : true) : false)
-  external_data_cache   = (local.external_data_config ? (var.data_storage_config.external.hpc_cache == null ? false : true) : false)
   external_hpcc_data    = (local.external_data_config ? (var.data_storage_config.external.hpcc == null ? false : true) : false)
 
   acr_default = {
@@ -77,16 +86,16 @@ locals {
     blob_nfs = (local.create_data_storage ? module.data_storage.0.data_planes : (
       local.external_data_storage ? var.data_storage_config.external.blob_nfs : null)
     )
-    hpc_cache = (local.create_data_cache ? module.data_cache.0.data_planes.internal : (
-      local.external_data_cache ? var.data_storage_config.external.hpc_cache : null)
-    )
     hpcc = local.external_hpcc_data ? var.data_storage_config.external.hpcc : []
   }
 
-  blob_nfs_data_enabled  = local.storage_config.blob_nfs == null ? false : true
-  hpc_cache_data_enabled = local.storage_config.hpc_cache == null ? false : true
-  remote_data_enabled    = local.storage_config.hpcc == null ? false : true
-  spill_space_enabled    = length(var.spill_volumes) > 0 ? true : false
+  data_storage_planes = [
+    for v in var.external_storage_config : v if v.plane_name == "data"
+  ]
+
+  blob_nfs_data_enabled = local.storage_config.blob_nfs != null ? true : false
+  remote_data_enabled   = local.storage_config.hpcc == null ? false : true
+  spill_space_enabled   = length(var.spill_volumes) > 0 ? true : false
 
   blob_nfs_data_storage = local.blob_nfs_data_enabled ? { for plane in local.storage_config.blob_nfs :
     length(local.storage_config.blob_nfs) == 1 ? "data" : "data-${plane.id}" => {
@@ -98,79 +107,103 @@ locals {
       storage_account = plane.storage_account_name
       size            = "5Pi"
     }
+    } : local.external_storage_config_enabled ? { for v in var.external_storage_config : "data-${tostring(index(local.data_storage_planes, v) + 1)}" => {
+      category        = "data"
+      container_name  = v.container_name
+      id              = tostring(index(local.data_storage_planes, v) + 1)
+      path            = "hpcc-data"
+      resource_group  = v.resource_group
+      storage_account = v.storage_account
+      size            = "${v.size}Pi"
+    } if v.plane_name == "data"
   } : {}
 
-  hpc_cache_data_storage = local.hpc_cache_data_enabled ? { for plane in local.storage_config.hpc_cache :
-    length(local.storage_config.hpc_cache) == 1 ? "data" : "data-${plane.id}" => {
-      server = plane.server
-      path   = plane.path
-      size   = "5Pi"
-    }
-  } : {}
-
-  services_storage_config = [
+  services_storage_config = local.external_storage_config_enabled ? [for v in var.external_storage_config :
     {
-      category       = "dali"
-      container_name = "hpcc-dali"
-      path           = "dalistorage"
-      plane_name     = "dali"
-      size           = "${var.admin_services_storage.dali.size}G"
-      storage_type   = var.admin_services_storage.dali.type
+      category        = v.category
+      container_name  = v.container_name
+      path            = v.path
+      plane_name      = v.plane_name
+      size            = "${v.size}G"
+      storage_type    = v.storage_type
+      resource_group  = v.resource_group
+      storage_account = v.storage_account
+    } if v.plane_name != "data"
+    ] : [
+    {
+      category        = "dali"
+      container_name  = "hpcc-dali"
+      path            = "dalistorage"
+      plane_name      = "dali"
+      size            = "${local.admin_services_storage.dali.size}G"
+      storage_type    = local.admin_services_storage.dali.type
+      resource_group  = var.resource_group_name
+      storage_account = local.admin_services_storage.dali.type == "azurefiles" ? azurerm_storage_account.azurefiles_admin_services.0.name : azurerm_storage_account.blob_nfs_admin_services.0.name
     },
     {
-      category       = "debug"
-      container_name = "hpcc-debug"
-      path           = "debug"
-      plane_name     = "debug"
-      size           = "${var.admin_services_storage.debug.size}G"
-      storage_type   = var.admin_services_storage.debug.type
+      category        = "debug"
+      container_name  = "hpcc-debug"
+      path            = "debug"
+      plane_name      = "debug"
+      size            = "${local.admin_services_storage.debug.size}G"
+      storage_type    = local.admin_services_storage.debug.type
+      resource_group  = var.resource_group_name
+      storage_account = local.admin_services_storage.debug.type == "azurefiles" ? azurerm_storage_account.azurefiles_admin_services.0.name : azurerm_storage_account.blob_nfs_admin_services.0.name
     },
     {
-      category       = "dll"
-      container_name = "hpcc-dll"
-      path           = "queries"
-      plane_name     = "dll"
-      size           = "${var.admin_services_storage.dll.size}G"
-      storage_type   = var.admin_services_storage.dll.type
+      category        = "dll"
+      container_name  = "hpcc-dll"
+      path            = "queries"
+      plane_name      = "dll"
+      size            = "${local.admin_services_storage.dll.size}G"
+      storage_type    = local.admin_services_storage.dll.type
+      resource_group  = var.resource_group_name
+      storage_account = local.admin_services_storage.dll.type == "azurefiles" ? azurerm_storage_account.azurefiles_admin_services.0.name : azurerm_storage_account.blob_nfs_admin_services.0.name
     },
     {
-      category       = "lz"
-      container_name = "hpcc-mydropzone"
-      path           = "mydropzone"
-      plane_name     = "mydropzone"
-      size           = "${var.admin_services_storage.lz.size}G"
-      storage_type   = var.admin_services_storage.lz.type
+      category        = "lz"
+      container_name  = "hpcc-mydropzone"
+      path            = "mydropzone"
+      plane_name      = "mydropzone"
+      size            = "${local.admin_services_storage.lz.size}G"
+      storage_type    = local.admin_services_storage.lz.type
+      resource_group  = var.resource_group_name
+      storage_account = local.admin_services_storage.lz.type == "azurefiles" ? azurerm_storage_account.azurefiles_admin_services.0.name : azurerm_storage_account.blob_nfs_admin_services.0.name
     },
     {
-      category       = "sasha"
-      container_name = "hpcc-sasha"
-      path           = "sashastorage"
-      plane_name     = "sasha"
-      size           = "${var.admin_services_storage.sasha.size}G"
-      storage_type   = var.admin_services_storage.sasha.type
+      category        = "sasha"
+      container_name  = "hpcc-sasha"
+      path            = "sashastorage"
+      plane_name      = "sasha"
+      size            = "${local.admin_services_storage.sasha.size}G"
+      storage_type    = local.admin_services_storage.sasha.type
+      resource_group  = var.resource_group_name
+      storage_account = local.admin_services_storage.sasha.type == "azurefiles" ? azurerm_storage_account.azurefiles_admin_services.0.name : azurerm_storage_account.blob_nfs_admin_services.0.name
     }
   ]
 
-  azurefiles_services_storage = { for config in local.services_storage_config :
+  azurefiles_services_storage = {
+    for config in local.services_storage_config :
     config.plane_name => {
       category        = config.category
       container_name  = config.container_name
       path            = config.path
-      resource_group  = var.resource_group_name
+      resource_group  = config.resource_group
       size            = config.size
-      storage_account = azurerm_storage_account.azurefiles_admin_services.0.name
+      storage_account = config.storage_account
       protocol        = local.azure_files_pv_protocol
     } if config.storage_type == "azurefiles"
   }
 
-  blob_nfs_services_storage = { for config in local.services_storage_config :
+  blob_nfs_services_storage = {
+    for config in local.services_storage_config :
     config.plane_name => {
       category        = config.category
       container_name  = config.container_name
       path            = config.path
-      resource_group  = var.resource_group_name
+      resource_group  = config.resource_group
       size            = config.size
-      storage_account = azurerm_storage_account.blob_nfs_admin_services.0.name
+      storage_account = config.storage_account
     } if config.storage_type == "blobnfs"
   }
 
@@ -700,37 +733,22 @@ locals {
             prefix   = "/var/lib/HPCCSystems/${v.path}"
             pvc      = kubernetes_persistent_volume_claim.azurefiles[k].metadata.0.name
           }
-          ], local.blob_nfs_data_enabled ? [
-          merge({
+          ], local.blob_nfs_data_enabled || local.external_storage_config_enabled ? [
+          {
             category   = "data"
             name       = "data"
             numDevices = length(local.blob_nfs_data_storage)
             prefix     = "/var/lib/HPCCSystems/hpcc-data"
             pvc        = "pvc-blob-data"
-            }, local.hpc_cache_data_enabled ? {
-            aliases = [
-              {
-                mode      = ["random"]
-                name      = "data-cache"
-                numMounts = length(local.hpc_cache_data_storage)
-                prefix    = "/var/lib/HPCCSystems/hpcc-data-cache"
-                pvc       = "pvc-hpc-cache-data"
-              }
-            ]
-          } : {})] : [], (local.hpc_cache_data_enabled && !local.blob_nfs_data_enabled) ? [
-          {
-            category   = "data"
-            name       = "data"
-            numDevices = length(local.hpc_cache_data_storage)
-            prefix     = "/var/lib/HPCCSystems/hpcc-data"
-            pvc        = "pvc-hpc-cache-data"
           }
-          ] : [], local.spill_space_enabled ? [for k, v in var.spill_volumes : {
-            category         = "spill"
-            name             = v.name
-            prefix           = v.prefix
-            pvc              = "${var.namespace.name}-pvc-${v.name}"
-            forcePermissions = true
+        ] : [],
+        local.spill_space_enabled ? [for k, v in var.spill_volumes : {
+          category         = "spill"
+          name             = v.name
+          prefix           = v.prefix
+          pvc              = "${var.namespace.name}-pvc-${v.name}"
+          forcePermissions = true
+          waitForMount     = true
           }
           ] : [], local.onprem_lz_enabled ? local.onprem_lz_helm_values : [], local.remote_storage_enabled ? [for k, v in local.remote_storage_helm_values :
           {

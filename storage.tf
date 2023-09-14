@@ -94,7 +94,6 @@ resource "kubernetes_secret" "azurefiles_admin_services" {
     azurestorageaccountname = azurerm_storage_account.azurefiles_admin_services.0.name
     azurestorageaccountkey  = azurerm_storage_account.azurefiles_admin_services.0.primary_access_key
   }
-
   type = "kubernetes.io/generic"
 }
 
@@ -148,33 +147,4 @@ module "data_storage" {
   data_plane_count            = var.data_storage_config.internal.blob_nfs.data_plane_count
   storage_account_name_prefix = "hpcc${random_string.random.result}data"
   storage_account_settings    = var.data_storage_config.internal.blob_nfs.storage_account_settings
-}
-
-module "data_cache" {
-  depends_on = [
-    module.data_storage
-  ]
-
-  source = "./modules/hpcc_data_cache"
-
-  count = local.create_data_cache ? 1 : 0
-
-  name                = "hpcc${random_string.random.result}cache"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
-
-  resource_provider_object_id = var.data_storage_config.internal.hpc_cache.resource_provider_object_id
-
-  dns       = var.data_storage_config.internal.hpc_cache.dns
-  size      = var.data_storage_config.internal.hpc_cache.size
-  subnet_id = var.data_storage_config.internal.hpc_cache.subnet_id
-
-  storage_targets = {
-    internal = {
-      cache_update_frequency = var.data_storage_config.internal.hpc_cache.cache_update_frequency
-      storage_account_data_planes = (var.data_storage_config.internal.hpc_cache.storage_account_data_planes == null ?
-      module.data_storage.0.data_planes : var.data_storage_config.internal.hpc_cache.storage_account_data_planes)
-    }
-  }
 }

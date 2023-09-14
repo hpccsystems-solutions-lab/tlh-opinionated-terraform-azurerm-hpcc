@@ -90,7 +90,6 @@ variable "admin_services_storage" {
   }
 }
 
-
 variable "data_storage_config" {
   description = "Data plane config for HPCC."
   type = object({
@@ -106,24 +105,6 @@ variable "data_storage_config" {
           container_soft_delete_retention_days = optional(number)
         })
       })
-      hpc_cache = optional(object({
-        cache_update_frequency = string
-        dns = object({
-          zone_name                = string
-          zone_resource_group_name = string
-        })
-        resource_provider_object_id = string
-        size                        = string
-        storage_account_data_planes = list(object({
-          container_id         = string
-          container_name       = string
-          id                   = number
-          resource_group_name  = string
-          storage_account_id   = string
-          storage_account_name = string
-        }))
-        subnet_id = string
-      }))
     })
     external = object({
       blob_nfs = list(object({
@@ -134,11 +115,6 @@ variable "data_storage_config" {
         storage_account_id   = string
         storage_account_name = string
       }))
-      hpc_cache = optional(list(object({
-        id     = string
-        path   = string
-        server = string
-      })))
       hpcc = list(object({
         name = string
         planes = list(object({
@@ -162,20 +138,28 @@ variable "data_storage_config" {
           container_soft_delete_retention_days = 7
         }
       }
-      hpc_cache = null
     }
     external = null
   }
-
-  validation {
-    condition = (var.data_storage_config.internal == null ? true :
-      var.data_storage_config.internal.hpc_cache == null ? true :
-    contains(["never", "30s", "3h"], var.data_storage_config.internal.hpc_cache.cache_update_frequency))
-    error_message = "HPC Cache update frequency must be \"never\", \"30s\" or \"3h\"."
-  }
 }
 
+variable "external_storage_config" {
+  description = "External services storage config."
+  type = list(object({
+    category        = string
+    container_name  = string
+    path            = string
+    plane_name      = string
+    protocol        = string
+    resource_group  = string
+    size            = number
+    storage_account = string
+    storage_type    = string
+    prefix_name     = string
+  }))
 
+  default = null
+}
 
 variable "remote_storage_plane" {
   description = "Input for attaching remote storage plane"

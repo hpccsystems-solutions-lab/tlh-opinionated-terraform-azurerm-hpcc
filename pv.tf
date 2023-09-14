@@ -99,37 +99,6 @@ resource "kubernetes_persistent_volume" "blob_nfs" {
   }
 }
 
-resource "kubernetes_persistent_volume" "hpc_cache" {
-
-  depends_on = [
-    module.data_cache
-  ]
-
-  for_each = local.hpc_cache_data_storage
-
-  metadata {
-    labels = {
-      storage-tier = "hpccache"
-    }
-    name = "${var.namespace.name}-pv-hpc-cache-${each.key}"
-  }
-  spec {
-    capacity = {
-      storage = "${each.value.size}"
-    }
-    access_modes                     = ["ReadOnlyMany"]
-    persistent_volume_reclaim_policy = "Retain"
-    persistent_volume_source {
-      nfs {
-        server = each.value.server
-        path   = each.value.path
-      }
-    }
-    storage_class_name = "hpcc-data"
-  }
-}
-
-
 # Multiple Spill PVs - Issue #123
 
 resource "kubernetes_persistent_volume" "spill" {

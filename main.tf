@@ -34,7 +34,6 @@ resource "helm_release" "hpcc" {
     kubernetes_namespace.default,
     kubernetes_persistent_volume_claim.azurefiles,
     kubernetes_persistent_volume_claim.blob_nfs,
-    kubernetes_persistent_volume_claim.hpc_cache,
     kubernetes_persistent_volume_claim.spill,
     kubernetes_secret.hpcc_container_registry_auth,
     kubernetes_secret.dali_hpcc_admin,
