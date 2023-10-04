@@ -16,7 +16,7 @@ locals {
 
   internal_data_config            = var.data_storage_config.internal == null ? false : true
   external_data_config            = var.data_storage_config.external == null ? false : true
-  external_storage_config_enabled = var.external_storage_config != null ? true : false
+  external_storage_config_enabled = (var.external_storage_config != null) && (var.internal_storage_enabled == false) ? true : false
 
   create_data_storage = (local.internal_data_config ? (var.data_storage_config.internal.blob_nfs == null ? false : true) : false)
   # create_data_storage = var.external_storage_config == null ? true : false
@@ -105,7 +105,7 @@ locals {
       path            = "hpcc-data"
       resource_group  = plane.resource_group_name
       storage_account = plane.storage_account_name
-      size            = "5Pi"
+      size            = (var.storage_data_gb != null) ? (var.storage_data_gb < 1000)? "1Pi" : "${ceil(var.storage_data_gb/1000)}Pi" : "5Pi"
     }
     } : local.external_storage_config_enabled ? { for v in var.external_storage_config : "data-${tostring(index(local.data_storage_planes, v) + 1)}" => {
       category        = "data"
@@ -624,7 +624,27 @@ locals {
     }
   ] : []
 
-  helm_chart_values = {
+  global_eclqueries_service = {
+    servicePort = 18002
+    visibility  = "global"
+    annotations = merge({
+      "service.beta.kubernetes.io/azure-load-balancer-internal" = tostring(local.internal_load_balancer_enabled)
+      "lnrs.io/zone-type"                                       = "public"
+    }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclqueries", var.namespace.name, local.domain) } : {})
+  }
+
+  local_eclqueries_service = {
+   servicePort = 443
+   visibility  = "local"
+   annotations = merge({
+      "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
+      "lnrs.io/zone-type"                                       = "public"
+    }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclqueries", var.namespace.name, local.domain) } : {})
+  }
+
+  eclqueries_service = var.enable_roxie? local.global_eclqueries_service : local.local_eclqueries_service
+
+  helm_chart_values0 = {
 
     global = {
       env = [for k, v in var.environment_variables : { name = k, value = v }]
@@ -911,14 +931,7 @@ locals {
         application = "eclqueries"
         auth        = local.auth_mode
         replicas    = 1
-        service = {
-          servicePort = 443
-          visibility  = "local"
-          annotations = merge({
-            "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
-            "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclqueries", var.namespace.name, local.domain) } : {})
-        }
+        service     = local.eclqueries_service
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
@@ -986,4 +999,41 @@ locals {
 
   }
 
+  #=======================================================================================
+  # Adding htpasswd support
+  #---------------------------------------------------------------------------------------
+  enable_htpasswd = (try(var.authn_htpasswd_filename, "") != "")
+
+  esp0 = local.helm_chart_values0.esp
+
+  esp_with_htpasswd1 = {
+    esp = [
+      for s in (local.esp0)
+        : merge(
+            s,
+            local.enable_htpasswd && s.service.visibility == "global" ? {auth = "htpasswdSecMgr"} : {},
+            local.enable_htpasswd && s.service.visibility == "global" && s.application == "eclwatch" ? yamldecode(file("${path.module}/yaml_files/eclwatch.yaml")) : {},
+            local.enable_htpasswd && s.service.visibility == "global" && s.application == "eclqueries" ? yamldecode(file("${path.module}/yaml_files/eclqueries.yaml")) : {},
+            local.enable_htpasswd && s.service.visibility == "global" && s.application == "sql2ecl" ? yamldecode(file("${path.module}/yaml_files/sql2ecl.yaml")) : {}
+          )
+    ]
+  }
+
+  # Now go back and fix the htpasswdFile entries
+  esp_with_htpasswd2 = {
+    esp = [
+      for s in (local.esp_with_htpasswd1.esp)
+        : merge(
+            s,
+            s.auth == "htpasswdSecMgr" ? {authNZ = {htpasswdSecMgr = merge(s.authNZ.htpasswdSecMgr, {htpasswdFile = "/var/lib/HPCCSystems/queries/${var.authn_htpasswd_filename}"})}} : {}
+          )
+    ]
+  }
+
+  #======================================================================================
+  # Adding eclSecurity
+  eclSecurity = var.enable_code_security ?  yamldecode(file("${path.module}/yaml_files/security.yaml")) : {}
+
+  helm_chart_values = merge( local.helm_chart_values0, local.esp_with_htpasswd2, local.eclSecurity)
+  #=======================================================================================
 }

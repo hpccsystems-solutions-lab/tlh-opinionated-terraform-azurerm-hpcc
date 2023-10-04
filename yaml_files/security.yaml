@@ -1,0 +1,6 @@
+  security:
+    eclSecurity:
+      embedded: "allowSigned"
+      pipe:  "allowSigned"
+      extern: "allowSigned"
+      datafile: "allow"

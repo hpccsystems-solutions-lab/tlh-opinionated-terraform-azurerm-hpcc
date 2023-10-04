@@ -1,3 +1,34 @@
+variable "storage_data_gb" {
+  type        = number
+  description = "REQUIRED.  The amount of storage reserved for data in gigabytes.\nMust be 10 or more.\nIf a storage account is defined (see below) then this value is ignored."
+  validation {
+    condition     = var.storage_data_gb >= 10
+    error_message = "Value must be 10 or more."
+  }
+}
+
+variable "enable_code_security" {
+  description = "REQUIRED.  Enable code security?\nIf true, only signed ECL code will be allowed to create embedded language functions, use PIPE(), etc.\nExample entry: false"
+  type        = bool
+}
+
+variable "authn_htpasswd_filename" {
+  type        = string
+  description = "OPTIONAL.  If you would like to use htpasswd to authenticate users to the cluster, enter the filename of the htpasswd file.  This file should be uploaded to the Azure 'dllsshare' file share in order for the HPCC processes to find it.\nA corollary is that persistent storage is enabled.\nAn empty string indicates that htpasswd is not to be used for authentication.\nExample entry: htpasswd.txt"
+  default     = ""
+}
+
+variable "enable_roxie" {
+  description = "REQUIRED.  Enable ROXIE?\nThis will also expose port 8002 on the cluster.\nExample entry: false"
+  type        = bool
+}
+
+variable "internal_storage_enabled" {
+  description = "If true then there will be internal data storage instead of external."
+  type        = bool
+  default     = true
+}
+
 variable "admin_services_node_selector" {
   description = "Node selector for admin services pods."
   type        = map(map(string))
@@ -794,6 +825,12 @@ variable "eclccserver_settings" {
     gitUsername        = optional(string, "")
     defaultRepo        = optional(string, "")
     defaultRepoVersion = optional(string, "")
+    eclSecurity = optional(object({
+      datafile = string
+      embedded = string
+      extern   = string
+      pipe     = string
+    }))
     resources = optional(object({
       cpu    = string
       memory = string
@@ -818,6 +855,12 @@ variable "eclccserver_settings" {
       egress                = "engineEgress"
       replicas              = 1
       childProcessTimeLimit = 10
+      eclSecurity  = {
+        datafile = "allow"
+        embedded = "allow"
+        extern   = "allow"
+        pipe     = "allow"
+      }
       resources = {
         cpu    = "1"
         memory = "4G"
