@@ -213,6 +213,7 @@ locals {
     useChildProcesses     = v.useChildProcesses
     childProcessTimeLimit = v.childProcessTimeLimit
     maxActive             = v.maxActive
+    #eclSecurity           = v.eclSecurity # add this line when enable_code_security is true.
     resources             = v.resources
     egress                = v.egress
     listen                = v.listen_queue
@@ -1002,7 +1003,7 @@ locals {
   #=======================================================================================
   # Adding htpasswd support
   #---------------------------------------------------------------------------------------
-  enable_htpasswd = (try(var.authn_htpasswd_filename, "") != "")
+  enable_htpasswd = (try(var.authn_htpasswd_filename, "") != "") 
 
   esp0 = local.helm_chart_values0.esp
 

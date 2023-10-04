@@ -23,12 +23,6 @@ variable "enable_roxie" {
   type        = bool
 }
 
-variable "internal_storage_enabled" {
-  description = "If true then there will be internal data storage instead of external."
-  type        = bool
-  default     = true
-}
-
 variable "admin_services_node_selector" {
   description = "Node selector for admin services pods."
   type        = map(map(string))
@@ -263,6 +257,12 @@ variable "global_num_rename_retries" {
   description = "Value for Global.numRenameRetries - Global.expert level."
   type        = number
   default     = null
+}
+
+variable "internal_storage_enabled" {
+  description = "If true then there will be internal data storage instead of external."
+  type        = bool
+  default     = true
 }
 
 variable "enable_premium_zrs_storage_class" {
@@ -829,7 +829,7 @@ variable "eclccserver_settings" {
       datafile = string
       embedded = string
       extern   = string
-      pipe     = string
+      pipe     = string 
     }))
     resources = optional(object({
       cpu    = string
@@ -857,9 +857,9 @@ variable "eclccserver_settings" {
       childProcessTimeLimit = 10
       eclSecurity  = {
         datafile = "allow"
-        embedded = "allow"
-        extern   = "allow"
-        pipe     = "allow"
+        embedded = "allowSigned"
+        extern   = "allowSigned"
+        pipe     = "allowSigned"
       }
       resources = {
         cpu    = "1"
