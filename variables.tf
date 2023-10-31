@@ -840,7 +840,6 @@ variable "eclccserver_settings" {
     })
     listen_queue          = optional(list(string), [])
     childProcessTimeLimit = optional(number, 10)
-    gitUsername           = optional(string, "")
     legacySyntax          = optional(bool, false)
     options = optional(list(object({
       name  = string

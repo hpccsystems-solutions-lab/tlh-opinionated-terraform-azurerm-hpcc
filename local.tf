@@ -105,7 +105,7 @@ locals {
       path            = "hpcc-data"
       resource_group  = plane.resource_group_name
       storage_account = plane.storage_account_name
-      size            = (var.storage_data_gb != null) ? (var.storage_data_gb < 1000)? "1Pi" : "${ceil(var.storage_data_gb/1000)}Pi" : "5Pi"
+      size            = (var.storage_data_gb != null) ? (var.storage_data_gb < 1000000)? "1Pi" : "${ceil(var.storage_data_gb/1000000)}Pi" : "5Pi"
     }
     } : local.external_storage_config_enabled ? { for v in var.external_storage_config : "data-${tostring(index(local.data_storage_planes, v) + 1)}" => {
       category        = "data"
