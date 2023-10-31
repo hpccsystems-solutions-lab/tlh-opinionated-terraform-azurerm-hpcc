@@ -829,7 +829,7 @@ variable "eclccserver_settings" {
       datafile = string
       embedded = string
       extern   = string
-      pipe     = string 
+      pipe     = string
     }))
     resources = optional(object({
       cpu    = string
@@ -854,7 +854,7 @@ variable "eclccserver_settings" {
       egress                = "engineEgress"
       replicas              = 1
       childProcessTimeLimit = 10
-      eclSecurity  = {
+      eclSecurity = {
         datafile = "allow"
         embedded = "allowSigned"
         extern   = "allowSigned"

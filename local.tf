@@ -105,7 +105,7 @@ locals {
       path            = "hpcc-data"
       resource_group  = plane.resource_group_name
       storage_account = plane.storage_account_name
-      size            = (var.storage_data_gb != null) ? (var.storage_data_gb < 1000000)? "1Pi" : "${ceil(var.storage_data_gb/1000000)}Pi" : "5Pi"
+      size            = (var.storage_data_gb != null) ? (var.storage_data_gb < 1000000) ? "1Pi" : "${ceil(var.storage_data_gb / 1000000)}Pi" : "5Pi"
     }
     } : local.external_storage_config_enabled ? { for v in var.external_storage_config : "data-${tostring(index(local.data_storage_planes, v) + 1)}" => {
       category        = "data"
@@ -214,14 +214,14 @@ locals {
     childProcessTimeLimit = v.childProcessTimeLimit
     maxActive             = v.maxActive
     #eclSecurity           = v.eclSecurity # add this line when enable_code_security is true.
-    resources             = v.resources
-    egress                = v.egress
-    listen                = v.listen_queue
-    gitUsername           = v.gitUsername
-    defaultRepo           = v.defaultRepo
-    defaultRepoVersion    = v.defaultRepoVersion
-    cost                  = v.cost
-    options               = v.legacySyntax != false ? concat([{ name = "eclcc-legacyimport", value = 1 }, { name = "eclcc-legacywhen", value = 1 }], v.options) : v.options
+    resources          = v.resources
+    egress             = v.egress
+    listen             = v.listen_queue
+    gitUsername        = v.gitUsername
+    defaultRepo        = v.defaultRepo
+    defaultRepoVersion = v.defaultRepoVersion
+    cost               = v.cost
+    options            = v.legacySyntax != false ? concat([{ name = "eclcc-legacyimport", value = 1 }, { name = "eclcc-legacywhen", value = 1 }], v.options) : v.options
   }]
 
   ldap_defaults = {
@@ -635,15 +635,15 @@ locals {
   }
 
   local_eclqueries_service = {
-   servicePort = 443
-   visibility  = "local"
-   annotations = merge({
+    servicePort = 443
+    visibility  = "local"
+    annotations = merge({
       "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
       "lnrs.io/zone-type"                                       = "public"
     }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclqueries", var.namespace.name, local.domain) } : {})
   }
 
-  eclqueries_service = var.enable_roxie? local.global_eclqueries_service : local.local_eclqueries_service
+  eclqueries_service = var.enable_roxie ? local.global_eclqueries_service : local.local_eclqueries_service
 
   helm_chart_values0 = {
 
@@ -933,7 +933,7 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service     = local.eclqueries_service
-        egress = var.egress.esp_engine
+        egress      = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
         name        = format("esdl-sandbox-%s", var.namespace.name)
@@ -1003,38 +1003,38 @@ locals {
   #=======================================================================================
   # Adding htpasswd support
   #---------------------------------------------------------------------------------------
-  enable_htpasswd = (try(var.authn_htpasswd_filename, "") != "") 
+  enable_htpasswd = (try(var.authn_htpasswd_filename, "") != "")
 
   esp0 = local.helm_chart_values0.esp
 
   esp_with_htpasswd1 = {
     esp = [
-      for s in (local.esp0)
-        : merge(
-            s,
-            local.enable_htpasswd && s.service.visibility == "global" ? {auth = "htpasswdSecMgr"} : {},
-            local.enable_htpasswd && s.service.visibility == "global" && s.application == "eclwatch" ? yamldecode(file("${path.module}/yaml_files/eclwatch.yaml")) : {},
-            local.enable_htpasswd && s.service.visibility == "global" && s.application == "eclqueries" ? yamldecode(file("${path.module}/yaml_files/eclqueries.yaml")) : {},
-            local.enable_htpasswd && s.service.visibility == "global" && s.application == "sql2ecl" ? yamldecode(file("${path.module}/yaml_files/sql2ecl.yaml")) : {}
-          )
+      for s in(local.esp0)
+      : merge(
+        s,
+        local.enable_htpasswd && s.service.visibility == "global" ? { auth = "htpasswdSecMgr" } : {},
+        local.enable_htpasswd && s.service.visibility == "global" && s.application == "eclwatch" ? yamldecode(file("${path.module}/yaml_files/eclwatch.yaml")) : {},
+        local.enable_htpasswd && s.service.visibility == "global" && s.application == "eclqueries" ? yamldecode(file("${path.module}/yaml_files/eclqueries.yaml")) : {},
+        local.enable_htpasswd && s.service.visibility == "global" && s.application == "sql2ecl" ? yamldecode(file("${path.module}/yaml_files/sql2ecl.yaml")) : {}
+      )
     ]
   }
 
   # Now go back and fix the htpasswdFile entries
   esp_with_htpasswd2 = {
     esp = [
-      for s in (local.esp_with_htpasswd1.esp)
-        : merge(
-            s,
-            s.auth == "htpasswdSecMgr" ? {authNZ = {htpasswdSecMgr = merge(s.authNZ.htpasswdSecMgr, {htpasswdFile = "/var/lib/HPCCSystems/queries/${var.authn_htpasswd_filename}"})}} : {}
-          )
+      for s in(local.esp_with_htpasswd1.esp)
+      : merge(
+        s,
+        s.auth == "htpasswdSecMgr" ? { authNZ = { htpasswdSecMgr = merge(s.authNZ.htpasswdSecMgr, { htpasswdFile = "/var/lib/HPCCSystems/queries/${var.authn_htpasswd_filename}" }) } } : {}
+      )
     ]
   }
 
   #======================================================================================
   # Adding eclSecurity
-  eclSecurity = var.enable_code_security ?  yamldecode(file("${path.module}/yaml_files/security.yaml")) : {}
+  eclSecurity = var.enable_code_security ? yamldecode(file("${path.module}/yaml_files/security.yaml")) : {}
 
-  helm_chart_values = merge( local.helm_chart_values0, local.esp_with_htpasswd2, local.eclSecurity)
+  helm_chart_values = merge(local.helm_chart_values0, local.esp_with_htpasswd2, local.eclSecurity)
   #=======================================================================================
 }
