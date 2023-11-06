@@ -1,3 +1,9 @@
+variable "hpcc_user_ip_cidr_list" {
+  description = "OPTIONAL.  List of additional CIDR addresses that can access this HPCC Systems cluster.\nDefault value is '[]' which means no CIDR addresses.\nTo open to the internet, add \"0.0.0.0/0\"."
+  type        = list(string)
+  default     = []
+}
+
 variable "storage_data_gb" {
   type        = number
   description = "REQUIRED.  The amount of storage reserved for data in gigabytes.\nMust be 10 or more.\nIf a storage account is defined (see below) then this value is ignored."
