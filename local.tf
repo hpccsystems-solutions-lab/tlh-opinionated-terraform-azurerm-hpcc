@@ -626,8 +626,8 @@ locals {
   ] : []
 
   global_eclqueries_service = {
-    servicePort = 18002
-    visibility  = "global"
+    servicePort              = 18002
+    visibility               = "global"
     loadBalancerSourceRanges = var.hpcc_user_ip_cidr_list
     annotations = merge({
       "service.beta.kubernetes.io/azure-load-balancer-internal" = tostring(local.internal_load_balancer_enabled)
@@ -636,8 +636,8 @@ locals {
   }
 
   local_eclqueries_service = {
-    servicePort = 443
-    visibility  = "local"
+    servicePort              = 443
+    visibility               = "local"
     loadBalancerSourceRanges = var.hpcc_user_ip_cidr_list
     annotations = merge({
       "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -907,9 +907,9 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service = {
-          port        = 8888
-          servicePort = local.servicePort
-          visibility  = local.visibility
+          port                     = 8888
+          servicePort              = local.servicePort
+          visibility               = local.visibility
           loadBalancerSourceRanges = var.hpcc_user_ip_cidr_list
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = tostring(local.internal_load_balancer_enabled)
