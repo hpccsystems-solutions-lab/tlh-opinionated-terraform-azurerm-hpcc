@@ -902,7 +902,8 @@ locals {
         egress = var.egress.esp_engine
       }, local.esp_ldap_config),
       merge({
-        name        = format("eclwatch-%s", var.namespace.name)
+        #name        = format("eclwatch-%s", var.namespace.name)
+        name        = var.a_record_name
         application = "eclwatch"
         auth        = local.auth_mode
         replicas    = 1
@@ -914,7 +915,9 @@ locals {
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = tostring(local.internal_load_balancer_enabled)
             "lnrs.io/zone-type"                                       = "public"
-          }, local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclwatch", var.namespace.name, local.domain) } : {})
+          },
+          # tlh 20231115 local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclwatch", var.namespace.name, local.domain) } : {})
+          local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", var.a_record_name, local.domain) } : {})
         }
         egress      = var.egress.esp_engine
         corsAllowed = local.corsAllowed
