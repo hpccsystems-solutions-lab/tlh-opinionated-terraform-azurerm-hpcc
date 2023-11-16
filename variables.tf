@@ -1,3 +1,13 @@
+variable "hpcc_version" {
+  description = "The version of HPCC Systems to install.\nOnly versions in nn.nn.nn format are supported. Default is 'latest'"
+  type        = string
+  validation {
+    condition     = (var.hpcc_version == "latest") || can(regex("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(-rc\\d{1,3})?$", var.hpcc_version))
+    error_message = "Value must be 'latest' OR in nn.nn.nn format and 8.6.0 or higher."
+  }
+  default = "latest"
+}
+
 variable "a_record_name" {
   type        = string
   description = "dns zone eclwatch A record name"
