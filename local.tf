@@ -626,8 +626,8 @@ locals {
   ] : []
 
   global_eclqueries_service = {
-    servicePort = 18002
-    visibility  = "global"
+    servicePort              = 18002
+    visibility               = "global"
     loadBalancerSourceRanges = var.hpcc_user_ip_cidr_list
     annotations = merge({
       "service.beta.kubernetes.io/azure-load-balancer-internal" = tostring(local.internal_load_balancer_enabled)
@@ -636,8 +636,8 @@ locals {
   }
 
   local_eclqueries_service = {
-    servicePort = 443
-    visibility  = "local"
+    servicePort              = 443
+    visibility               = "local"
     loadBalancerSourceRanges = var.hpcc_user_ip_cidr_list
     annotations = merge({
       "service.beta.kubernetes.io/azure-load-balancer-internal" = "true"
@@ -909,15 +909,15 @@ locals {
         auth        = local.auth_mode
         replicas    = 1
         service = {
-          port        = 8888
-          servicePort = local.servicePort
-          visibility  = local.visibility
+          port                     = 8888
+          servicePort              = local.servicePort
+          visibility               = local.visibility
           loadBalancerSourceRanges = var.hpcc_user_ip_cidr_list
           annotations = merge({
             "service.beta.kubernetes.io/azure-load-balancer-internal" = tostring(local.internal_load_balancer_enabled)
             "lnrs.io/zone-type"                                       = "public"
-          },
-          # tlh 20231115 local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclwatch", var.namespace.name, local.domain) } : {})
+            },
+            # tlh 20231115 local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s-%s.%s", "eclwatch", var.namespace.name, local.domain) } : {})
           local.external_dns_zone_enabled ? { "external-dns.alpha.kubernetes.io/hostname" = format("%s.%s", var.a_record_name, local.domain) } : {})
         }
         egress      = var.egress.esp_engine
