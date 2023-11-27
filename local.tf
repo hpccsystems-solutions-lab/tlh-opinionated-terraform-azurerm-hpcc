@@ -662,7 +662,7 @@ locals {
       }
       busybox = local.acr_default.busybox
       image = merge({
-        version    = var.hpcc_container.version
+        version = var.hpcc_container.version
         #version    = var.hpcc_version
         root       = var.hpcc_container.image_root
         name       = var.hpcc_container.image_name
