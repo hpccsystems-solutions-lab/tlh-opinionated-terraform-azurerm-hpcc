@@ -15,8 +15,8 @@ locals {
   azurefiles_admin_storage_enabled = contains([for storage in local.admin_services_storage : storage.type], "azurefiles")
   blobnfs_admin_storage_enabled    = contains([for storage in local.admin_services_storage : storage.type], "blobnfs")
 
-  internal_data_config            = var.data_storage_config.internal == null ? false : true
-  external_data_config            = var.data_storage_config.external == null ? false : true
+  internal_data_config = var.data_storage_config.internal == null ? false : true
+  external_data_config = var.data_storage_config.external == null ? false : true
 
   create_data_storage = (local.internal_data_config ? (var.data_storage_config.internal.blob_nfs == null ? false : true) : false)
   # create_data_storage = var.external_storage_config == null ? true : false
