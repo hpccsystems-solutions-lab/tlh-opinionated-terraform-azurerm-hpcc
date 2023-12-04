@@ -2,6 +2,7 @@ locals {
 
   create_hpcc_registry_auth_secret = var.hpcc_container_registry_auth != null ? true : false
 
+  external_storage_config_enabled = (var.external_storage_config != null) && (var.internal_storage_enabled == false) ? true : false
   admin_services_storage = local.external_storage_config_enabled ? merge(
     {
       for plane in var.external_storage_config :
@@ -16,7 +17,6 @@ locals {
 
   internal_data_config            = var.data_storage_config.internal == null ? false : true
   external_data_config            = var.data_storage_config.external == null ? false : true
-  external_storage_config_enabled = (var.external_storage_config != null) && (var.internal_storage_enabled == false) ? true : false
 
   create_data_storage = (local.internal_data_config ? (var.data_storage_config.internal.blob_nfs == null ? false : true) : false)
   # create_data_storage = var.external_storage_config == null ? true : false
@@ -662,8 +662,8 @@ locals {
       }
       busybox = local.acr_default.busybox
       image = merge({
-        version    = var.hpcc_container.version
-        #version    = var.hpcc_version
+        #version    = var.hpcc_container.version
+        version    = var.hpcc_version
         root       = var.hpcc_container.image_root
         name       = var.hpcc_container.image_name
         pullPolicy = "IfNotPresent"

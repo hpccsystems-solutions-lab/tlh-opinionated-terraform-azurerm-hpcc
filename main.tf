@@ -53,8 +53,8 @@ resource "helm_release" "hpcc" {
   namespace  = var.namespace.name
   chart      = var.hpcc_container.custom_chart_version == null ? "hpcc" : var.hpcc_container.custom_chart_version
   repository = var.hpcc_container.custom_chart_version == null ? "https://hpcc-systems.github.io/helm-chart" : null
-  version    = var.hpcc_container.version != "latest" ? var.hpcc_container.version : null
-  #version    = var.hpcc_version != "latest" ? var.hpcc_version : null
+  #version    = var.hpcc_container.version != "latest" ? var.hpcc_container.version : null
+  version    = var.hpcc_version != "latest" ? var.hpcc_version : null
   values = concat([
     yamlencode(local.helm_chart_values)],
     concat([for v in var.helm_chart_files_overrides : file(v)]),
