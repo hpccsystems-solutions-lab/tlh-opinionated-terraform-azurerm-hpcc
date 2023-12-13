@@ -30,10 +30,10 @@ locals {
   }
 
   external_dns_zone_enabled      = var.internal_domain != null
-  internal_load_balancer_enabled = local.external_dns_zone_enabled ? false : true                                             // For ECLWatch service
+  internal_load_balancer_enabled = local.external_dns_zone_enabled ? false : true                                           // For ECLWatch service
   servicePort                    = local.external_dns_zone_enabled ? local.certificates.enabled == false ? 8010 : 443 : 443 // For ECLWatch service
   #servicePort                    = local.external_dns_zone_enabled ? local.certificates.enabled == false ? 8010 : 18010 : 443 // For ECLWatch service
-  visibility                     = local.external_dns_zone_enabled ? "global" : "local"                                       // For ECLWatch service
+  visibility = local.external_dns_zone_enabled ? "global" : "local" // For ECLWatch service
 
   certificates = {
     enabled = true
