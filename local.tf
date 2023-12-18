@@ -425,7 +425,8 @@ locals {
                     {
                       key      = "workload"
                       operator = "In"
-                      values   = ["spraypool"]
+                      #values   = ["spraypool"]
+                      values   = ["${var.spray_service_settings.nodeSelector}"]
                     }
                   ]
                 }
